@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary colors
-  static const Color primary = Color(0xFF2196F3);
-  static const Color primaryDark = Color(0xFF1976D2);
-  static const Color primaryLight = Color(0xFF64B5F6);
+  // Primary colors - Beautiful purple theme from design
+  static const Color primary = Color(0xFF6A57FF);
+  static const Color primaryDark = Color(0xFF5541E6);
+  static const Color primaryLight = Color(0xFFECE8FF);
 
   // Secondary colors
   static const Color secondary = Color(0xFF03DAC6);
@@ -27,13 +27,13 @@ class AppColors {
   static const Color priorityHigh = Color(0xFFFF5722);
   static const Color priorityCritical = Color(0xFFD32F2F);
 
-  // Text colors
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
+  // Text colors - Matching design palette
+  static const Color textPrimary = Color(0xFF231628);
+  static const Color textSecondary = Color(0xFF898491);
   static const Color textHint = Color(0xFF9E9E9E);
   static const Color textDisabled = Color(0xFFBDBDBD);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
-  static const Color textOnSecondary = Color(0xFF000000);
+  static const Color textOnSecondary = Color(0xFF231628);
 
   // Background colors
   static const Color background = Color(0xFFF5F5F5);
@@ -108,6 +108,11 @@ class AppColors {
   static const Color shadowLight = Color(0x0A000000);
   static const Color shadowMedium = Color(0x1F000000);
   static const Color shadowDark = Color(0x3D000000);
+
+  // Input field colors - Modern design
+  static const Color inputBackground = Color(0xFFF5F5F5);
+  static const Color inputBorder = Color(0xFFE0E0E0);
+  static const Color inputFocused = Color(0xFF6A57FF);
 
   // Ticket status colors
   static Color getTicketStatusColor(String status) {
@@ -236,23 +241,24 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error),
         ),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.inputBackground,
+        contentPadding: const EdgeInsets.all(16),
       ),
     );
   }

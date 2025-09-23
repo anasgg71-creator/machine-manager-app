@@ -195,21 +195,31 @@ class SupabaseService {
     int offset = 0,
   }) async {
     try {
-      var query = client.from('tickets').select('''
-        *,
-        creator:profiles!creator_id(*),
-        assignee:profiles!assignee_id(*),
-        resolver:profiles!resolver_id(*),
-        machine:machines(*)
-      ''').order('created_at', ascending: false);
+      print('🔍 DEBUG: Starting getTickets query...');
 
-      // Note: Filtering will be handled by the TicketProvider for now
+      // Simplified query without joins first
+      var query = client.from('tickets').select('*').order('created_at', ascending: false);
 
       query = query.range(offset, offset + limit - 1);
 
+      print('🔍 DEBUG: Executing query...');
       final response = await query;
-      return response.map((json) => Ticket.fromJson(json)).toList();
+      print('🔍 DEBUG: Got response with ${response.length} tickets');
+
+      // Create simplified tickets without relations for now
+      final tickets = response.map((json) {
+        // Add default values for missing relations
+        json['creator'] = null;
+        json['assignee'] = null;
+        json['resolver'] = null;
+        json['machine'] = null;
+        return Ticket.fromJson(json);
+      }).toList();
+
+      print('🔍 DEBUG: Returning ${tickets.length} tickets');
+      return tickets;
     } catch (e) {
+      print('🔍 DEBUG: Error in getTickets: $e');
       rethrow;
     }
   }
@@ -218,10 +228,10 @@ class SupabaseService {
     try {
       final response = await client.from('tickets').select('''
         *,
-        creator:profiles!creator_id(*),
-        assignee:profiles!assignee_id(*),
-        resolver:profiles!resolver_id(*),
-        machine:machines(*)
+        creator:profiles!fk_tickets_creator(*),
+        assignee:profiles!fk_tickets_assignee(*),
+        resolver:profiles!fk_tickets_resolver(*),
+        machine:machines!fk_tickets_machine(*)
       ''').eq('id', ticketId).single();
 
       return Ticket.fromJson(response);
@@ -260,8 +270,8 @@ class SupabaseService {
           .insert(ticketData)
           .select('''
             *,
-            creator:profiles!creator_id(*),
-            machine:machines(*)
+            creator:profiles!fk_tickets_creator(*),
+            machine:machines!fk_tickets_machine(*)
           ''')
           .single();
 
@@ -314,6 +324,23 @@ class SupabaseService {
     }
   }
 
+  // Extension functionality - actually update the database
+  static Future<bool> extendTicketExpiration(String ticketId) async {
+    try {
+      final now = DateTime.now();
+      final newExpiresAt = now.add(const Duration(days: AppConstants.defaultTicketExpireDays));
+
+      await updateTicket(ticketId, {
+        'expires_at': newExpiresAt.toIso8601String(),
+        'auto_close_warned': false, // Reset warning flag
+      });
+
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Chat Methods
   static Future<List<ChatMessage>> getChatMessages(String ticketId) async {
     try {
@@ -321,7 +348,7 @@ class SupabaseService {
           .from('chat_messages')
           .select('''
             *,
-            sender:profiles!sender_id(*)
+            sender:profiles!chat_messages_sender_id_fkey(*)
           ''')
           .eq('ticket_id', ticketId)
           .order('created_at', ascending: true);
@@ -356,11 +383,62 @@ class SupabaseService {
           .insert(messageData)
           .select('''
             *,
-            sender:profiles!sender_id(*)
+            sender:profiles!chat_messages_sender_id_fkey(*)
           ''')
           .single();
 
       return ChatMessage.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Get chat participants for ticket solver selection
+  static Future<List<UserProfile>> getChatParticipants(String ticketId) async {
+    try {
+      final response = await client
+          .from('chat_messages')
+          .select('sender_id, sender:profiles!chat_messages_sender_id_fkey(*)')
+          .eq('ticket_id', ticketId)
+          .order('created_at', ascending: false);
+
+      // Get unique participants
+      final Set<String> uniqueSenderIds = <String>{};
+      final List<UserProfile> participants = [];
+
+      for (final message in response) {
+        final senderId = message['sender_id'] as String;
+        if (!uniqueSenderIds.contains(senderId) && message['sender'] != null) {
+          uniqueSenderIds.add(senderId);
+          participants.add(UserProfile.fromJson(message['sender']));
+        }
+      }
+
+      return participants;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Close ticket with optional resolution and rating
+  static Future<void> closeTicket({
+    required String ticketId,
+    String? resolverId,
+    String? resolution,
+    int? rating,
+    String closeReason = 'closed_by_user',
+  }) async {
+    try {
+      final updates = {
+        'status': 'closed',
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      if (resolverId != null) updates['resolver_id'] = resolverId;
+      if (resolution != null) updates['resolution'] = resolution;
+      if (rating != null) updates['rating'] = rating.toString();
+
+      await updateTicket(ticketId, updates);
     } catch (e) {
       rethrow;
     }

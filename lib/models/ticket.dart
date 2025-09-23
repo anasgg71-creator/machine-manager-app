@@ -18,6 +18,7 @@ class Ticket {
   final DateTime updatedAt;
   final DateTime? resolvedAt;
   final DateTime expiresAt;
+  final bool autoCloseWarned;
 
   // Related objects
   final UserProfile? creator;
@@ -42,6 +43,7 @@ class Ticket {
     required this.updatedAt,
     this.resolvedAt,
     required this.expiresAt,
+    this.autoCloseWarned = false,
     this.creator,
     this.assignee,
     this.resolver,
@@ -68,6 +70,7 @@ class Ticket {
           ? DateTime.parse(json['resolved_at'] as String)
           : null,
       expiresAt: DateTime.parse(json['expires_at'] as String),
+      autoCloseWarned: json['auto_close_warned'] as bool? ?? false,
       creator: json['creator'] != null
           ? UserProfile.fromJson(json['creator'] as Map<String, dynamic>)
           : null,
@@ -101,6 +104,7 @@ class Ticket {
       'updated_at': updatedAt.toIso8601String(),
       'resolved_at': resolvedAt?.toIso8601String(),
       'expires_at': expiresAt.toIso8601String(),
+      'auto_close_warned': autoCloseWarned,
     };
   }
 
@@ -121,6 +125,7 @@ class Ticket {
     DateTime? updatedAt,
     DateTime? resolvedAt,
     DateTime? expiresAt,
+    bool? autoCloseWarned,
     UserProfile? creator,
     UserProfile? assignee,
     UserProfile? resolver,
@@ -143,6 +148,7 @@ class Ticket {
       updatedAt: updatedAt ?? this.updatedAt,
       resolvedAt: resolvedAt ?? this.resolvedAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      autoCloseWarned: autoCloseWarned ?? this.autoCloseWarned,
       creator: creator ?? this.creator,
       assignee: assignee ?? this.assignee,
       resolver: resolver ?? this.resolver,

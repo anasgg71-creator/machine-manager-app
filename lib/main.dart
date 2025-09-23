@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/supabase_service.dart';
+import 'services/ticket_expiration_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/ticket_provider.dart';
 import 'config/colors.dart';
@@ -18,6 +19,15 @@ void main() async {
   } catch (e) {
     print('❌ Failed to initialize Supabase: $e');
     print('⚠️  Make sure to update your Supabase credentials in config/constants.dart');
+  }
+
+  // Initialize Ticket Expiration Service
+  try {
+    // Temporarily disabled for debugging
+    // await TicketExpirationService.initialize();
+    print('⚠️ Ticket Expiration Service temporarily disabled for debugging');
+  } catch (e) {
+    print('❌ Failed to initialize Ticket Expiration Service: $e');
   }
 
   runApp(const MyApp());

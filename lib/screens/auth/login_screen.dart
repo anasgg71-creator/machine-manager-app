@@ -85,12 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        // App Icon
+        // App Icon - Modern purple design
         Container(
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: AppColors.primaryLight,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -102,8 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           child: const Icon(
             Icons.precision_manufacturing,
-            size: 40,
-            color: AppColors.textOnPrimary,
+            size: 32,
+            color: AppColors.primary,
           ),
         ),
 
@@ -274,10 +274,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       onPressed: authProvider.isLoading ? null : _handleSubmit,
       style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.textOnPrimary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
+        elevation: 0,
       ),
       child: authProvider.isLoading
           ? const SizedBox(
