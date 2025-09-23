@@ -9,6 +9,7 @@ import 'config/colors.dart';
 import 'config/constants.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/dashboard/dashboard_screen.dart';
+import 'utils/test_ticket_creation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,14 @@ void main() async {
     print('✅ Machine seeding completed');
   } catch (e) {
     print('❌ Failed to seed machines: $e');
+  }
+
+  // Run tests to verify ticket creation
+  try {
+    await TestTicketCreation.runMachineTest();
+    print('✅ Machine test completed');
+  } catch (e) {
+    print('❌ Failed to run machine test: $e');
   }
 
   runApp(const MyApp());

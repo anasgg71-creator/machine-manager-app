@@ -13,11 +13,16 @@ class MachineSeedService {
       // Check if any machines exist
       final existingMachines = await client
           .from('machines')
-          .select('id')
-          .limit(1);
+          .select('id, name')
+          .limit(10);
+
+      print('🐛 SEED: Found ${existingMachines.length} existing machines');
+      for (final machine in existingMachines) {
+        print('🐛 SEED: Existing machine: ${machine['id']} - ${machine['name']}');
+      }
 
       if (existingMachines.isNotEmpty) {
-        print('✅ Machines already exist in database');
+        print('✅ Machines already exist in database, skipping seeding');
         return;
       }
 
@@ -31,27 +36,42 @@ class MachineSeedService {
         final categoryName = category['name']!;
         final machines = AppConstants.machinesByCategory[categoryValue] ?? [];
 
+        print('🐛 SEED: Processing category: $categoryValue with ${machines.length} machines');
+
         for (final machine in machines) {
-          machinesToInsert.add({
+          final machineRecord = {
             'id': machine['id']!,
             'name': machine['name']!,
             'category': categoryValue,
             'status': 'operational',
             'location': _getLocationForCategory(categoryValue),
             'created_at': DateTime.now().toIso8601String(),
-          });
+          };
+          machinesToInsert.add(machineRecord);
+          print('🐛 SEED: Prepared machine: ${machineRecord['id']} - ${machineRecord['name']}');
         }
       }
 
       if (machinesToInsert.isNotEmpty) {
+        print('🌱 Inserting ${machinesToInsert.length} machines into database...');
         await client
             .from('machines')
             .insert(machinesToInsert);
 
         print('✅ Successfully seeded ${machinesToInsert.length} machines');
+
+        // Verify the insertion
+        final verifyMachines = await client
+            .from('machines')
+            .select('id, name')
+            .limit(20);
+        print('🔍 VERIFICATION: Database now contains ${verifyMachines.length} machines');
+      } else {
+        print('⚠️ No machines to seed from constants');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ Error seeding machines: $e');
+      print('❌ Stack trace: $stackTrace');
       rethrow;
     }
   }

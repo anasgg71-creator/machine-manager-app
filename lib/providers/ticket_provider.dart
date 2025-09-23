@@ -131,10 +131,25 @@ class TicketProvider extends ChangeNotifier {
     required String priority,
   }) async {
     try {
+      print('🐛 PROVIDER: Starting ticket creation...');
+      print('🐛 PROVIDER: Title: "$title"');
+      print('🐛 PROVIDER: Description: "$description"');
+      print('🐛 PROVIDER: Machine ID: "$machineId"');
+      print('🐛 PROVIDER: Problem Type: "$problemType"');
+      print('🐛 PROVIDER: Priority: "$priority"');
+
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
+      // Validate machine exists
+      final machine = getMachineById(machineId);
+      if (machine == null) {
+        throw Exception('Machine with ID "$machineId" not found. Available machines: ${_machines.map((m) => '${m.id}:${m.name}').join(', ')}');
+      }
+      print('✅ PROVIDER: Machine validation passed - ${machine.name}');
+
+      print('🐛 PROVIDER: Calling SupabaseService.createTicket...');
       final ticket = await SupabaseService.createTicket(
         title: title,
         description: description,
@@ -143,10 +158,13 @@ class TicketProvider extends ChangeNotifier {
         priority: priority,
       );
 
+      print('✅ PROVIDER: Ticket created successfully with ID: ${ticket.id}');
       _tickets.insert(0, ticket);
       notifyListeners();
       return ticket;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ PROVIDER: Error creating ticket: $e');
+      print('❌ PROVIDER: Stack trace: $stackTrace');
       _errorMessage = 'Failed to create ticket: ${e.toString()}';
       notifyListeners();
       return null;

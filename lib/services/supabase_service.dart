@@ -248,7 +248,11 @@ class SupabaseService {
     required String priority,
   }) async {
     try {
+      print('🐛 SUPABASE: Starting ticket creation...');
+      print('🐛 SUPABASE: Current user: ${currentUser?.id}');
+
       if (currentUser == null) {
+        print('❌ SUPABASE: User not authenticated');
         throw Exception('User not authenticated');
       }
 
@@ -265,6 +269,22 @@ class SupabaseService {
         'expires_at': expiresAt.toIso8601String(),
       };
 
+      print('🐛 SUPABASE: Ticket data to insert: $ticketData');
+
+      // First, verify the machine exists
+      final machineCheck = await client
+          .from('machines')
+          .select('id, name')
+          .eq('id', machineId)
+          .maybeSingle();
+
+      if (machineCheck == null) {
+        print('❌ SUPABASE: Machine not found with ID: $machineId');
+        throw Exception('Machine with ID "$machineId" does not exist');
+      }
+      print('✅ SUPABASE: Machine exists: ${machineCheck['name']}');
+
+      print('🐛 SUPABASE: Inserting ticket into database...');
       final response = await client
           .from('tickets')
           .insert(ticketData)
@@ -275,8 +295,13 @@ class SupabaseService {
           ''')
           .single();
 
+      print('✅ SUPABASE: Ticket inserted successfully');
+      print('🐛 SUPABASE: Response: $response');
+
       return Ticket.fromJson(response);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ SUPABASE: Error creating ticket: $e');
+      print('❌ SUPABASE: Stack trace: $stackTrace');
       rethrow;
     }
   }

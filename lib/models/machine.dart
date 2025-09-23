@@ -23,9 +23,9 @@ class Machine {
 
   factory Machine.fromJson(Map<String, dynamic> json) {
     return Machine(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      category: json['category'] as String,
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? 'Unknown Machine',
+      category: json['category'] as String? ?? 'unknown',
       model: json['model'] as String?,
       location: json['location'] as String?,
       status: json['status'] as String? ?? 'operational',
@@ -35,7 +35,9 @@ class Machine {
       nextMaintenance: json['next_maintenance'] != null
           ? DateTime.parse(json['next_maintenance'] as String)
           : null,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
     );
   }
 

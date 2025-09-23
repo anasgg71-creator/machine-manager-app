@@ -70,47 +70,162 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _submitProblem() async {
+    print('🐛 DEBUG: Starting problem submission...');
+    print('🐛 DEBUG: Title: "${_problemTitleController.text.trim()}"');
+    print('🐛 DEBUG: Description: "${_problemDescriptionController.text.trim()}"');
+    print('🐛 DEBUG: Selected Machine ID: $_selectedMachineId');
+    print('🐛 DEBUG: Selected Priority: $_selectedPriority');
+
     if (_problemTitleController.text.trim().isEmpty ||
-        _problemDescriptionController.text.trim().isEmpty ||
-        _selectedMachineId == null) {
+        _problemDescriptionController.text.trim().isEmpty) {
+      print('❌ DEBUG: Validation failed - missing required fields');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill in all required fields'),
+          content: Text('Please fill in all required fields (title and description)'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
-    final ticket = await ticketProvider.createTicket(
-      title: _problemTitleController.text.trim(),
-      description: _problemDescriptionController.text.trim(),
-      machineId: _selectedMachineId!,
-      problemType: 'mechanical',
-      priority: _selectedPriority,
-    );
+    // Auto-select first machine if none selected
+    if (_selectedMachineId == null) {
+      final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+      if (ticketProvider.machines.isNotEmpty) {
+        _selectedMachineId = ticketProvider.machines.first.id;
+        print('🔧 DEBUG: Auto-selected machine: ${ticketProvider.machines.first.name}');
+      } else {
+        print('❌ DEBUG: No machines available');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No machines available. Please try again later.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
 
-    if (ticket != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Problem reported successfully!'),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      print('🐛 DEBUG: Getting ticket provider...');
+      final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+
+      print('🐛 DEBUG: Available machines: ${ticketProvider.machines.length}');
+      for (final machine in ticketProvider.machines) {
+        print('🐛 DEBUG: Machine: ${machine.id} - ${machine.name}');
+      }
+
+      print('🐛 DEBUG: Calling createTicket...');
+      final ticket = await ticketProvider.createTicket(
+        title: _problemTitleController.text.trim(),
+        description: _problemDescriptionController.text.trim(),
+        machineId: _selectedMachineId!,
+        problemType: 'mechanical',
+        priority: _selectedPriority,
       );
 
-      // Clear form
-      _problemTitleController.clear();
-      _problemDescriptionController.clear();
-      setState(() {
-        _selectedMachineId = null;
-        _selectedPriority = 'medium';
-        _currentScreen = 'roomDetail';
-      });
-    } else {
+      print('🐛 DEBUG: Create ticket result: ${ticket != null ? "SUCCESS" : "FAILED"}');
+      if (ticket != null) {
+        print('✅ DEBUG: Ticket created successfully with ID: ${ticket.id}');
+      } else {
+        print('❌ DEBUG: Ticket creation returned null');
+        print('❌ DEBUG: Provider error: ${ticketProvider.errorMessage}');
+      }
+
+      if (ticket != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Problem reported successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Clear form
+        _problemTitleController.clear();
+        _problemDescriptionController.clear();
+        setState(() {
+          _selectedMachineId = null;
+          _selectedPriority = 'medium';
+          _currentScreen = 'roomDetail';
+        });
+      } else {
+        final errorMsg = ticketProvider.errorMessage ?? 'Unknown error occurred';
+        print('❌ DEBUG: Showing error to user: $errorMsg');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to submit problem: $errorMsg'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('❌ DEBUG: Exception during problem submission: $e');
+      print('❌ DEBUG: Stack trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to submit problem. Please try again.'),
+        SnackBar(
+          content: Text('Error submitting problem: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _testTicketCreation() async {
+    print('🧪 DEBUG BUTTON: Starting ticket creation test...');
+
+    try {
+      final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+
+      print('🧪 DEBUG BUTTON: Available machines: ${ticketProvider.machines.length}');
+      for (final machine in ticketProvider.machines) {
+        print('🧪 DEBUG BUTTON: Machine: ${machine.id} - ${machine.name}');
+      }
+
+      if (ticketProvider.machines.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No machines available for testing'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Use the first available machine
+      final testMachine = ticketProvider.machines.first;
+      print('🧪 DEBUG BUTTON: Using test machine: ${testMachine.id} - ${testMachine.name}');
+
+      final ticket = await ticketProvider.createTicket(
+        title: 'TEST TICKET - ${DateTime.now().millisecondsSinceEpoch}',
+        description: 'This is a test ticket created by the debug button to verify ticket creation works.',
+        machineId: testMachine.id,
+        problemType: 'mechanical',
+        priority: 'medium',
+      );
+
+      if (ticket != null) {
+        print('✅ DEBUG BUTTON: Test ticket created successfully!');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('TEST TICKET CREATED: ${ticket.id}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        print('❌ DEBUG BUTTON: Test ticket creation failed');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('TEST FAILED: ${ticketProvider.errorMessage ?? "Unknown error"}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('❌ DEBUG BUTTON: Exception during test: $e');
+      print('❌ DEBUG BUTTON: Stack trace: $stackTrace');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('TEST ERROR: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -2372,7 +2487,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 30),
 
+                    // Debug Test Button (temporary)
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _testTicketCreation,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'DEBUG: Test Ticket Creation',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ),
+
                     // Submit Button
+                    const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
