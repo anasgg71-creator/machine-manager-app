@@ -23,9 +23,8 @@ void main() async {
 
   // Initialize Ticket Expiration Service
   try {
-    // Temporarily disabled for debugging
-    // await TicketExpirationService.initialize();
-    print('⚠️ Ticket Expiration Service temporarily disabled for debugging');
+    await TicketExpirationService.initialize();
+    print('✅ Ticket Expiration Service initialized successfully');
   } catch (e) {
     print('❌ Failed to initialize Ticket Expiration Service: $e');
   }

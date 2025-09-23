@@ -50,6 +50,55 @@ class AppConstants {
     'general'
   ];
 
+  // Machine categories (matching HTML demo)
+  static const List<Map<String, String>> machineCategories = [
+    {'value': 'alpha_machine', 'label': '🔧 Alpha Machine', 'name': 'Alpha Machine'},
+    {'value': 'beta_machine', 'label': '⚙️ Beta Machine', 'name': 'Beta Machine'},
+    {'value': 'gamma_machine', 'label': '🔩 Gamma Machine', 'name': 'Gamma Machine'},
+    {'value': 'delta_machine', 'label': '🏭 Delta Machine', 'name': 'Delta Machine'},
+    {'value': 'packaging_line_a', 'label': '📦 Packaging Line A', 'name': 'Packaging Line A'},
+    {'value': 'packaging_line_b', 'label': '📦 Packaging Line B', 'name': 'Packaging Line B'},
+    {'value': 'quality_control', 'label': '✅ Quality Control', 'name': 'Quality Control'},
+  ];
+
+  // Individual machines by category (matching HTML demo structure)
+  static const Map<String, List<Map<String, String>>> machinesByCategory = {
+    'alpha_machine': [
+      {'id': 'alpha_001', 'name': 'Alpha Machine 001'},
+      {'id': 'alpha_002', 'name': 'Alpha Machine 002'},
+      {'id': 'alpha_003', 'name': 'Alpha Machine 003'},
+    ],
+    'beta_machine': [
+      {'id': 'beta_001', 'name': 'Beta Machine 001'},
+      {'id': 'beta_002', 'name': 'Beta Machine 002'},
+      {'id': 'beta_003', 'name': 'Beta Machine 003'},
+    ],
+    'gamma_machine': [
+      {'id': 'gamma_001', 'name': 'Gamma Machine 001'},
+      {'id': 'gamma_002', 'name': 'Gamma Machine 002'},
+    ],
+    'delta_machine': [
+      {'id': 'delta_001', 'name': 'Delta Machine 001'},
+      {'id': 'delta_002', 'name': 'Delta Machine 002'},
+      {'id': 'delta_003', 'name': 'Delta Machine 003'},
+      {'id': 'delta_004', 'name': 'Delta Machine 004'},
+    ],
+    'packaging_line_a': [
+      {'id': 'pack_a_001', 'name': 'Packaging Line A - Station 1'},
+      {'id': 'pack_a_002', 'name': 'Packaging Line A - Station 2'},
+      {'id': 'pack_a_003', 'name': 'Packaging Line A - Station 3'},
+    ],
+    'packaging_line_b': [
+      {'id': 'pack_b_001', 'name': 'Packaging Line B - Station 1'},
+      {'id': 'pack_b_002', 'name': 'Packaging Line B - Station 2'},
+    ],
+    'quality_control': [
+      {'id': 'qc_001', 'name': 'Quality Control Station 1'},
+      {'id': 'qc_002', 'name': 'Quality Control Station 2'},
+      {'id': 'qc_003', 'name': 'Quality Control Station 3'},
+    ],
+  };
+
   // Ticket statuses
   static const List<String> ticketStatuses = [
     'open',

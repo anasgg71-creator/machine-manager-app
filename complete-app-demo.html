@@ -1,0 +1,4855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Manager - Complete App Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f5f5;
+            color: #231628;
+        }
+
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-header {
+            background: #6A57FF;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .demo-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .demo-header p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .screen {
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Login Screen */
+        .login-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: #ECE8FF;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #6A57FF;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #898491;
+            margin-bottom: 40px;
+        }
+
+        .input-field {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: left;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .login-button {
+            background: #6A57FF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .demo-creds {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .demo-creds h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .demo-creds p {
+            font-size: 14px;
+            color: #898491;
+            margin: 4px 0;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #E6E3EB;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: #F5F5F5;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #898491;
+        }
+
+        /* Rooms Grid */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .room-card {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .room-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #E3F2FD;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #2196F3;
+        }
+
+        .room-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .room-status {
+            font-size: 12px;
+            color: #4CAF50;
+        }
+
+        /* Navigation */
+        .nav-item {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #E3F2FD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+            color: #2196F3;
+        }
+
+        .nav-text h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .nav-text p {
+            font-size: 14px;
+            color: #898491;
+        }
+
+        /* History Items */
+        .history-item {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-left {
+            display: flex;
+            flex: 1;
+        }
+
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .question-icon {
+            background: #E3F2FD;
+            color: #2196F3;
+        }
+
+        .problem-icon {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .item-description {
+            font-size: 14px;
+            color: #898491;
+            line-height: 1.4;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #F5F5F5;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-tag {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .solved-tag {
+            background: #E8F5E8;
+            color: #4CAF50;
+        }
+
+        .unsolved-tag {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #898491;
+        }
+
+        /* Chat Modal */
+        .chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ECE5DD;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chat-modal.show {
+            display: flex;
+        }
+
+        .chat-header {
+            background: #075E54;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-back {
+            margin-right: 12px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chat-info h3 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .chat-info p {
+            font-size: 12px;
+            color: #4CAF50;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-action {
+            padding: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .message {
+            max-width: 75%;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.own {
+            background: #DCF8C6;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.other {
+            background: white;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-user {
+            font-size: 12px;
+            font-weight: 600;
+            color: #075E54;
+            margin-bottom: 2px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #898491;
+            text-align: right;
+        }
+
+        .chat-input {
+            background: #F0F0F0;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-button {
+            background: #25D366;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Chat Todos Styles */
+        .chat-todos {
+            background: #F8F9FF;
+            border-bottom: 1px solid #E6E3EB;
+            padding: 12px 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .todos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .todos-header h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .add-todo-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .add-todo-btn:hover {
+            background: #45a049;
+        }
+
+        .todos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .todo-item.completed {
+            background: #F0F8F0;
+            border-color: #4CAF50;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .todo-text {
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .todo-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            font-size: 12px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .todo-action-btn:hover {
+            opacity: 1;
+        }
+
+        .todo-action-btn.complete {
+            color: #4CAF50;
+        }
+
+        .todo-action-btn.delete {
+            color: #F44336;
+        }
+
+        .add-todo-form {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 8px;
+        }
+
+        .add-todo-form input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            padding: 4px 0;
+            margin-bottom: 8px;
+        }
+
+        .todo-form-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .todo-form-actions button {
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .todo-form-actions button:first-child {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .todo-form-actions button:last-child {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        /* Solver Modal Styles */
+        .solver-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .solver-modal.show {
+            display: flex;
+        }
+
+        .solver-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .solver-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #E6E3EB;
+        }
+
+        .solver-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #231628;
+        }
+
+        .close-solver {
+            font-size: 24px;
+            cursor: pointer;
+            color: #898491;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-solver:hover {
+            background: #F5F5F5;
+        }
+
+        .solver-body {
+            padding: 24px;
+        }
+
+        .solver-section {
+            margin-bottom: 24px;
+        }
+
+        .solver-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #231628;
+        }
+
+        .solver-select {
+            width: 100%;
+            background: #F5F5F5;
+            border: 1px solid #E6E3EB;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #231628;
+            cursor: pointer;
+        }
+
+        .solver-select:focus {
+            outline: none;
+            border-color: #6A57FF;
+            box-shadow: 0 0 0 3px rgba(106, 87, 255, 0.1);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .star {
+            font-size: 28px;
+            color: #E6E3EB;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            user-select: none;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #FFD700;
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: #898491;
+        }
+
+        .solver-comment {
+            width: 100%;
+            background: #F5F5F5;
+            border: 1px solid #E6E3EB;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #231628;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .solver-comment:focus {
+            outline: none;
+            border-color: #6A57FF;
+            box-shadow: 0 0 0 3px rgba(106, 87, 255, 0.1);
+        }
+
+        .solver-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        .solver-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .solver-btn.cancel {
+            background: #F5F5F5;
+            color: #898491;
+        }
+
+        .solver-btn.cancel:hover {
+            background: #E6E3EB;
+        }
+
+        .solver-btn.submit {
+            background: #6A57FF;
+            color: white;
+        }
+
+        .solver-btn.submit:hover {
+            background: #5a47e6;
+            transform: translateY(-1px);
+        }
+
+        .solver-btn.submit:disabled {
+            background: #E6E3EB;
+            color: #898491;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .highlight {
+            background: #FFE082 !important;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid #FF9800;
+        }
+
+        .highlight h4 {
+            color: #F57C00;
+            margin-bottom: 8px;
+        }
+
+        /* Submission Form Styles */
+        .submission-form {
+            padding: 0 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #231628;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: #F5F5F5;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            color: #231628;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6A57FF;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(106, 87, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #E6E3EB;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #FAFAFA;
+        }
+
+        .file-upload-area:hover {
+            border-color: #6A57FF;
+            background: #F8F7FF;
+        }
+
+        .file-upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .file-upload-text p {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #231628;
+        }
+
+        .file-upload-text small {
+            font-size: 12px;
+            color: #898491;
+        }
+
+        .attached-files {
+            margin-top: 12px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: #E3F2FD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: #2196F3;
+        }
+
+        .file-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .file-details p {
+            font-size: 12px;
+            color: #898491;
+        }
+
+        .file-remove {
+            color: #F44336;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #E6E3EB;
+        }
+
+        .btn-primary, .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #6A57FF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5647E6;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #231628;
+            border: 1px solid #E6E3EB;
+        }
+
+        .btn-secondary:hover {
+            background: #EEEEEE;
+            transform: translateY(-1px);
+        }
+
+        /* Active Ticket Styles */
+        .active-ticket {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .active-ticket:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .active-ticket.warning {
+            border-left: 4px solid #FF9800;
+            background: #FFF8E1;
+        }
+
+        .active-ticket.urgent {
+            border-left: 4px solid #F44336;
+            background: #FFEBEE;
+        }
+
+        .ticket-timer {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #E3F2FD;
+            color: #1976D2;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .ticket-timer.warning {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .ticket-timer.urgent {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .ticket-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .ticket-btn.extend {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .ticket-btn.extend:hover {
+            background: #BBDEFB;
+        }
+
+        .ticket-btn.close {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .ticket-btn.close:hover {
+            background: #EEEEEE;
+        }
+
+        .ticket-btn.solve {
+            background: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .ticket-btn.solve:hover {
+            background: #C8E6C9;
+        }
+
+        .ticket-btn.unsolve {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .ticket-btn.unsolve:hover {
+            background: #FFCDD2;
+        }
+
+        .creator-badge {
+            background: #6A57FF;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .warning-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FF9800;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 2000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tab System Styles */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-header {
+            display: flex;
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #898491;
+            text-align: center;
+            position: relative;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #6A57FF;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-button:hover:not(.active) {
+            color: #6A57FF;
+            background: rgba(106, 87, 255, 0.05);
+        }
+
+        .tab-badge {
+            background: #E3F2FD;
+            color: #1976D2;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 6px;
+            display: inline-block;
+        }
+
+        .tab-button.active .tab-badge {
+            background: #6A57FF;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Filter Section Styles */
+        .filter-section {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #231628;
+        }
+
+        .clear-filters {
+            background: transparent;
+            border: none;
+            color: #6A57FF;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .clear-filters:hover {
+            background: rgba(106, 87, 255, 0.1);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #898491;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+            background: #F5F5F5;
+            border: 1px solid #E6E3EB;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #231628;
+            transition: all 0.2s ease;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #6A57FF;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(106, 87, 255, 0.1);
+        }
+
+        .search-input {
+            position: relative;
+        }
+
+        .search-input::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-input input {
+            padding-left: 36px;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .filter-chip {
+            background: #E3F2FD;
+            color: #1976D2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .filter-chip .remove {
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .filter-chip .remove:hover {
+            opacity: 1;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #898491;
+            margin-bottom: 16px;
+        }
+
+        /* Summary Modal Styles */
+        .summary-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .summary-modal.show {
+            display: flex;
+        }
+
+        .summary-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .summary-header {
+            background: #6A57FF;
+            color: white;
+            padding: 20px;
+            border-radius: 16px 16px 0 0;
+            position: relative;
+        }
+
+        .summary-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-right: 40px;
+        }
+
+        .summary-meta {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .summary-body {
+            padding: 24px;
+        }
+
+        .summary-section {
+            margin-bottom: 24px;
+        }
+
+        .summary-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #231628;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .summary-tag {
+            background: #F5F5F5;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .summary-tag.status {
+            background: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .summary-tag.status.unsolved {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .summary-description {
+            background: #F9F9F9;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .chat-summary {
+            background: #F0F7FF;
+            border: 1px solid #E3F2FD;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .chat-message-summary {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E3F2FD;
+        }
+
+        .chat-message-summary:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E3F2FD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #1976D2;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1976D2;
+            margin-bottom: 4px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            color: #231628;
+            line-height: 1.4;
+        }
+
+        .resolution-info {
+            background: #E8F5E8;
+            border: 1px solid #C8E6C9;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .resolution-info.unsolved {
+            background: #FFEBEE;
+            border-color: #FFCDD2;
+        }
+
+        .resolution-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .resolution-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        .resolution-text.unsolved {
+            color: #C62828;
+        }
+
+        /* Meeting Points Styles */
+        .meeting-points {
+            background: #F8F9FA;
+            border: 1px solid #E9ECEF;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .meeting-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .meeting-point:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .point-icon {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .point-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #231628;
+            flex: 1;
+        }
+
+        /* Statistics Dashboard Styles */
+        .stats-section {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .stats-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #231628;
+        }
+
+        .stats-icon {
+            font-size: 18px;
+        }
+
+        .stats-content {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: #F8F9FA;
+            border: 1px solid #E9ECEF;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon {
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6C757D;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #231628;
+            margin-bottom: 8px;
+        }
+
+        .stat-subtext {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stat-detail {
+            font-size: 12px;
+            color: #6C757D;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 6px;
+            background: #E9ECEF;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .stat-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #28A745, #20C997);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Problem Types Card */
+        .problem-types-card .stat-value {
+            display: none;
+        }
+
+        .problem-type-list {
+            margin-top: 8px;
+        }
+
+        .problem-type-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .problem-type-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .type-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            min-width: 70px;
+        }
+
+        .type-count {
+            font-size: 12px;
+            font-weight: 700;
+            color: #231628;
+            min-width: 20px;
+        }
+
+        .type-bar {
+            flex: 1;
+            height: 4px;
+            background: #E9ECEF;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .type-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #6A57FF, #8B7CFF);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Priority Card */
+        .priority-card .stat-value {
+            display: none;
+        }
+
+        .priority-list {
+            margin-top: 8px;
+        }
+
+        .priority-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .priority-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .priority-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .priority-item.critical .priority-dot {
+            background: #DC3545;
+        }
+
+        .priority-item.high .priority-dot {
+            background: #FD7E14;
+        }
+
+        .priority-item.medium .priority-dot {
+            background: #FFC107;
+        }
+
+        .priority-item.low .priority-dot {
+            background: #28A745;
+        }
+
+        .priority-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            flex: 1;
+        }
+
+        .priority-count {
+            font-size: 12px;
+            font-weight: 700;
+            color: #231628;
+        }
+
+        /* Leaderboard Card Styles */
+        .leaderboard-card .stat-value {
+            display: none;
+        }
+
+        .leaderboard-list {
+            margin-top: 8px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .leaderboard-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(106, 87, 255, 0.05);
+            transform: translateX(2px);
+        }
+
+        .leaderboard-item.gold {
+            border-left: 3px solid #FFD700;
+        }
+
+        .leaderboard-item.silver {
+            border-left: 3px solid #C0C0C0;
+        }
+
+        .leaderboard-item.bronze {
+            border-left: 3px solid #CD7F32;
+        }
+
+        .rank-medal {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .performer-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .performer-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #231628;
+        }
+
+        .performer-stats {
+            font-size: 11px;
+            color: #898491;
+        }
+
+        /* Team Page Styles */
+        .profile-section {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #6A57FF 0%, #9C88FF 100%);
+            color: white;
+        }
+
+        .profile-icon {
+            font-size: 20px;
+        }
+
+        .profile-info h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .profile-info p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .profile-card {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .profile-card.current {
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border: 2px solid #6A57FF;
+        }
+
+        .profile-avatar {
+            position: relative;
+        }
+
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            background: #6A57FF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-details h4 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            color: #231628;
+        }
+
+        .profile-role {
+            margin: 0 0 16px 0;
+            color: #898491;
+            font-size: 14px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #6A57FF;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #898491;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .achievement-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.helper {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .badge.solver {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .badge.expert {
+            background: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .badge.speed {
+            background: #FFF8E1;
+            color: #F9A825;
+        }
+
+        .badge.helpful {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        /* Leaderboard Section */
+        .leaderboard-section {
+            background: white;
+            border: 1px solid #E6E3EB;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid #E6E3EB;
+            background: #F8F9FA;
+        }
+
+        .section-header h3 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            color: #231628;
+        }
+
+        .section-header p {
+            margin: 0;
+            color: #898491;
+            font-size: 14px;
+        }
+
+        .leaderboard-grid {
+            padding: 20px;
+        }
+
+        /* Podium Styles */
+        .podium-container {
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .podium-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .podium-profile {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .podium-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #6A57FF;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .podium-medal {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .podium-info {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .podium-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: #231628;
+        }
+
+        .podium-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #898491;
+            font-weight: 600;
+        }
+
+        .podium-bar {
+            width: 60px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .podium-bar.first {
+            height: 80px;
+            background: linear-gradient(to top, #FFD700, #FFF700);
+        }
+
+        .podium-bar.second {
+            height: 60px;
+            background: linear-gradient(to top, #C0C0C0, #E5E5E5);
+        }
+
+        .podium-bar.third {
+            height: 40px;
+            background: linear-gradient(to top, #CD7F32, #DAA520);
+        }
+
+        /* Team List */
+        .team-list {
+            border-top: 1px solid #E6E3EB;
+            padding-top: 20px;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .team-member:hover {
+            background: #F8F9FA;
+            transform: translateX(4px);
+        }
+
+        .team-member.current-user-row {
+            background: rgba(106, 87, 255, 0.05);
+            border: 1px solid rgba(106, 87, 255, 0.2);
+        }
+
+        .member-rank {
+            font-size: 16px;
+            font-weight: 700;
+            color: #898491;
+            width: 30px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6A57FF;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .member-avatar.current {
+            background: linear-gradient(135deg, #6A57FF, #9C88FF);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #6A57FF;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: #231628;
+        }
+
+        .member-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #898491;
+        }
+
+        .you-badge {
+            background: #6A57FF;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .member-trend {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .member-trend.up {
+            background: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .member-trend.down {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Profile Modal Styles */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-modal.show {
+            display: flex;
+        }
+
+        .profile-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .profile-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #E6E3EB;
+            background: linear-gradient(135deg, #6A57FF 0%, #9C88FF 100%);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close-profile {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-profile:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .profile-modal-body {
+            padding: 24px;
+        }
+
+        .modal-profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .modal-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #6A57FF;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border: 4px solid white;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .modal-profile-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 20px;
+            color: #231628;
+        }
+
+        .modal-profile-info p {
+            margin: 0 0 24px 0;
+            color: #898491;
+            font-size: 14px;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .modal-stat {
+            text-align: center;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 12px;
+        }
+
+        .modal-stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #6A57FF;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .modal-stat-label {
+            font-size: 12px;
+            color: #898491;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .modal-achievements {
+            width: 100%;
+        }
+
+        .modal-achievements h5 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: #231628;
+            text-align: left;
+        }
+
+        .modal-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>🚀 Complete Machine Manager App Demo</h1>
+        <p>All original features + NEW chat integration</p>
+    </div>
+
+    <div class="phone-container">
+        <!-- Login Screen -->
+        <div class="screen active" id="loginScreen">
+            <div class="login-screen">
+                <div class="logo-icon">🔧</div>
+                <h1 class="app-title">Machine Manager</h1>
+                <p class="app-subtitle">Tetrapack Production Control</p>
+
+                <input type="text" class="input-field" placeholder="Username" id="username" value="admin">
+                <input type="password" class="input-field" placeholder="Password" id="password" value="admin123">
+
+                <button class="login-button" onclick="login()">Sign In</button>
+
+                <div class="demo-creds">
+                    <h4>Demo Credentials:</h4>
+                    <p>Username: admin</p>
+                    <p>Password: admin123</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Screen -->
+        <div class="screen" id="roomsScreen">
+            <div class="header">
+                <button class="back-button" onclick="logout()">←</button>
+                <div>
+                    <div class="header-title">Rooms</div>
+                    <div class="header-subtitle">Tetrapack Facility</div>
+                </div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="rooms-grid">
+                <div class="room-card" onclick="goToRoom(1)">
+                    <div class="room-icon">🏭</div>
+                    <div class="room-name">Room 1</div>
+                    <div class="room-status">Running</div>
+                </div>
+                <div class="room-card" onclick="goToRoom(2)">
+                    <div class="room-icon">🏭</div>
+                    <div class="room-name">Room 2</div>
+                    <div class="room-status">Running</div>
+                </div>
+                <div class="room-card" onclick="goToRoom(3)">
+                    <div class="room-icon">🏭</div>
+                    <div class="room-name">Room 3</div>
+                    <div class="room-status">Maintenance</div>
+                </div>
+                <div class="room-card" onclick="goToRoom(4)">
+                    <div class="room-icon">🏭</div>
+                    <div class="room-name">Room 4</div>
+                    <div class="room-status">Running</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Detail Screen -->
+        <div class="screen" id="roomDetailScreen">
+            <div class="header">
+                <button class="back-button" onclick="showScreen('roomsScreen')">←</button>
+                <div>
+                    <div class="header-title">Tetrapack Room 1</div>
+                    <div class="header-subtitle">Machine Management</div>
+                </div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="nav-item" onclick="showScreen('activeIssuesScreen')">
+                <div class="nav-item-left">
+                    <div class="nav-icon">🔥</div>
+                    <div class="nav-text">
+                        <h3>Active Issues</h3>
+                        <p>Current open tickets & discussions</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+
+            <div class="nav-item" onclick="showScreen('historyScreen')">
+                <div class="nav-item-left">
+                    <div class="nav-icon">📜</div>
+                    <div class="nav-text">
+                        <h3>History</h3>
+                        <p>Closed tickets & past issues</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+
+            <div class="nav-item" onclick="showScreen('teamScreen')">
+                <div class="nav-item-left">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-text">
+                        <h3>Team</h3>
+                        <p>Leaderboard & profiles</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+
+            <div class="nav-item" onclick="showMachineCategories()">
+                <div class="nav-item-left">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">
+                        <h3>Machine Categories</h3>
+                        <p>Browse by machine type</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+
+            <div class="nav-item" onclick="reportProblem()">
+                <div class="nav-item-left">
+                    <div class="nav-icon">⚠️</div>
+                    <div class="nav-text">
+                        <h3>Report Problem</h3>
+                        <p>Submit machine issues</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+
+            <div class="nav-item" onclick="askQuestion()">
+                <div class="nav-item-left">
+                    <div class="nav-icon">❓</div>
+                    <div class="nav-text">
+                        <h3>Ask Question</h3>
+                        <p>Get help from team</p>
+                    </div>
+                </div>
+                <span>→</span>
+            </div>
+        </div>
+
+        <!-- Active Issues Screen -->
+        <div class="screen" id="activeIssuesScreen">
+            <div class="header">
+                <button class="back-button" onclick="showScreen('roomDetailScreen')">←</button>
+                <div>
+                    <div class="header-title">Active Issues</div>
+                    <div class="header-subtitle">Tetrapack Room 1</div>
+                </div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="highlight">
+                <h4>⏰ ACTIVE TICKETS</h4>
+                <p>These tickets will auto-close in 3 days unless extended. Click to join discussions!</p>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-button active" onclick="switchTab('myTickets')" id="myTicketsTab">
+                        My Tickets <span class="tab-badge" id="myTicketsCount">0</span>
+                    </button>
+                    <button class="tab-button" onclick="switchTab('allTickets')" id="allTicketsTab">
+                        All Tickets <span class="tab-badge" id="allTicketsCount">0</span>
+                    </button>
+                </div>
+
+                <!-- My Tickets Tab -->
+                <div class="tab-content active" id="myTicketsContent">
+                    <div id="myTicketsContainer">
+                        <!-- My active tickets will be populated here -->
+                    </div>
+                    <div class="empty-state" id="myTicketsEmptyState" style="display: none;">
+                        <div style="text-align: center; padding: 40px 20px; color: #898491;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                            <h3>No Active Tickets</h3>
+                            <p>You don't have any active tickets.<br>Create one by reporting a problem or asking a question!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Tickets Tab -->
+                <div class="tab-content" id="allTicketsContent">
+                    <div id="allTicketsContainer">
+                        <!-- All active tickets will be populated here -->
+                    </div>
+                    <div class="empty-state" id="allTicketsEmptyState" style="display: none;">
+                        <div style="text-align: center; padding: 40px 20px; color: #898491;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+                            <h3>No Active Issues</h3>
+                            <p>All tickets are resolved or closed!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Screen -->
+        <div class="screen" id="historyScreen">
+            <div class="header">
+                <button class="back-button" onclick="showScreen('roomDetailScreen')">←</button>
+                <div>
+                    <div class="header-title">History</div>
+                    <div class="header-subtitle">Tetrapack Room 1</div>
+                </div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="highlight">
+                <h4>🔍 FILTER & SEARCH</h4>
+                <p>Find tickets by status, machine, or search terms!</p>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section">
+                <div class="stats-header">
+                    <div class="stats-title">
+                        <span class="stats-icon">📊</span>
+                        <span>Statistics Dashboard</span>
+                    </div>
+                </div>
+
+                <div class="stats-content">
+                    <div class="stats-grid">
+                        <!-- Resolution Rate Card -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-icon">✅</span>
+                                <span class="stat-label">Resolution Rate</span>
+                            </div>
+                            <div class="stat-value" id="resolutionRate">85%</div>
+                            <div class="stat-subtext">
+                                <span class="stat-detail" id="solvedCount">17 solved</span>
+                                <span class="stat-detail" id="unsolvedCount">3 unsolved</span>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-progress" id="resolutionProgress" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Total Tickets Card -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-icon">📋</span>
+                                <span class="stat-label">Total Tickets</span>
+                            </div>
+                            <div class="stat-value" id="totalTickets">20</div>
+                            <div class="stat-subtext">
+                                <span class="stat-detail" id="thisMonth">This month</span>
+                            </div>
+                        </div>
+
+                        <!-- Problem Types Card -->
+                        <div class="stat-card problem-types-card">
+                            <div class="stat-header">
+                                <span class="stat-icon">⚙️</span>
+                                <span class="stat-label">Problem Types</span>
+                            </div>
+                            <div class="problem-type-list" id="problemTypeStats">
+                                <div class="problem-type-item">
+                                    <span class="type-label">Mechanical</span>
+                                    <span class="type-count">8</span>
+                                    <div class="type-bar">
+                                        <div class="type-progress" style="width: 40%"></div>
+                                    </div>
+                                </div>
+                                <div class="problem-type-item">
+                                    <span class="type-label">Electrical</span>
+                                    <span class="type-count">6</span>
+                                    <div class="type-bar">
+                                        <div class="type-progress" style="width: 30%"></div>
+                                    </div>
+                                </div>
+                                <div class="problem-type-item">
+                                    <span class="type-label">Questions</span>
+                                    <span class="type-count">4</span>
+                                    <div class="type-bar">
+                                        <div class="type-progress" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority Distribution Card -->
+                        <div class="stat-card priority-card">
+                            <div class="stat-header">
+                                <span class="stat-icon">🔥</span>
+                                <span class="stat-label">Priority Levels</span>
+                            </div>
+                            <div class="priority-list" id="priorityStats">
+                                <div class="priority-item critical">
+                                    <span class="priority-dot"></span>
+                                    <span class="priority-label">Critical</span>
+                                    <span class="priority-count">2</span>
+                                </div>
+                                <div class="priority-item high">
+                                    <span class="priority-dot"></span>
+                                    <span class="priority-label">High</span>
+                                    <span class="priority-count">5</span>
+                                </div>
+                                <div class="priority-item medium">
+                                    <span class="priority-dot"></span>
+                                    <span class="priority-label">Medium</span>
+                                    <span class="priority-count">10</span>
+                                </div>
+                                <div class="priority-item low">
+                                    <span class="priority-dot"></span>
+                                    <span class="priority-label">Low</span>
+                                    <span class="priority-count">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <div class="filter-title">🔧 Filter Tickets</div>
+                    <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
+                </div>
+
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Search</label>
+                        <div class="search-input">
+                            <input type="text" class="filter-input" id="searchInput" placeholder="Search title, description..." oninput="applyFilters()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Resolution Status</label>
+                        <select class="filter-select" id="resolutionFilter" onchange="applyFilters()">
+                            <option value="">All Statuses</option>
+                            <option value="SOLVED">Solved Only</option>
+                            <option value="UNSOLVED">Unsolved Only</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Machine Category</label>
+                        <select class="filter-select" id="machineFilter" onchange="applyFilters()">
+                            <option value="">All Machines</option>
+                            <option value="Alpha Machine">Alpha Machine</option>
+                            <option value="Beta Machine">Beta Machine</option>
+                            <option value="Gamma Machine">Gamma Machine</option>
+                            <option value="Delta Machine">Delta Machine</option>
+                            <option value="Packaging Line A">Packaging Line A</option>
+                            <option value="Packaging Line B">Packaging Line B</option>
+                            <option value="Quality Control">Quality Control</option>
+                            <option value="Conveyor System">Conveyor System</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Problem Type</label>
+                        <select class="filter-select" id="problemTypeFilter" onchange="applyFilters()">
+                            <option value="">All Types</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Software">Software</option>
+                            <option value="Quality">Quality</option>
+                            <option value="Safety">Safety</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Both">Both (Mech & Elec)</option>
+                            <option value="General Question">General Question</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filter Chips -->
+                <div class="filter-chips" id="activeFilters"></div>
+            </div>
+
+            <!-- Results Count -->
+            <div class="results-count" id="resultsCount">
+                Showing all tickets
+            </div>
+
+            <div class="history-item" onclick="openDemoSummary('Machine overheating issue', 'Alpha Machine temperature exceeding normal range', 'Alpha Machine', 'Mechanical', 'UNSOLVED', '1234', 'John Smith', 'Dec 18, 2:30 PM')">
+                <div class="item-header">
+                    <div class="item-left">
+                        <div class="type-icon problem-icon">⚠️</div>
+                        <div>
+                            <div class="item-title">Machine overheating issue</div>
+                            <div class="item-description">Alpha Machine temperature exceeding normal range</div>
+                        </div>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="item-tags">
+                    <div class="tag">Alpha Machine</div>
+                    <div class="tag">Mechanical</div>
+                    <div class="status-tag unsolved-tag">UNSOLVED</div>
+                </div>
+                <div class="item-footer">
+                    <span>by John Smith</span>
+                    <span>Dec 18, 2:30 PM</span>
+                    <span style="color: #2196F3; font-weight: 600;">#1234</span>
+                </div>
+            </div>
+
+            <div class="history-item" onclick="openDemoSummary('Production line question', 'How to optimize packaging speed for new product line', 'Beta Machine', 'General Question', 'SOLVED', '1233', 'Sarah Johnson', 'Dec 17, 11:45 AM')">
+                <div class="item-header">
+                    <div class="item-left">
+                        <div class="type-icon question-icon">❓</div>
+                        <div>
+                            <div class="item-title">Production line question</div>
+                            <div class="item-description">How to optimize packaging speed for new product line</div>
+                        </div>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="item-tags">
+                    <div class="tag">Beta Machine</div>
+                    <div class="tag">General Question</div>
+                    <div class="status-tag solved-tag">SOLVED</div>
+                </div>
+                <div class="item-footer">
+                    <span>by Sarah Johnson</span>
+                    <span>Dec 17, 11:45 AM</span>
+                    <span style="color: #2196F3; font-weight: 600;">#1233</span>
+                </div>
+            </div>
+
+            <div class="history-item" onclick="openDemoSummary('Electrical fault detected', 'Power fluctuations in main control panel', 'Gamma Machine', 'Electrical', 'SOLVED', '1232', 'Mike Wilson', 'Dec 16, 3:15 PM')">
+                <div class="item-header">
+                    <div class="item-left">
+                        <div class="type-icon problem-icon">⚠️</div>
+                        <div>
+                            <div class="item-title">Electrical fault detected</div>
+                            <div class="item-description">Power fluctuations in main control panel</div>
+                        </div>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="item-tags">
+                    <div class="tag">Gamma Machine</div>
+                    <div class="tag">Electrical</div>
+                    <div class="status-tag solved-tag">SOLVED</div>
+                </div>
+                <div class="item-footer">
+                    <span>by Mike Wilson</span>
+                    <span>Dec 16, 3:15 PM</span>
+                    <span style="color: #2196F3; font-weight: 600;">#1232</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Form Screen -->
+        <div class="screen" id="submissionScreen">
+            <div class="header">
+                <button class="back-button" onclick="showScreen('roomDetailScreen')">←</button>
+                <div>
+                    <div class="header-title" id="submissionTitle">Report Problem</div>
+                    <div class="header-subtitle">Tetrapack Room 1</div>
+                </div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <form class="submission-form" id="submissionForm">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="submissionTitleInput" placeholder="Brief description of the issue/question" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Machine Category *</label>
+                    <select class="form-select" id="machineCategory" required>
+                        <option value="">Select a machine category</option>
+                        <option value="Alpha Machine">Alpha Machine</option>
+                        <option value="Beta Machine">Beta Machine</option>
+                        <option value="Gamma Machine">Gamma Machine</option>
+                        <option value="Delta Machine">Delta Machine</option>
+                        <option value="Packaging Line A">Packaging Line A</option>
+                        <option value="Packaging Line B">Packaging Line B</option>
+                        <option value="Quality Control">Quality Control</option>
+                        <option value="Conveyor System">Conveyor System</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Problem Type *</label>
+                    <select class="form-select" id="problemType" required>
+                        <option value="">Select problem type</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Software">Software</option>
+                        <option value="Quality">Quality</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Both">Both (Mechanical & Electrical)</option>
+                        <option value="General Question">General Question</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority Level</label>
+                    <select class="form-select" id="priorityLevel">
+                        <option value="Low">Low - Can wait</option>
+                        <option value="Medium" selected>Medium - Normal priority</option>
+                        <option value="High">High - Urgent</option>
+                        <option value="Critical">Critical - Production stopped</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description *</label>
+                    <textarea class="form-textarea" id="submissionDescription" placeholder="Provide detailed description of the issue or question..." required rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Attach Files</label>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="file-upload-icon">📎</div>
+                        <div class="file-upload-text">
+                            <p>Click to attach photos, videos, or documents</p>
+                            <small>Support: JPG, PNG, MP4, PDF, DOC (Max 10MB each)</small>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx" style="display: none;">
+                    <div class="attached-files" id="attachedFiles"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="showScreen('roomDetailScreen')">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Screen -->
+    <div class="screen" id="teamScreen">
+        <div class="container">
+            <div class="header">
+                <span class="back-btn" onclick="showScreen('roomDetailScreen')">←</span>
+                <div class="header-content">
+                    <div class="header-title">Team</div>
+                    <div class="header-subtitle">Leaderboard & Profiles</div>
+                </div>
+            </div>
+
+            <!-- Current User Profile Section -->
+            <div class="profile-section">
+                <div class="profile-header">
+                    <div class="profile-icon">👤</div>
+                    <div class="profile-info">
+                        <h3>Your Profile</h3>
+                        <p>Performance overview & achievements</p>
+                    </div>
+                </div>
+                <div class="profile-card current">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">CU</div>
+                        <div class="status-badge online">🟢</div>
+                    </div>
+                    <div class="profile-details">
+                        <h4 id="currentUserName">Current User</h4>
+                        <p class="profile-role">Team Member</p>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="currentUserPoints">45</span>
+                                <span class="stat-label">Points</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="currentUserSolved">8</span>
+                                <span class="stat-label">Solved</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="currentUserRating">4.2</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="currentUserRank">#4</span>
+                                <span class="stat-label">Rank</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badges">
+                            <span class="badge helper">🤝 Team Helper</span>
+                            <span class="badge solver">⚡ Problem Solver</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div class="leaderboard-section">
+                <div class="section-header">
+                    <h3>🏆 Leaderboard</h3>
+                    <p>Top performers this month</p>
+                </div>
+
+                <div class="leaderboard-grid" id="leaderboardGrid">
+                    <!-- Top 3 - Podium Style -->
+                    <div class="podium-container" id="podiumContainer">
+                        <!-- Podium will be populated dynamically -->
+                    </div>
+
+                    <!-- Rest of Team List -->
+                    <div class="team-list" id="teamList">
+                        <!-- Team list will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h3 id="modalProfileName">Team Member Profile</h3>
+                <span class="close-profile" onclick="closeProfile()">&times;</span>
+            </div>
+            <div class="profile-modal-body">
+                <div class="modal-profile-card">
+                    <div class="modal-avatar" id="modalAvatar">JS</div>
+                    <div class="modal-profile-info">
+                        <h4 id="modalName">John Smith</h4>
+                        <p id="modalRole">Senior Technician</p>
+                        <div class="modal-stats">
+                            <div class="modal-stat">
+                                <span class="modal-stat-number" id="modalPoints">92</span>
+                                <span class="modal-stat-label">Total Points</span>
+                            </div>
+                            <div class="modal-stat">
+                                <span class="modal-stat-number" id="modalSolved">15</span>
+                                <span class="modal-stat-label">Tickets Solved</span>
+                            </div>
+                            <div class="modal-stat">
+                                <span class="modal-stat-number" id="modalRating">4.7</span>
+                                <span class="modal-stat-label">Avg Rating</span>
+                            </div>
+                            <div class="modal-stat">
+                                <span class="modal-stat-number" id="modalRank">#2</span>
+                                <span class="modal-stat-label">Current Rank</span>
+                            </div>
+                        </div>
+                        <div class="modal-achievements">
+                            <h5>Achievements</h5>
+                            <div class="modal-badges" id="modalBadges">
+                                <span class="badge expert">⭐ Expert Solver</span>
+                                <span class="badge speed">⚡ Quick Response</span>
+                                <span class="badge helpful">🤝 Team Player</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <span class="chat-back" onclick="closeChat()">←</span>
+                <div class="chat-info">
+                    <h3 id="chatTitle">Problem Discussion</h3>
+                    <p>🟢 3 online</p>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <span class="chat-action">⚙️</span>
+                <span class="chat-action">📹</span>
+                <span class="chat-action">📞</span>
+                <span class="chat-action">⋮</span>
+            </div>
+        </div>
+
+        <!-- Todo List Section -->
+        <div class="chat-todos" id="chatTodos">
+            <div class="todos-header">
+                <h4>🎯 Actions Tried</h4>
+                <button class="add-todo-btn" onclick="showAddTodoForm()">+ Add Action</button>
+            </div>
+            <div class="todos-list" id="todosList">
+                <!-- Todos will be populated here -->
+            </div>
+            <div class="add-todo-form" id="addTodoForm" style="display: none;">
+                <input type="text" id="todoInput" placeholder="What action was tried?">
+                <div class="todo-form-actions">
+                    <button onclick="addTodo()">Add</button>
+                    <button onclick="hideAddTodoForm()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message other">
+                <div class="message-user">John Smith</div>
+                <div class="message-text">I had a similar issue last week. Try checking the temperature settings.</div>
+                <div class="message-time">10:30 AM</div>
+            </div>
+            <div class="message own">
+                <div class="message-text">Thanks! What temperature should I check?</div>
+                <div class="message-time">10:35 AM</div>
+            </div>
+            <div class="message other">
+                <div class="message-user">John Smith</div>
+                <div class="message-text">Check if it's between 75-80°C. Also make sure the cooling system is working.</div>
+                <div class="message-time">10:40 AM</div>
+            </div>
+            <div class="message other">
+                <div class="message-user">Sarah Johnson</div>
+                <div class="message-text">I agree with John. Also check the pressure valve - that was my issue.</div>
+                <div class="message-time">11:15 AM</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <div class="input-container">
+                <span>📎</span>
+                <input type="text" placeholder="Type a message" id="messageInput">
+                <span>😊</span>
+            </div>
+            <button class="send-button" onclick="sendMessage()">→</button>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div class="summary-modal" id="summaryModal">
+        <div class="summary-content">
+            <div class="summary-header">
+                <button class="summary-close" onclick="closeSummary()">×</button>
+                <div class="summary-title" id="summaryTitle">Ticket Summary</div>
+                <div class="summary-meta" id="summaryMeta">
+                    <span>Ticket #1234</span>
+                    <span>Created Dec 18</span>
+                    <span>by John Smith</span>
+                </div>
+            </div>
+            <div class="summary-body">
+                <div class="summary-section">
+                    <div class="summary-tags" id="summaryTags">
+                        <div class="summary-tag">Alpha Machine</div>
+                        <div class="summary-tag">Mechanical</div>
+                        <div class="summary-tag status">SOLVED</div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📝 Description</h3>
+                    <div class="summary-description" id="summaryDescription">
+                        Original problem description will appear here...
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📋 Meeting Points & Key Decisions</h3>
+                    <div class="meeting-points" id="meetingPointsContent">
+                        <div class="meeting-point">
+                            <span class="point-icon">🌡️</span>
+                            <span class="point-text">Temperature issue confirmed: Machine running 5°C above normal range</span>
+                        </div>
+                        <div class="meeting-point">
+                            <span class="point-icon">🔍</span>
+                            <span class="point-text">Root cause identified: Cooling fan #3 bearing worn, running slower</span>
+                        </div>
+                        <div class="meeting-point">
+                            <span class="point-icon">📋</span>
+                            <span class="point-text">Action required: Order replacement bearings for fan #3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🎯 Resolution</h3>
+                    <div class="resolution-info" id="resolutionInfo">
+                        <div class="resolution-icon">✅</div>
+                        <div class="resolution-text">Issue Resolved</div>
+                        <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">This ticket was closed and marked as solved.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solver Selection Modal -->
+    <div class="solver-modal" id="solverModal">
+        <div class="solver-modal-content">
+            <div class="solver-header">
+                <h3>🏆 Who Solved This Issue?</h3>
+                <span class="close-solver" onclick="closeSolverModal()">&times;</span>
+            </div>
+            <div class="solver-body">
+                <div class="solver-section">
+                    <label class="solver-label">Select the person who solved this problem:</label>
+                    <select id="solverSelect" class="solver-select">
+                        <option value="">Choose from chat participants...</option>
+                    </select>
+                </div>
+                <div class="solver-section">
+                    <label class="solver-label">Rate their solution (1-5 stars):</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <div class="rating-text" id="ratingText">Click to rate</div>
+                </div>
+                <div class="solver-section">
+                    <label class="solver-label">Additional feedback (optional):</label>
+                    <textarea id="solverComment" class="solver-comment" placeholder="Great work on diagnosing the issue quickly..."></textarea>
+                </div>
+                <div class="solver-actions">
+                    <button class="solver-btn cancel" onclick="closeSolverModal()">Cancel</button>
+                    <button class="solver-btn submit" onclick="submitSolverRating()">Mark as Solved</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+
+            // Update leaderboard when showing team screen
+            if (screenId === 'teamScreen') {
+                updateLeaderboard();
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin123') {
+                showScreen('roomsScreen');
+            } else {
+                alert('Invalid credentials! Use admin/admin123');
+            }
+        }
+
+        function logout() {
+            showScreen('loginScreen');
+        }
+
+        function goToRoom(roomId) {
+            showScreen('roomDetailScreen');
+        }
+
+        function showMachineCategories() {
+            alert('Machine Categories: Alpha, Beta, Gamma, Delta machines available');
+        }
+
+        function reportProblem() {
+            document.getElementById('submissionTitle').textContent = 'Report Problem';
+            document.getElementById('problemType').required = true;
+            showScreen('submissionScreen');
+        }
+
+        function askQuestion() {
+            document.getElementById('submissionTitle').textContent = 'Ask Question';
+            document.getElementById('problemType').required = false;
+            showScreen('submissionScreen');
+        }
+
+        function openChat(title, description, ticketId = null) {
+            // If no ticketId provided, try to find it from active tickets
+            if (!ticketId) {
+                const activeTickets = tickets.filter(t => t.state === 'ACTIVE');
+                const matchingTicket = activeTickets.find(t => t.title === title && t.description === description);
+                ticketId = matchingTicket ? matchingTicket.id : null;
+            }
+
+            currentActiveTicket = ticketId;
+            document.getElementById('chatTitle').textContent = title;
+
+            // Load existing messages for this ticket
+            loadChatMessages(ticketId);
+
+            // Load existing todos for this ticket
+            loadChatTodos(ticketId);
+
+            document.getElementById('chatModal').classList.add('show');
+        }
+
+        function loadChatMessages(ticketId) {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = '';
+
+            if (ticketId && ticketChats[ticketId]) {
+                const messages = ticketChats[ticketId].messages;
+
+                messages.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    const isOwnMessage = message.author === currentUser;
+                    messageDiv.className = isOwnMessage ? 'message own' : 'message other';
+
+                    messageDiv.innerHTML = `
+                        ${!isOwnMessage ? `<div class="message-user">${message.author}</div>` : ''}
+                        <div class="message-text">${message.text}</div>
+                        <div class="message-time">${message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    `;
+
+                    messagesContainer.appendChild(messageDiv);
+                });
+
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            } else {
+                // No existing chat - show empty state or starter message
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'message other';
+                welcomeDiv.innerHTML = `
+                    <div class="message-user">System</div>
+                    <div class="message-text">Chat started for this ticket. Team members will be notified.</div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                messagesContainer.appendChild(welcomeDiv);
+            }
+        }
+
+        function closeChat() {
+            document.getElementById('chatModal').classList.remove('show');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message || !currentActiveTicket) return;
+
+            const timestamp = new Date();
+            const messagesContainer = document.getElementById('chatMessages');
+
+            // Create and add the user's message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message own';
+            messageDiv.innerHTML = `
+                <div class="message-text">${message}</div>
+                <div class="message-time">${timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Save message to ticket's chat history
+            if (!ticketChats[currentActiveTicket]) {
+                ticketChats[currentActiveTicket] = { messages: [], meetingPoints: [] };
+            }
+
+            const userMessage = {
+                id: Date.now(),
+                author: currentUser,
+                timestamp: timestamp,
+                text: message
+            };
+
+            ticketChats[currentActiveTicket].messages.push(userMessage);
+
+            // Track participant in this ticket's chat
+            if (!ticketParticipants[currentActiveTicket]) {
+                ticketParticipants[currentActiveTicket] = new Set();
+            }
+            ticketParticipants[currentActiveTicket].add(currentUser);
+
+            input.value = '';
+
+            // Simulate team member response
+            setTimeout(() => {
+                const responses = [
+                    "Let me check the maintenance logs for that.",
+                    "I'll head over to check that right away.",
+                    "Thanks for reporting this issue.",
+                    "I've seen this before - try restarting the system.",
+                    "Adding this to our priority list now.",
+                    "Can you provide more details about when this started?",
+                    "I'll coordinate with the maintenance team on this.",
+                    "Let me run some diagnostics and get back to you."
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const responseTimestamp = new Date();
+
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'message other';
+                responseDiv.innerHTML = `
+                    <div class="message-user">Team Member</div>
+                    <div class="message-text">${randomResponse}</div>
+                    <div class="message-time">${responseTimestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                messagesContainer.appendChild(responseDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // Save response to chat history
+                const responseMessage = {
+                    id: Date.now() + 1,
+                    author: 'Team Member',
+                    timestamp: responseTimestamp,
+                    text: randomResponse
+                };
+
+                ticketChats[currentActiveTicket].messages.push(responseMessage);
+
+                // Track responder as participant
+                if (!ticketParticipants[currentActiveTicket]) {
+                    ticketParticipants[currentActiveTicket] = new Set();
+                }
+                ticketParticipants[currentActiveTicket].add(randomResponder);
+
+            }, 1000 + Math.random() * 2000);
+        }
+
+        // Allow Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('chatModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChat();
+            }
+        });
+
+        // Todo Management Functions for Chat
+        function loadChatTodos(ticketId) {
+            const todosList = document.getElementById('todosList');
+            todosList.innerHTML = '';
+
+            if (ticketId && ticketTodos[ticketId]) {
+                const todos = ticketTodos[ticketId];
+                todos.forEach((todo, index) => {
+                    const todoDiv = document.createElement('div');
+                    todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                    todoDiv.innerHTML = `
+                        <div class="todo-text">${todo.text}</div>
+                        <div class="todo-actions">
+                            ${!todo.completed ?
+                                `<button class="todo-action-btn complete" onclick="toggleTodo(${index})" title="Mark as tried">✓</button>` :
+                                `<button class="todo-action-btn complete" onclick="toggleTodo(${index})" title="Mark as not tried">↶</button>`
+                            }
+                            <button class="todo-action-btn delete" onclick="deleteTodo(${index})" title="Delete">×</button>
+                        </div>
+                    `;
+                    todosList.appendChild(todoDiv);
+                });
+            } else {
+                // Show some default todos for demo
+                const defaultTodos = [
+                    { text: 'Checked temperature settings', completed: true },
+                    { text: 'Restarted the machine', completed: true },
+                    { text: 'Verified cooling system status', completed: false }
+                ];
+
+                if (ticketId) {
+                    ticketTodos[ticketId] = defaultTodos;
+                    loadChatTodos(ticketId); // Reload with the default todos
+                }
+            }
+        }
+
+        function showAddTodoForm() {
+            document.getElementById('addTodoForm').style.display = 'block';
+            document.getElementById('todoInput').focus();
+        }
+
+        function hideAddTodoForm() {
+            document.getElementById('addTodoForm').style.display = 'none';
+            document.getElementById('todoInput').value = '';
+        }
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (!text || !currentActiveTicket) return;
+
+            if (!ticketTodos[currentActiveTicket]) {
+                ticketTodos[currentActiveTicket] = [];
+            }
+
+            const newTodo = {
+                text: text,
+                completed: false,
+                timestamp: new Date()
+            };
+
+            ticketTodos[currentActiveTicket].push(newTodo);
+            loadChatTodos(currentActiveTicket);
+            hideAddTodoForm();
+        }
+
+        function toggleTodo(index) {
+            if (!currentActiveTicket || !ticketTodos[currentActiveTicket]) return;
+
+            ticketTodos[currentActiveTicket][index].completed = !ticketTodos[currentActiveTicket][index].completed;
+            loadChatTodos(currentActiveTicket);
+        }
+
+        function deleteTodo(index) {
+            if (!currentActiveTicket || !ticketTodos[currentActiveTicket]) return;
+
+            ticketTodos[currentActiveTicket].splice(index, 1);
+            loadChatTodos(currentActiveTicket);
+        }
+
+        // Allow Enter key to add todo
+        document.addEventListener('DOMContentLoaded', function() {
+            const todoInput = document.getElementById('todoInput');
+            if (todoInput) {
+                todoInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addTodo();
+                    }
+                });
+            }
+
+            // Initialize leaderboard on page load
+            updateLeaderboard();
+        });
+
+        // Ticket Management System
+        let tickets = [];
+        let ticketChats = {}; // Store chat messages for each ticket ID
+        let ticketTodos = {}; // Store todo lists for each ticket ID
+        let currentActiveTicket = null; // Track which ticket's chat is currently open
+        const currentUser = 'Current User';
+
+        // User profiles and points system
+        let userProfiles = {
+            'Current User': { name: 'Current User', points: 45, ticketsSolved: 8, totalRatings: 15, averageRating: 4.2 },
+            'John Smith': { name: 'John Smith', points: 92, ticketsSolved: 15, totalRatings: 25, averageRating: 4.7 },
+            'Sarah Wilson': { name: 'Sarah Wilson', points: 78, ticketsSolved: 12, totalRatings: 20, averageRating: 4.1 },
+            'Mike Johnson': { name: 'Mike Johnson', points: 134, ticketsSolved: 22, totalRatings: 35, averageRating: 4.8 },
+            'Emma Davis': { name: 'Emma Davis', points: 56, ticketsSolved: 9, totalRatings: 18, averageRating: 4.3 },
+            'Alex Rodriguez': { name: 'Alex Rodriguez', points: 89, ticketsSolved: 14, totalRatings: 22, averageRating: 4.5 }
+        };
+
+        // Track chat participants per ticket
+        let ticketParticipants = {};
+
+        // Initialize with some demo tickets for testing
+        function initializeDemoTickets() {
+            const now = new Date();
+
+            // Add some existing tickets with different timer states
+            tickets = [
+                {
+                    id: 1001,
+                    title: 'Machine overheating issue',
+                    description: 'Alpha Machine temperature exceeding normal range',
+                    machineCategory: 'Alpha Machine',
+                    problemType: 'Mechanical',
+                    priority: 'High',
+                    creator: 'John Smith',
+                    state: 'CLOSED',
+                    resolution: 'UNSOLVED',
+                    createdAt: new Date(now - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+                    expiresAt: new Date(now - 2 * 24 * 60 * 60 * 1000), // expired 2 days ago
+                    autoCloseWarned: true,
+                    files: []
+                },
+                {
+                    id: 1002,
+                    title: 'Production line question',
+                    description: 'How to optimize packaging speed for new product line',
+                    machineCategory: 'Beta Machine',
+                    problemType: 'General Question',
+                    priority: 'Medium',
+                    creator: 'Sarah Johnson',
+                    state: 'CLOSED',
+                    resolution: 'SOLVED',
+                    createdAt: new Date(now - 4 * 24 * 60 * 60 * 1000), // 4 days ago
+                    expiresAt: new Date(now - 1 * 24 * 60 * 60 * 1000), // expired 1 day ago
+                    autoCloseWarned: true,
+                    files: []
+                },
+                {
+                    id: 1003,
+                    title: 'Electrical fault detected',
+                    description: 'Power fluctuations in main control panel',
+                    machineCategory: 'Gamma Machine',
+                    problemType: 'Electrical',
+                    priority: 'Critical',
+                    creator: 'Mike Wilson',
+                    state: 'CLOSED',
+                    resolution: 'SOLVED',
+                    createdAt: new Date(now - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+                    expiresAt: new Date(now - 6 * 60 * 60 * 1000), // expired 6 hours ago
+                    autoCloseWarned: true,
+                    files: []
+                },
+                {
+                    id: 1004,
+                    title: 'Current User Test Ticket',
+                    description: 'This is your test ticket to try the new system!',
+                    machineCategory: 'Alpha Machine',
+                    problemType: 'Mechanical',
+                    priority: 'Medium',
+                    creator: 'Current User',
+                    state: 'ACTIVE',
+                    resolution: 'UNSOLVED',
+                    createdAt: new Date(now - 1 * 60 * 60 * 1000), // 1 hour ago
+                    expiresAt: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000), // 2d 23h from now
+                    autoCloseWarned: false,
+                    files: []
+                },
+                {
+                    id: 1005,
+                    title: 'Urgent Warning Test',
+                    description: 'This ticket will warn about auto-close soon',
+                    machineCategory: 'Beta Machine',
+                    problemType: 'Electrical',
+                    priority: 'High',
+                    creator: 'Current User',
+                    state: 'ACTIVE',
+                    resolution: 'UNSOLVED',
+                    createdAt: new Date(now - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+                    expiresAt: new Date(now.getTime() + 12 * 60 * 60 * 1000), // 12 hours from now (warning zone)
+                    autoCloseWarned: false,
+                    files: []
+                }
+            ];
+
+            // Initialize chat histories for demo tickets
+            ticketChats = {
+                1001: {
+                    messages: [
+                        { id: 1, author: 'John Smith', timestamp: new Date(now - 4 * 60 * 60 * 1000), text: 'Machine is running at 85°C consistently. Normal range should be 75-80°C.' },
+                        { id: 2, author: 'Team Lead', timestamp: new Date(now - 3 * 60 * 60 * 1000), text: 'Let me check the maintenance logs for this machine.' },
+                        { id: 3, author: 'Team Lead', timestamp: new Date(now - 3 * 60 * 60 * 1000), text: 'Last maintenance was 2 weeks ago. Cooling system looks normal in logs.' },
+                        { id: 4, author: 'Technician Mike', timestamp: new Date(now - 2 * 60 * 60 * 1000), text: 'I\'ll check the cooling fans and temperature sensors physically.' },
+                        { id: 5, author: 'John Smith', timestamp: new Date(now - 2 * 60 * 60 * 1000), text: 'Thanks! The issue started this morning around 9 AM.' },
+                        { id: 6, author: 'Technician Mike', timestamp: new Date(now - 1 * 60 * 60 * 1000), text: 'Found the issue - cooling fan #3 is running slower than normal. Bearing seems worn.' },
+                        { id: 7, author: 'Team Lead', timestamp: new Date(now - 1 * 60 * 60 * 1000), text: 'Do we have replacement bearings in stock?' },
+                        { id: 8, author: 'John Smith', timestamp: new Date(now - 30 * 60 * 1000), text: 'Need to order new bearings. Issue will persist until replacement.' }
+                    ],
+                    meetingPoints: [
+                        '🌡️ Temperature issue confirmed: Machine running 5°C above normal range',
+                        '🔍 Root cause identified: Cooling fan #3 bearing worn, running slower',
+                        '📋 Action required: Order replacement bearings for fan #3',
+                        '⏱️ Timeline: Issue will persist until parts arrive and replacement completed',
+                        '👤 Assigned: Technician Mike to handle replacement when parts arrive'
+                    ]
+                },
+                1002: {
+                    messages: [
+                        { id: 1, author: 'Sarah Johnson', timestamp: new Date(now - 5 * 24 * 60 * 60 * 1000), text: 'Need help optimizing packaging speed for the new juice box line.' },
+                        { id: 2, author: 'Senior Operator', timestamp: new Date(now - 5 * 24 * 60 * 60 * 1000), text: 'What\'s the current throughput and target speed?' },
+                        { id: 3, author: 'Sarah Johnson', timestamp: new Date(now - 5 * 24 * 60 * 60 * 1000), text: 'Currently at 120 units/min, need to reach 150 units/min for production targets.' },
+                        { id: 4, author: 'Senior Operator', timestamp: new Date(now - 5 * 24 * 60 * 60 * 1000), text: 'Try these settings: Conveyor speed 85%, Pressure 12 PSI, Cycle timing 2.5 seconds.' },
+                        { id: 5, author: 'Production Manager', timestamp: new Date(now - 5 * 24 * 60 * 60 * 1000), text: 'Also check the folding mechanism tension - should be at level 7 for juice boxes.' },
+                        { id: 6, author: 'Sarah Johnson', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Applied all settings. Speed increased to 145 units/min! Almost there.' },
+                        { id: 7, author: 'Senior Operator', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Great! For the final 5 units/min, try reducing dwell time to 1.8 seconds.' },
+                        { id: 8, author: 'Sarah Johnson', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Perfect! Now at 152 units/min. Target achieved! Thanks everyone.' }
+                    ],
+                    meetingPoints: [
+                        '🎯 Goal: Increase packaging speed from 120 to 150 units/min for new juice box line',
+                        '⚙️ Settings optimized: Conveyor 85%, Pressure 12 PSI, Cycle timing 2.5s',
+                        '🔧 Folding mechanism adjusted: Tension set to level 7 for juice boxes',
+                        '📈 Result: Final speed 152 units/min - target exceeded by 2 units/min',
+                        '✅ Resolution: Production targets achieved, settings documented for future use'
+                    ]
+                },
+                1003: {
+                    messages: [
+                        { id: 1, author: 'Mike Wilson', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Experiencing power fluctuations in main control panel every 8-10 minutes.' },
+                        { id: 2, author: 'Electrical Team', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'We\'ll investigate immediately. Any pattern to the timing?' },
+                        { id: 3, author: 'Mike Wilson', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Very consistent - exactly every 9 minutes. Voltage drops from 220V to 205V briefly.' },
+                        { id: 4, author: 'Electrical Team', timestamp: new Date(now - 4 * 24 * 60 * 60 * 1000), text: 'Checking panel C3 connections and reviewing load balancing.' },
+                        { id: 5, author: 'Electrical Team', timestamp: new Date(now - 3 * 24 * 60 * 60 * 1000), text: 'Found loose connection in panel C3, terminal 7. Tightened and testing now.' },
+                        { id: 6, author: 'Mike Wilson', timestamp: new Date(now - 3 * 24 * 60 * 60 * 1000), text: 'Monitoring for the past 30 minutes - no fluctuations detected!' },
+                        { id: 7, author: 'Electrical Team', timestamp: new Date(now - 3 * 24 * 60 * 60 * 1000), text: 'Will continue monitoring for 24 hours to confirm stability.' },
+                        { id: 8, author: 'Mike Wilson', timestamp: new Date(now - 3 * 24 * 60 * 60 * 1000), text: 'Confirmed stable for 24 hours. Issue resolved!' }
+                    ],
+                    meetingPoints: [
+                        '⚡ Issue: Power fluctuations every 9 minutes, voltage drops from 220V to 205V',
+                        '🔍 Investigation: Focused on panel C3 connections and load balancing',
+                        '🔧 Root cause: Loose connection found in panel C3, terminal 7',
+                        '✅ Solution: Connection tightened and system tested',
+                        '📊 Verification: 24-hour monitoring confirmed stable power supply'
+                    ]
+                },
+                1004: {
+                    messages: [
+                        { id: 1, author: 'Current User', timestamp: new Date(now - 1 * 60 * 60 * 1000), text: 'This is a test ticket to demonstrate the new chat system!' },
+                        { id: 2, author: 'Team Lead', timestamp: new Date(now - 45 * 60 * 1000), text: 'I can see this ticket in the system. What specific issue are you testing?' },
+                        { id: 3, author: 'Current User', timestamp: new Date(now - 30 * 60 * 1000), text: 'Testing that each ticket has its own chat history and that messages persist.' }
+                    ],
+                    meetingPoints: [
+                        '🧪 Purpose: Test ticket to demonstrate new chat system functionality',
+                        '💬 Chat persistence: Each ticket maintains its own message history',
+                        '🔄 System status: New ticket management system working as expected'
+                    ]
+                },
+                1005: {
+                    messages: [
+                        { id: 1, author: 'Current User', timestamp: new Date(now - 2 * 24 * 60 * 60 * 1000), text: 'Beta Machine electrical panel showing warning lights intermittently.' },
+                        { id: 2, author: 'Electrical Team', timestamp: new Date(now - 2 * 24 * 60 * 60 * 1000), text: 'Which specific warning lights? Main power, motor, or control system?' },
+                        { id: 3, author: 'Current User', timestamp: new Date(now - 2 * 24 * 60 * 60 * 1000), text: 'Motor warning light flashes red every few hours. No pattern detected yet.' }
+                    ],
+                    meetingPoints: [
+                        '🚨 Issue: Intermittent motor warning lights on Beta Machine',
+                        '🔍 Status: Under investigation by Electrical Team',
+                        '⏰ Timeline: Warning occurs every few hours, pattern analysis ongoing'
+                    ]
+                }
+            };
+        }
+
+        // Timer and notification system
+        function updateTicketTimers() {
+            const now = new Date();
+
+            tickets.forEach(ticket => {
+                if (ticket.state === 'ACTIVE') {
+                    const timeLeft = ticket.expiresAt - now;
+                    const hoursLeft = timeLeft / (1000 * 60 * 60);
+
+                    // Auto-close if expired
+                    if (timeLeft <= 0) {
+                        ticket.state = 'CLOSED';
+                        showNotification(`🔒 Ticket #${ticket.id} auto-closed due to timeout`);
+                    }
+                    // Warn if 24 hours or less remaining and not already warned
+                    else if (hoursLeft <= 24 && !ticket.autoCloseWarned) {
+                        ticket.autoCloseWarned = true;
+                        showNotification(`⚠️ Ticket #${ticket.id} will auto-close in ${Math.ceil(hoursLeft)} hours`);
+                    }
+                }
+            });
+
+            // Update displays
+            renderActiveTickets();
+            renderHistoryTickets();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'warning-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function getTimeLeftText(expiresAt) {
+            const now = new Date();
+            const timeLeft = expiresAt - now;
+
+            if (timeLeft <= 0) return 'Expired';
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            if (days > 0) {
+                return `${days}d ${hours}h left`;
+            } else if (hours > 0) {
+                return `${hours}h left`;
+            } else {
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                return `${minutes}m left`;
+            }
+        }
+
+        function getTimerClass(expiresAt) {
+            const now = new Date();
+            const timeLeft = expiresAt - now;
+            const hoursLeft = timeLeft / (1000 * 60 * 60);
+
+            if (timeLeft <= 0) return 'urgent';
+            if (hoursLeft <= 24) return 'warning';
+            return '';
+        }
+
+        // File handling
+        let attachedFiles = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                    return;
+                }
+
+                const fileObj = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    file: file
+                };
+
+                attachedFiles.push(fileObj);
+                displayAttachedFiles();
+            });
+
+            // Clear the input
+            e.target.value = '';
+        });
+
+        function displayAttachedFiles() {
+            const container = document.getElementById('attachedFiles');
+            container.innerHTML = '';
+
+            attachedFiles.forEach(fileObj => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+
+                const fileIcon = getFileIcon(fileObj.type);
+                const fileSize = formatFileSize(fileObj.size);
+
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${fileIcon}</div>
+                        <div class="file-details">
+                            <h4>${fileObj.name}</h4>
+                            <p>${fileSize}</p>
+                        </div>
+                    </div>
+                    <span class="file-remove" onclick="removeFile('${fileObj.id}')">×</span>
+                `;
+
+                container.appendChild(fileItem);
+            });
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.startsWith('image/')) return '🖼️';
+            if (fileType.startsWith('video/')) return '🎥';
+            if (fileType.includes('pdf')) return '📄';
+            if (fileType.includes('doc')) return '📝';
+            return '📎';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function removeFile(fileId) {
+            attachedFiles = attachedFiles.filter(file => file.id != fileId);
+            displayAttachedFiles();
+        }
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabName === 'myTickets') {
+                document.getElementById('myTicketsTab').classList.add('active');
+                document.getElementById('myTicketsContent').classList.add('active');
+            } else if (tabName === 'allTickets') {
+                document.getElementById('allTicketsTab').classList.add('active');
+                document.getElementById('allTicketsContent').classList.add('active');
+            }
+        }
+
+        // Render ticket element
+        function createTicketElement(ticket) {
+            const ticketElement = document.createElement('div');
+            const timerClass = getTimerClass(ticket.expiresAt);
+            const isCreator = ticket.creator === currentUser;
+
+            ticketElement.className = `active-ticket ${timerClass}`;
+            ticketElement.onclick = function(e) {
+                if (!e.target.classList.contains('ticket-btn')) {
+                    openChat(ticket.title, ticket.description, ticket.id);
+                }
+            };
+
+            const icon = ticket.problemType === 'General Question' ? '❓' : '⚠️';
+            const iconClass = ticket.problemType === 'General Question' ? 'question-icon' : 'problem-icon';
+
+            ticketElement.innerHTML = `
+                <div class="ticket-timer ${timerClass}">${getTimeLeftText(ticket.expiresAt)}</div>
+                <div class="item-header">
+                    <div class="item-left">
+                        <div class="type-icon ${iconClass}">${icon}</div>
+                        <div>
+                            <div class="item-title">${ticket.title}${isCreator ? '<span class="creator-badge">YOU</span>' : ''}</div>
+                            <div class="item-description">${ticket.description}</div>
+                        </div>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="item-tags">
+                    <div class="tag">${ticket.machineCategory}</div>
+                    <div class="tag">${ticket.problemType}</div>
+                    <div class="tag">${ticket.priority}</div>
+                    <div class="status-tag ${ticket.resolution === 'SOLVED' ? 'solved-tag' : 'unsolved-tag'}">${ticket.resolution}</div>
+                </div>
+                <div class="item-footer">
+                    <span>by ${ticket.creator}</span>
+                    <span>${formatTimestamp(ticket.createdAt)}</span>
+                    <span style="color: #2196F3; font-weight: 600;">#${ticket.id}</span>
+                </div>
+                ${isCreator ? `
+                    <div class="ticket-actions">
+                        <button class="ticket-btn extend" onclick="extendTicket(${ticket.id})">🔄 Extend +3d</button>
+                        <button class="ticket-btn close" onclick="closeTicket(${ticket.id})">🔒 Close</button>
+                        <button class="ticket-btn ${ticket.resolution === 'SOLVED' ? 'unsolve' : 'solve'}" onclick="toggleResolution(${ticket.id})">
+                            ${ticket.resolution === 'SOLVED' ? '❌ Mark Unsolved' : '✅ Mark Solved'}
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+
+            return ticketElement;
+        }
+
+        // Render active tickets with tabs
+        function renderActiveTickets() {
+            const activeTickets = tickets.filter(t => t.state === 'ACTIVE');
+            const myTickets = activeTickets.filter(t => t.creator === currentUser);
+            const allTickets = activeTickets;
+
+            // Update tab counts
+            document.getElementById('myTicketsCount').textContent = myTickets.length;
+            document.getElementById('allTicketsCount').textContent = allTickets.length;
+
+            // Render My Tickets tab
+            const myContainer = document.getElementById('myTicketsContainer');
+            const myEmptyState = document.getElementById('myTicketsEmptyState');
+
+            myContainer.innerHTML = '';
+
+            if (myTickets.length === 0) {
+                myEmptyState.style.display = 'block';
+            } else {
+                myEmptyState.style.display = 'none';
+                myTickets.forEach(ticket => {
+                    myContainer.appendChild(createTicketElement(ticket));
+                });
+            }
+
+            // Render All Tickets tab
+            const allContainer = document.getElementById('allTicketsContainer');
+            const allEmptyState = document.getElementById('allTicketsEmptyState');
+
+            allContainer.innerHTML = '';
+
+            if (allTickets.length === 0) {
+                allEmptyState.style.display = 'block';
+            } else {
+                allEmptyState.style.display = 'none';
+                allTickets.forEach(ticket => {
+                    allContainer.appendChild(createTicketElement(ticket));
+                });
+            }
+        }
+
+        // Render history tickets (closed only) with filtering
+        function renderHistoryTickets() {
+            const historyContainer = document.querySelector('#historyScreen');
+            const existingItems = historyContainer.querySelectorAll('.history-item');
+
+            // Remove all existing history items except demo ones
+            existingItems.forEach(item => {
+                const id = item.getAttribute('data-ticket-id');
+                if (id) {
+                    item.remove();
+                }
+            });
+
+            const closedTickets = tickets.filter(t => t.state === 'CLOSED');
+            const filteredTickets = filterTickets(closedTickets);
+
+            // Update results count
+            updateResultsCount(filteredTickets.length, closedTickets.length);
+
+            // Find insertion point (after results count)
+            const resultsCount = historyContainer.querySelector('#resultsCount');
+            let insertAfter = resultsCount;
+
+            // Show all existing demo items if no filters applied
+            const demoItems = historyContainer.querySelectorAll('.history-item:not([data-ticket-id])');
+            if (Object.values(currentFilters).every(f => !f)) {
+                demoItems.forEach(item => item.style.display = 'block');
+            } else {
+                // Hide demo items when filters are active and filter them too
+                demoItems.forEach(item => {
+                    // Try to extract data from demo items for filtering
+                    const title = item.querySelector('.item-title')?.textContent || '';
+                    const description = item.querySelector('.item-description')?.textContent || '';
+                    const tags = Array.from(item.querySelectorAll('.tag')).map(tag => tag.textContent);
+                    const machineCategory = tags[0] || '';
+                    const problemType = tags[1] || '';
+                    const resolution = item.querySelector('.solved-tag') ? 'SOLVED' : 'UNSOLVED';
+
+                    const demoTicket = {
+                        title: title,
+                        description: description,
+                        machineCategory: machineCategory,
+                        problemType: problemType,
+                        resolution: resolution
+                    };
+
+                    const matches = filterTickets([demoTicket]).length > 0;
+                    item.style.display = matches ? 'block' : 'none';
+                });
+            }
+
+            filteredTickets.forEach(ticket => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.setAttribute('data-ticket-id', ticket.id);
+                historyItem.onclick = function() {
+                    openSummary(ticket);
+                };
+
+                const icon = ticket.problemType === 'General Question' ? '❓' : '⚠️';
+                const iconClass = ticket.problemType === 'General Question' ? 'question-icon' : 'problem-icon';
+                const statusTag = ticket.resolution === 'SOLVED' ? 'solved-tag' : 'unsolved-tag';
+
+                historyItem.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-left">
+                            <div class="type-icon ${iconClass}">${icon}</div>
+                            <div>
+                                <div class="item-title">${ticket.title}</div>
+                                <div class="item-description">${ticket.description}</div>
+                            </div>
+                        </div>
+                        <span>→</span>
+                    </div>
+                    <div class="item-tags">
+                        <div class="tag">${ticket.machineCategory}</div>
+                        <div class="tag">${ticket.problemType}</div>
+                        <div class="status-tag ${statusTag}">${ticket.resolution}</div>
+                    </div>
+                    <div class="item-footer">
+                        <span>by ${ticket.creator}</span>
+                        <span>${formatTimestamp(ticket.createdAt)}</span>
+                        <span style="color: #2196F3; font-weight: 600;">#${ticket.id}</span>
+                    </div>
+                `;
+
+                insertAfter.parentNode.insertBefore(historyItem, insertAfter.nextSibling);
+                insertAfter = historyItem;
+            });
+        }
+
+        // Ticket action functions
+        function extendTicket(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket && ticket.creator === currentUser) {
+                const now = new Date();
+                ticket.expiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // +3 days
+                ticket.autoCloseWarned = false;
+                showNotification(`✅ Ticket #${ticketId} extended by 3 days`);
+                renderActiveTickets();
+            }
+        }
+
+        function closeTicket(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket && ticket.creator === currentUser) {
+                ticket.state = 'CLOSED';
+                showNotification(`🔒 Ticket #${ticketId} closed`);
+                renderActiveTickets();
+                renderHistoryTickets();
+            }
+        }
+
+        function toggleResolution(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket && ticket.creator === currentUser) {
+                if (ticket.resolution === 'SOLVED') {
+                    // Mark as unsolved - no rating needed
+                    ticket.resolution = 'UNSOLVED';
+                    showNotification('❌ Ticket #' + ticketId + ' marked as unsolved');
+                    renderActiveTickets();
+                } else {
+                    // Mark as solved - show solver selection modal
+                    showSolverModal(ticketId);
+                }
+            }
+        }
+
+        // Form submission - now creates ACTIVE tickets
+        document.getElementById('submissionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const now = new Date();
+            const formData = {
+                id: Date.now(),
+                title: document.getElementById('submissionTitleInput').value.trim(),
+                description: document.getElementById('submissionDescription').value.trim(),
+                machineCategory: document.getElementById('machineCategory').value,
+                problemType: document.getElementById('problemType').value || 'General Question',
+                priority: document.getElementById('priorityLevel').value,
+                creator: currentUser,
+                state: 'ACTIVE',
+                resolution: 'UNSOLVED',
+                createdAt: now,
+                expiresAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000), // +3 days
+                autoCloseWarned: false,
+                files: [...attachedFiles]
+            };
+
+            if (!formData.title || !formData.machineCategory || !formData.description) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Add to tickets array
+            tickets.push(formData);
+
+            // Show success message
+            alert('✅ Successfully submitted! Check Active Issues to manage your ticket.');
+
+            // Reset form and go back
+            resetForm();
+            showScreen('roomDetailScreen');
+
+            // Update displays
+            renderActiveTickets();
+        });
+
+        function addToHistory(submission) {
+            const historyContainer = document.querySelector('#historyScreen');
+            const firstHistoryItem = historyContainer.querySelector('.history-item');
+
+            // Create new history item
+            const newHistoryItem = document.createElement('div');
+            newHistoryItem.className = 'history-item';
+            newHistoryItem.onclick = function() {
+                openChat(submission.title, submission.description);
+            };
+
+            const isQuestion = document.getElementById('submissionTitle').textContent === 'Ask Question';
+            const icon = isQuestion ? '❓' : '⚠️';
+            const iconClass = isQuestion ? 'question-icon' : 'problem-icon';
+            const statusTag = submission.status === 'SOLVED' ? 'solved-tag' : 'unsolved-tag';
+
+            newHistoryItem.innerHTML = `
+                <div class="item-header">
+                    <div class="item-left">
+                        <div class="type-icon ${iconClass}">${icon}</div>
+                        <div>
+                            <div class="item-title">${submission.title}</div>
+                            <div class="item-description">${submission.description}</div>
+                        </div>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="item-tags">
+                    <div class="tag">${submission.machineCategory}</div>
+                    <div class="tag">${submission.problemType || 'Question'}</div>
+                    <div class="status-tag ${statusTag}">${submission.status}</div>
+                </div>
+                <div class="item-footer">
+                    <span>by ${submission.author}</span>
+                    <span>${formatTimestamp(submission.timestamp)}</span>
+                    <span style="color: #2196F3; font-weight: 600;">#${submission.id}</span>
+                </div>
+            `;
+
+            // Insert at the top (after the highlight box)
+            const highlightBox = historyContainer.querySelector('.highlight');
+            highlightBox.parentNode.insertBefore(newHistoryItem, highlightBox.nextSibling);
+        }
+
+        function formatTimestamp(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} min ago`;
+
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('submissionForm').reset();
+            attachedFiles = [];
+            displayAttachedFiles();
+        }
+
+        // Initialize app
+        function initializeApp() {
+            initializeDemoTickets();
+            renderActiveTickets();
+            renderHistoryTickets();
+
+            // Set up timer to check for auto-close every minute
+            setInterval(updateTicketTimers, 60000);
+
+            // Initial timer check
+            updateTicketTimers();
+        }
+
+        // Remove the old addToHistory function since we now use the ticket system
+        function addToHistory(submission) {
+            // This is now handled by the ticket system
+        }
+
+        // Filter functionality for History page
+        let currentFilters = {
+            search: '',
+            resolution: '',
+            machine: '',
+            problemType: ''
+        };
+
+        function applyFilters() {
+            // Get current filter values
+            currentFilters.search = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.resolution = document.getElementById('resolutionFilter').value;
+            currentFilters.machine = document.getElementById('machineFilter').value;
+            currentFilters.problemType = document.getElementById('problemTypeFilter').value;
+
+            // Update filter chips
+            updateFilterChips();
+
+            // Re-render history with filters
+            renderHistoryTickets();
+
+            // Update statistics since dashboard is always visible
+            updateStatistics();
+        }
+
+        function updateFilterChips() {
+            const chipsContainer = document.getElementById('activeFilters');
+            chipsContainer.innerHTML = '';
+
+            const filters = [];
+
+            if (currentFilters.search) {
+                filters.push({ type: 'search', label: `Search: "${currentFilters.search}"`, value: currentFilters.search });
+            }
+            if (currentFilters.resolution) {
+                filters.push({ type: 'resolution', label: `Status: ${currentFilters.resolution}`, value: currentFilters.resolution });
+            }
+            if (currentFilters.machine) {
+                filters.push({ type: 'machine', label: `Machine: ${currentFilters.machine}`, value: currentFilters.machine });
+            }
+            if (currentFilters.problemType) {
+                filters.push({ type: 'problemType', label: `Type: ${currentFilters.problemType}`, value: currentFilters.problemType });
+            }
+
+            filters.forEach(filter => {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    ${filter.label}
+                    <span class="remove" onclick="removeFilter('${filter.type}')">×</span>
+                `;
+                chipsContainer.appendChild(chip);
+            });
+        }
+
+        function removeFilter(filterType) {
+            currentFilters[filterType] = '';
+
+            // Update UI elements
+            if (filterType === 'search') document.getElementById('searchInput').value = '';
+            if (filterType === 'resolution') document.getElementById('resolutionFilter').value = '';
+            if (filterType === 'machine') document.getElementById('machineFilter').value = '';
+            if (filterType === 'problemType') document.getElementById('problemTypeFilter').value = '';
+
+            applyFilters();
+        }
+
+        function clearAllFilters() {
+            currentFilters = { search: '', resolution: '', machine: '', problemType: '' };
+
+            // Clear all UI elements
+            document.getElementById('searchInput').value = '';
+            document.getElementById('resolutionFilter').value = '';
+            document.getElementById('machineFilter').value = '';
+            document.getElementById('problemTypeFilter').value = '';
+
+            applyFilters();
+        }
+
+        function filterTickets(tickets) {
+            return tickets.filter(ticket => {
+                // Search filter
+                if (currentFilters.search) {
+                    const searchTerm = currentFilters.search;
+                    const titleMatch = ticket.title.toLowerCase().includes(searchTerm);
+                    const descMatch = ticket.description.toLowerCase().includes(searchTerm);
+                    const machineMatch = ticket.machineCategory.toLowerCase().includes(searchTerm);
+
+                    if (!titleMatch && !descMatch && !machineMatch) {
+                        return false;
+                    }
+                }
+
+                // Resolution filter
+                if (currentFilters.resolution && ticket.resolution !== currentFilters.resolution) {
+                    return false;
+                }
+
+                // Machine filter
+                if (currentFilters.machine && ticket.machineCategory !== currentFilters.machine) {
+                    return false;
+                }
+
+                // Problem type filter
+                if (currentFilters.problemType && ticket.problemType !== currentFilters.problemType) {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        function updateResultsCount(filteredCount, totalCount) {
+            const resultsElement = document.getElementById('resultsCount');
+            if (filteredCount === totalCount) {
+                resultsElement.textContent = `Showing all ${totalCount} tickets`;
+            } else {
+                resultsElement.textContent = `Showing ${filteredCount} of ${totalCount} tickets`;
+            }
+        }
+
+        // Summary modal functions
+        function openSummary(ticket) {
+            // Populate summary modal with ticket data
+            document.getElementById('summaryTitle').textContent = ticket.title;
+
+            const meta = document.getElementById('summaryMeta');
+            meta.innerHTML = `
+                <span>Ticket #${ticket.id}</span>
+                <span>Created ${formatTimestamp(ticket.createdAt)}</span>
+                <span>by ${ticket.creator}</span>
+            `;
+
+            // Update tags
+            const tagsContainer = document.getElementById('summaryTags');
+            const statusClass = ticket.resolution === 'SOLVED' ? 'status' : 'status unsolved';
+            tagsContainer.innerHTML = `
+                <div class="summary-tag">${ticket.machineCategory}</div>
+                <div class="summary-tag">${ticket.problemType}</div>
+                <div class="summary-tag ${statusClass}">${ticket.resolution}</div>
+            `;
+
+            // Update description
+            document.getElementById('summaryDescription').textContent = ticket.description;
+
+            // Display meeting points from ticket's chat history
+            const meetingPoints = ticketChats[ticket.id] ? ticketChats[ticket.id].meetingPoints : [];
+            displayMeetingPoints(meetingPoints);
+
+            // Update resolution info
+            const resolutionInfo = document.getElementById('resolutionInfo');
+            if (ticket.resolution === 'SOLVED') {
+                resolutionInfo.className = 'resolution-info';
+                resolutionInfo.innerHTML = `
+                    <div class="resolution-icon">✅</div>
+                    <div class="resolution-text">Issue Resolved</div>
+                    <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">This ticket was closed and marked as solved.</div>
+                `;
+            } else {
+                resolutionInfo.className = 'resolution-info unsolved';
+                resolutionInfo.innerHTML = `
+                    <div class="resolution-icon">⏰</div>
+                    <div class="resolution-text unsolved">Issue Unresolved</div>
+                    <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">This ticket was closed but the issue remains unresolved.</div>
+                `;
+            }
+
+            // Show modal
+            document.getElementById('summaryModal').classList.add('show');
+        }
+
+        function openDemoSummary(title, description, machine, problemType, resolution, ticketId, creator, timestamp) {
+            // Handle demo tickets
+            const demoTicket = {
+                id: ticketId,
+                title: title,
+                description: description,
+                machineCategory: machine,
+                problemType: problemType,
+                resolution: resolution,
+                creator: creator,
+                createdAt: new Date() // Will be overridden by timestamp display
+            };
+
+            // Populate summary modal
+            document.getElementById('summaryTitle').textContent = title;
+
+            const meta = document.getElementById('summaryMeta');
+            meta.innerHTML = `
+                <span>Ticket #${ticketId}</span>
+                <span>Created ${timestamp}</span>
+                <span>by ${creator}</span>
+            `;
+
+            // Update tags
+            const tagsContainer = document.getElementById('summaryTags');
+            const statusClass = resolution === 'SOLVED' ? 'status' : 'status unsolved';
+            tagsContainer.innerHTML = `
+                <div class="summary-tag">${machine}</div>
+                <div class="summary-tag">${problemType}</div>
+                <div class="summary-tag ${statusClass}">${resolution}</div>
+            `;
+
+            // Update description
+            document.getElementById('summaryDescription').textContent = description;
+
+            // Display demo meeting points
+            const demoMeetingPoints = getDemoMeetingPoints(title, problemType, resolution);
+            displayMeetingPoints(demoMeetingPoints);
+
+            // Update resolution info
+            const resolutionInfo = document.getElementById('resolutionInfo');
+            if (resolution === 'SOLVED') {
+                resolutionInfo.className = 'resolution-info';
+                resolutionInfo.innerHTML = `
+                    <div class="resolution-icon">✅</div>
+                    <div class="resolution-text">Issue Resolved</div>
+                    <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">This ticket was closed and marked as solved.</div>
+                `;
+            } else {
+                resolutionInfo.className = 'resolution-info unsolved';
+                resolutionInfo.innerHTML = `
+                    <div class="resolution-icon">⏰</div>
+                    <div class="resolution-text unsolved">Issue Unresolved</div>
+                    <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">This ticket was closed but the issue remains unresolved.</div>
+                `;
+            }
+
+            // Show modal
+            document.getElementById('summaryModal').classList.add('show');
+        }
+
+        function closeSummary() {
+            document.getElementById('summaryModal').classList.remove('show');
+        }
+
+        function displayMeetingPoints(meetingPoints) {
+            const container = document.getElementById('meetingPointsContent');
+
+            if (!meetingPoints || meetingPoints.length === 0) {
+                container.innerHTML = `
+                    <div class="meeting-point">
+                        <span class="point-icon">📝</span>
+                        <span class="point-text">No meeting points recorded yet for this ticket.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = meetingPoints.map(point => {
+                // Extract icon from the beginning of the text if it exists
+                const iconMatch = point.match(/^(\p{Emoji})/u);
+                const icon = iconMatch ? iconMatch[1] : '📋';
+                const text = point.replace(/^(\p{Emoji})\s*/u, '');
+
+                return `
+                    <div class="meeting-point">
+                        <span class="point-icon">${icon}</span>
+                        <span class="point-text">${text}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getDemoMeetingPoints(title, problemType, resolution) {
+            if (title.includes('overheating')) {
+                return [
+                    '🌡️ Temperature issue confirmed: Machine running 5°C above normal range',
+                    '🔍 Root cause identified: Cooling fan #3 bearing worn, running slower',
+                    '📋 Action required: Order replacement bearings for fan #3',
+                    '⏱️ Timeline: Issue will persist until parts arrive and replacement completed',
+                    '👤 Assigned: Technician Mike to handle replacement when parts arrive'
+                ];
+            } else if (title.includes('Production line')) {
+                return [
+                    '🎯 Goal: Increase packaging speed from 120 to 150 units/min for new juice box line',
+                    '⚙️ Settings optimized: Conveyor 85%, Pressure 12 PSI, Cycle timing 2.5s',
+                    '🔧 Folding mechanism adjusted: Tension set to level 7 for juice boxes',
+                    '📈 Result: Final speed 152 units/min - target exceeded by 2 units/min',
+                    '✅ Resolution: Production targets achieved, settings documented for future use'
+                ];
+            } else if (title.includes('Electrical fault')) {
+                return [
+                    '⚡ Issue: Power fluctuations every 9 minutes, voltage drops from 220V to 205V',
+                    '🔍 Investigation: Focused on panel C3 connections and load balancing',
+                    '🔧 Root cause: Loose connection found in panel C3, terminal 7',
+                    '✅ Solution: Connection tightened and system tested',
+                    '📊 Verification: 24-hour monitoring confirmed stable power supply'
+                ];
+            } else {
+                return [
+                    '📋 Issue reported and team notified',
+                    '🔍 Investigation initiated by relevant specialists',
+                    '⚙️ Diagnostic procedures completed',
+                    resolution === 'SOLVED' ? '✅ Issue resolved successfully' : '⏰ Resolution still in progress'
+                ];
+            }
+        }
+
+        // Close summary modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('summary-modal')) {
+                closeSummary();
+            }
+        });
+
+        // Statistics Dashboard Functions
+
+
+        function updateStatistics() {
+            // Get all closed tickets (both filtered and unfiltered)
+            const allClosedTickets = [...tickets.filter(t => t.state === 'CLOSED')];
+
+            // Add demo tickets to the calculation
+            const demoTickets = [
+                { resolution: 'UNSOLVED', machineCategory: 'Alpha Machine', problemType: 'Mechanical', priority: 'High' },
+                { resolution: 'SOLVED', machineCategory: 'Beta Machine', problemType: 'General Question', priority: 'Medium' },
+                { resolution: 'SOLVED', machineCategory: 'Gamma Machine', problemType: 'Electrical', priority: 'Critical' }
+            ];
+
+            const allTickets = [...allClosedTickets, ...demoTickets];
+
+            // Calculate resolution rate
+            const solvedCount = allTickets.filter(t => t.resolution === 'SOLVED').length;
+            const unsolvedCount = allTickets.filter(t => t.resolution === 'UNSOLVED').length;
+            const totalCount = allTickets.length;
+            const resolutionRate = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
+
+            // Update resolution rate card
+            document.getElementById('resolutionRate').textContent = `${resolutionRate}%`;
+            document.getElementById('solvedCount').textContent = `${solvedCount} solved`;
+            document.getElementById('unsolvedCount').textContent = `${unsolvedCount} unsolved`;
+            document.getElementById('resolutionProgress').style.width = `${resolutionRate}%`;
+
+            // Update total tickets
+            document.getElementById('totalTickets').textContent = totalCount;
+
+
+            // Calculate problem type distribution
+            const problemTypes = {};
+            allTickets.forEach(ticket => {
+                problemTypes[ticket.problemType] = (problemTypes[ticket.problemType] || 0) + 1;
+            });
+
+            updateProblemTypeStats(problemTypes, totalCount);
+
+            // Calculate priority distribution
+            const priorities = {};
+            allTickets.forEach(ticket => {
+                priorities[ticket.priority] = (priorities[ticket.priority] || 0) + 1;
+            });
+
+            updatePriorityStats(priorities);
+
+        }
+
+        function updateProblemTypeStats(problemTypes, total) {
+            const typeOrder = ['Mechanical', 'Electrical', 'General Question', 'Software', 'Quality', 'Safety'];
+            const container = document.getElementById('problemTypeStats');
+
+            const sortedTypes = typeOrder
+                .map(type => ({
+                    type: type === 'General Question' ? 'Questions' : type,
+                    count: problemTypes[type] || 0,
+                    percentage: total > 0 ? (problemTypes[type] || 0) / total * 100 : 0
+                }))
+                .filter(item => item.count > 0)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 3); // Show top 3
+
+            container.innerHTML = sortedTypes.map(item => `
+                <div class="problem-type-item">
+                    <span class="type-label">${item.type}</span>
+                    <span class="type-count">${item.count}</span>
+                    <div class="type-bar">
+                        <div class="type-progress" style="width: ${item.percentage}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePriorityStats(priorities) {
+            const priorityOrder = ['Critical', 'High', 'Medium', 'Low'];
+            const colors = ['critical', 'high', 'medium', 'low'];
+
+            const container = document.getElementById('priorityStats');
+
+            container.innerHTML = priorityOrder.map((priority, index) => `
+                <div class="priority-item ${colors[index]}">
+                    <span class="priority-dot"></span>
+                    <span class="priority-label">${priority}</span>
+                    <span class="priority-count">${priorities[priority] || 0}</span>
+                </div>
+            `).join('');
+        }
+
+        // Leaderboard Functions
+        function updateLeaderboard() {
+            const sortedUsers = Object.entries(userProfiles)
+                .sort((a, b) => b[1].points - a[1].points);
+
+            updatePodium(sortedUsers.slice(0, 3));
+            updateTeamList(sortedUsers);
+        }
+
+        function updatePodium(topThree) {
+            const podiumContainer = document.getElementById('podiumContainer');
+            podiumContainer.innerHTML = '';
+
+            const positions = ['second', 'first', 'third'];
+            const medals = ['🥈', '🥇', '🥉'];
+            const order = [1, 0, 2]; // Display order: 2nd, 1st, 3rd
+
+            order.forEach((index, displayIndex) => {
+                if (topThree[index]) {
+                    const [userName, profile] = topThree[index];
+                    const podiumItem = document.createElement('div');
+                    podiumItem.className = `podium-item ${positions[index]}`;
+                    podiumItem.innerHTML = `
+                        <div class="podium-profile" onclick="showProfile('${userName}')">
+                            <div class="podium-avatar">${getInitials(userName)}</div>
+                            <div class="podium-medal">${medals[index]}</div>
+                        </div>
+                        <div class="podium-info">
+                            <h4>${userName}</h4>
+                            <p>${profile.points} pts</p>
+                        </div>
+                        <div class="podium-bar ${positions[index]}"></div>
+                    `;
+                    podiumContainer.appendChild(podiumItem);
+                }
+            });
+        }
+
+        function updateTeamList(sortedUsers) {
+            const teamList = document.getElementById('teamList');
+            teamList.innerHTML = '';
+
+            // Skip top 3 (already shown in podium)
+            const restOfTeam = sortedUsers.slice(3);
+
+            restOfTeam.forEach(([userName, profile], index) => {
+                const rank = index + 4; // Rank starts from 4 (after top 3)
+                const isCurrentUser = userName === currentUser;
+
+                const teamMember = document.createElement('div');
+                teamMember.className = `team-member ${isCurrentUser ? 'current-user-row' : ''}`;
+                teamMember.onclick = () => showProfile(userName);
+
+                const trendClass = Math.random() > 0.5 ? 'up' : 'down';
+                const trendValue = Math.floor(Math.random() * 20) + 1;
+                const trendSign = trendClass === 'up' ? '+' : '-';
+
+                teamMember.innerHTML = `
+                    <div class="member-rank">#${rank}</div>
+                    <div class="member-avatar ${isCurrentUser ? 'current' : ''}">${getInitials(userName)}</div>
+                    <div class="member-info">
+                        <h4>${userName}${isCurrentUser ? ' <span class="you-badge">YOU</span>' : ''}</h4>
+                        <p>${profile.points} pts • ${profile.ticketsSolved} solved • ⭐ ${profile.averageRating}</p>
+                    </div>
+                    <div class="member-trend ${trendClass}">${trendSign}${trendValue}</div>
+                `;
+
+                teamList.appendChild(teamMember);
+            });
+        }
+
+        // Profile Functions
+        function showProfile(userName) {
+            const profile = userProfiles[userName];
+            if (!profile) return;
+
+            const modal = document.getElementById('profileModal');
+
+            // Update modal content
+            document.getElementById('modalProfileName').textContent = `${userName} Profile`;
+            document.getElementById('modalAvatar').textContent = getInitials(userName);
+            document.getElementById('modalName').textContent = userName;
+            document.getElementById('modalRole').textContent = getUserRole(userName);
+            document.getElementById('modalPoints').textContent = profile.points;
+            document.getElementById('modalSolved').textContent = profile.ticketsSolved;
+            document.getElementById('modalRating').textContent = profile.averageRating;
+
+            // Calculate rank
+            const sortedUsers = Object.values(userProfiles).sort((a, b) => b.points - a.points);
+            const rank = sortedUsers.findIndex(user => user.name === userName) + 1;
+            document.getElementById('modalRank').textContent = `#${rank}`;
+
+            // Update badges
+            const badges = getUserBadges(profile);
+            document.getElementById('modalBadges').innerHTML = badges.map(badge =>
+                `<span class="badge ${badge.class}">${badge.text}</span>`
+            ).join('');
+
+            modal.classList.add('show');
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function getUserRole(userName) {
+            const roles = {
+                'Mike Johnson': 'Senior Technician',
+                'John Smith': 'Lead Engineer',
+                'Alex Rodriguez': 'Maintenance Specialist',
+                'Sarah Wilson': 'Quality Inspector',
+                'Emma Davis': 'Operations Assistant',
+                'Current User': 'Team Member'
+            };
+            return roles[userName] || 'Team Member';
+        }
+
+        function getUserBadges(profile) {
+            const badges = [];
+
+            if (profile.averageRating >= 4.5) {
+                badges.push({ class: 'expert', text: '⭐ Expert Solver' });
+            }
+            if (profile.ticketsSolved >= 20) {
+                badges.push({ class: 'speed', text: '⚡ Super Solver' });
+            } else if (profile.ticketsSolved >= 10) {
+                badges.push({ class: 'speed', text: '⚡ Quick Response' });
+            }
+            if (profile.points >= 100) {
+                badges.push({ class: 'helpful', text: '🏆 High Performer' });
+            }
+            badges.push({ class: 'helpful', text: '🤝 Team Player' });
+
+            return badges;
+        }
+
+        // Solver Modal Functions
+        let currentSolverTicketId = null;
+        let selectedRating = 0;
+
+        function showSolverModal(ticketId) {
+            currentSolverTicketId = ticketId;
+            const modal = document.getElementById('solverModal');
+            const select = document.getElementById('solverSelect');
+
+            // Clear previous selections
+            select.innerHTML = '<option value="">Choose from chat participants...</option>';
+            selectedRating = 0;
+            updateStarDisplay();
+            document.getElementById('solverComment').value = '';
+
+            // Populate dropdown with chat participants
+            const participants = ticketParticipants[ticketId] || new Set();
+            participants.forEach(participant => {
+                if (participant !== currentUser) { // Don't include the ticket creator
+                    const option = document.createElement('option');
+                    option.value = participant;
+                    option.textContent = participant;
+                    select.appendChild(option);
+                }
+            });
+
+            modal.classList.add('show');
+        }
+
+        function closeSolverModal() {
+            document.getElementById('solverModal').classList.remove('show');
+            currentSolverTicketId = null;
+            selectedRating = 0;
+        }
+
+        function submitSolverRating() {
+            const solver = document.getElementById('solverSelect').value;
+            const comment = document.getElementById('solverComment').value;
+
+            if (!solver) {
+                alert('Please select who solved the issue');
+                return;
+            }
+
+            if (selectedRating === 0) {
+                alert('Please rate the solution (1-5 stars)');
+                return;
+            }
+
+            // Update ticket resolution
+            const ticket = tickets.find(t => t.id === currentSolverTicketId);
+            if (ticket) {
+                ticket.resolution = 'SOLVED';
+                ticket.solver = solver;
+                ticket.rating = selectedRating;
+                ticket.solverComment = comment;
+
+                // Award points to solver
+                awardPoints(solver, selectedRating);
+
+                showNotification(`✅ Ticket #${currentSolverTicketId} marked as solved! ${solver} earned points.`);
+                renderActiveTickets();
+                updateStatistics(); // Update statistics
+                updateCurrentUserProfile(); // Update current user profile if it changed
+            }
+
+            closeSolverModal();
+        }
+
+        function awardPoints(solver, rating) {
+            if (!userProfiles[solver]) {
+                userProfiles[solver] = {
+                    name: solver,
+                    points: 0,
+                    ticketsSolved: 0,
+                    totalRatings: 0,
+                    averageRating: 0
+                };
+            }
+
+            const profile = userProfiles[solver];
+
+            // Base points: 10 for solving + 2 per star rating
+            const pointsEarned = 10 + (rating * 2);
+
+            // Quick resolution bonus (simulate - in real app would check timestamps)
+            const bonus = Math.random() > 0.5 ? 5 : 0; // 50% chance of quick bonus
+
+            profile.points += pointsEarned + bonus;
+            profile.ticketsSolved += 1;
+
+            // Update average rating
+            const totalRatingPoints = (profile.averageRating * profile.totalRatings) + rating;
+            profile.totalRatings += 1;
+            profile.averageRating = Math.round((totalRatingPoints / profile.totalRatings) * 10) / 10;
+
+            // Update leaderboard display
+            updateLeaderboard();
+        }
+
+        // Star rating functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('star')) {
+                selectedRating = parseInt(e.target.dataset.rating);
+                updateStarDisplay();
+            }
+        });
+
+        function updateStarDisplay() {
+            const stars = document.querySelectorAll('.star');
+            const ratingText = document.getElementById('ratingText');
+
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+
+            const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            ratingText.textContent = selectedRating > 0 ? `${selectedRating} star${selectedRating > 1 ? 's' : ''} - ${ratingLabels[selectedRating]}` : 'Click to rate';
+        }
+
+        // Update current user profile display
+        function updateCurrentUserProfile() {
+            const currentProfile = userProfiles[currentUser];
+            if (!currentProfile) return;
+
+            // Update profile stats
+            document.getElementById('currentUserPoints').textContent = currentProfile.points;
+            document.getElementById('currentUserSolved').textContent = currentProfile.ticketsSolved;
+            document.getElementById('currentUserRating').textContent = currentProfile.averageRating;
+
+            // Calculate and update rank
+            const sortedUsers = Object.values(userProfiles).sort((a, b) => b.points - a.points);
+            const rank = sortedUsers.findIndex(user => user.name === currentUser) + 1;
+            document.getElementById('currentUserRank').textContent = `#${rank}`;
+        }
+
+        // Start the app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateStatistics(); // Initialize statistics on page load
+            updateCurrentUserProfile(); // Update current user profile
+        });
+    </script>
+</body>
+</html>
