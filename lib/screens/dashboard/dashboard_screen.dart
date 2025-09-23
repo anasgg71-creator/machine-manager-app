@@ -6,6 +6,12 @@ import '../../services/supabase_service.dart';
 import '../../config/colors.dart';
 import '../../config/constants.dart';
 import '../chat/chat_screen.dart';
+import '../../widgets/animated_button.dart';
+import '../../widgets/skeleton_loader.dart';
+import '../../widgets/animated_form_field.dart';
+import '../../widgets/enhanced_ticket_card.dart';
+
+// NEW DESIGN: Modern colors, enhanced tickets with time countdown, chat & close buttons
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -174,6 +180,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void _showCloseTicketDialog(Map<String, dynamic> ticket) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Close Ticket'),
+        content: Text('Are you sure you want to close ticket "${ticket['title']}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+              await ticketProvider.closeTicket(ticketId: ticket['id']);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Ticket closed successfully'),
+                  backgroundColor: AppColors.success,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: const Text('Close Ticket'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -298,7 +337,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.border.withOpacity(0.3),
+            width: 1,
+          ),
           boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
             BoxShadow(
               color: AppColors.shadowLight,
               blurRadius: 8,
@@ -315,8 +363,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      color.withOpacity(0.1),
+                      color.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withOpacity(0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Icon(icon, color: color, size: 24),
               ),
@@ -336,15 +395,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: color,
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: color,
+                    ),
                   ),
                 ],
               ),
@@ -374,17 +442,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 children: [
                   // Search Bar
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search tickets...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.cardBackground,
-                    ),
+                  AnimatedFormField(
+                    label: 'Search tickets',
+                    hintText: 'Type to search...',
+                    prefixIcon: Icons.search,
                     onChanged: (value) {
                       setState(() {
                         _searchQuery = value;
@@ -413,7 +474,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ticketProvider.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Column(
+                        children: List.generate(
+                          5,
+                          (index) => const TicketCardSkeleton(),
+                        ),
+                      )
                     : _buildTicketsList(ticketProvider),
               ),
             ),
@@ -480,13 +546,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: const TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            AnimatedButton(
+              text: '🔧 Reload Tickets',
+              icon: Icons.refresh,
               onPressed: () async {
                 print('🔧 DEBUG: Manual ticket reload triggered');
                 await ticketProvider.loadTickets();
                 print('🔧 DEBUG: Manual reload completed');
               },
-              child: const Text('🔧 DEBUG: Reload Tickets'),
             ),
           ],
         ),
@@ -497,7 +564,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       itemCount: tickets.length,
       itemBuilder: (context, index) {
         final ticket = tickets[index];
-        return _buildTicketCard(ticket, false);
+        return EnhancedTicketCard(
+          ticket: ticket,
+          onChatPressed: () => _openTicketChat(ticket['id']),
+          onClosePressed: () => _showCloseTicketDialog(ticket),
+          onExtendPressed: () => _extendTicket(ticket['id']),
+        );
       },
     );
   }
@@ -575,7 +647,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         await _extendTicket(ticket['id']);
                         break;
                       case 'close':
-                        await _updateTicketStatus(ticket['id'], 'Closed');
+                        final ticketProvider = context.read<TicketProvider>();
+        await ticketProvider.closeTicket(ticketId: ticket['id']);
                         break;
                     }
                   },
@@ -1181,7 +1254,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ticketProvider.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Column(
+                        children: List.generate(
+                          4,
+                          (index) => const TicketCardSkeleton(),
+                        ),
+                      )
                     : _buildHistoryList(ticketProvider),
               ),
             ),
@@ -2190,7 +2268,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Machine Selection (filtered by category)
+                    // Machine Selection (filtered by category) - Using Database Machines
                     const Text(
                       'Specific Machine',
                       style: TextStyle(
@@ -2214,10 +2292,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           : 'Select specific machine'),
                       items: _selectedMachineCategory == null
                           ? []
-                          : (AppConstants.machinesByCategory[_selectedMachineCategory] ?? []).map((machine) {
+                          : ticketProvider.machines
+                              .where((machine) => machine.category == _selectedMachineCategory)
+                              .map((machine) {
                               return DropdownMenuItem(
-                                value: machine['id'],
-                                child: Text(machine['name']!),
+                                value: machine.id,
+                                child: Text(machine.name),
                               );
                             }).toList(),
                       onChanged: _selectedMachineCategory == null
@@ -2488,7 +2568,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Specific Machine Selection (conditional)
+                    // Specific Machine Selection (conditional) - Using Database Machines
                     if (_selectedMachineCategory != null) ...[
                       const Text(
                         'Specific Machine (Optional)',
@@ -2514,10 +2594,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             value: null,
                             child: Text('No specific machine'),
                           ),
-                          ...(AppConstants.machinesByCategory[_selectedMachineCategory] ?? []).map((machine) {
+                          ...ticketProvider.machines
+                              .where((machine) => machine.category == _selectedMachineCategory)
+                              .map((machine) {
                             return DropdownMenuItem(
-                              value: machine['id'],
-                              child: Text(machine['name']!),
+                              value: machine.id,
+                              child: Text(machine.name),
                             );
                           }).toList(),
                         ],

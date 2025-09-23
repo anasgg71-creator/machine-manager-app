@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/colors.dart';
 import '../../config/constants.dart';
+import '../../widgets/animated_button.dart';
+import '../../widgets/animated_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -141,12 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Full Name (only for register)
           if (!_isLoginMode) ...[
-            TextFormField(
+            AnimatedFormField(
+              label: AppStrings.fullName,
+              prefixIcon: Icons.person,
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: AppStrings.fullName,
-                prefixIcon: Icon(Icons.person),
-              ),
               validator: (value) {
                 if (!_isLoginMode && (value == null || value.trim().isEmpty)) {
                   return 'Please enter your full name';
@@ -154,17 +154,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
 
           // Email
-          TextFormField(
+          AnimatedFormField(
+            label: AppStrings.email,
+            prefixIcon: Icons.email,
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: AppStrings.email,
-              prefixIcon: Icon(Icons.email),
-            ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your email';
@@ -176,25 +174,24 @@ class _LoginScreenState extends State<LoginScreen> {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Password
-          TextFormField(
+          AnimatedFormField(
+            label: AppStrings.password,
+            prefixIcon: Icons.lock,
             controller: _passwordController,
             obscureText: _obscurePassword,
-            decoration: InputDecoration(
-              labelText: AppStrings.password,
-              prefixIcon: const Icon(Icons.lock),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                color: AppColors.textSecondary,
               ),
+              onPressed: () {
+                setState(() {
+                  _obscurePassword = !_obscurePassword;
+                });
+              },
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -209,23 +206,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Confirm Password (only for register)
           if (!_isLoginMode) ...[
-            const SizedBox(height: 16),
-            TextFormField(
+            const SizedBox(height: 20),
+            AnimatedFormField(
+              label: AppStrings.confirmPassword,
+              prefixIcon: Icons.lock_outline,
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
-              decoration: InputDecoration(
-                labelText: AppStrings.confirmPassword,
-                prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureConfirmPassword = !_obscureConfirmPassword;
-                    });
-                  },
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                  color: AppColors.textSecondary,
                 ),
+                onPressed: () {
+                  setState(() {
+                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                  });
+                },
               ),
               validator: (value) {
                 if (!_isLoginMode && value != _passwordController.text) {
@@ -271,33 +267,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildSubmitButton(AuthProvider authProvider) {
-    return ElevatedButton(
+    return AnimatedButton(
+      text: _isLoginMode ? AppStrings.signIn : AppStrings.signUp,
       onPressed: authProvider.isLoading ? null : _handleSubmit,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 0,
-      ),
-      child: authProvider.isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnPrimary),
-              ),
-            )
-          : Text(
-              _isLoginMode ? AppStrings.signIn : AppStrings.signUp,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+      isLoading: authProvider.isLoading,
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.textOnPrimary,
+      padding: const EdgeInsets.symmetric(vertical: 18),
     );
   }
 

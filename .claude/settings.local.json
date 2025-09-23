@@ -1,7 +1,37 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_ad23ae3722508e857f2eee79175782db65f0ac57 npx supabase sql --db-url \"postgresql://postgres.xsrvoyjdrylusvmdwppl:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcnZveWpkcnlsdXN2bWR3cHBsIiwicm9sZSI6InBvc3RncmVzIiwiaWF0IjoxNzU4NTU0MDUwLCJleHAiOjIwNzQxMzAwNTB9.c7kD2ySbZzFJ2R4vBW5JNi0XHJWUaJeXDdVCuqy2_QY@aws-0-eu-central-1.pooler.supabase.com:6543/postgres\" --file -)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(gh:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(flutter:*)",
+      "Bash(where flutter)",
+      "Bash(echo $PATH)",
+      "Read(//c/Users/anasa//**)",
+      "Read(//c//**)",
+      "Bash(/c/Flutter/bin/flutter:*)",
+      "Read(//c/Flutter//**)",
+      "Bash(/c/Flutter/flutter/bin/flutter:*)",
+      "mcp__supabase__list_projects",
+      "Bash(python:*)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "Read(//c/Flutter/**)",
+      "Bash(socat:*)",
+      "Bash(start ms-settings:developers)",
+      "Bash(timeout:*)",
+      "Bash(git restore:*)",
+      "Bash(nc:*)",
+      "Bash(while read line)",
+      "Bash(do echo $line)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary colors - Beautiful purple theme from design
-  static const Color primary = Color(0xFF6A57FF);
-  static const Color primaryDark = Color(0xFF5541E6);
-  static const Color primaryLight = Color(0xFFECE8FF);
+  // Primary colors - Bold modern theme
+  static const Color primary = Color(0xFF0D7C66);
+  static const Color primaryDark = Color(0xFF064A40);
+  static const Color primaryLight = Color(0xFFE0F2E7);
 
   // Secondary colors
-  static const Color secondary = Color(0xFF03DAC6);
-  static const Color secondaryDark = Color(0xFF00695C);
-  static const Color secondaryLight = Color(0xFF4DB6AC);
+  static const Color secondary = Color(0xFF41B3A2);
+  static const Color secondaryDark = Color(0xFF2A736B);
+  static const Color secondaryLight = Color(0xFFBFE3DC);
 
   // Status colors
   static const Color success = Color(0xFF4CAF50);
@@ -35,12 +35,12 @@ class AppColors {
   static const Color textOnPrimary = Color(0xFFFFFFFF);
   static const Color textOnSecondary = Color(0xFF231628);
 
-  // Background colors
-  static const Color background = Color(0xFFF5F5F5);
+  // Background colors - Fresh modern palette
+  static const Color background = Color(0xFFF7FFFE);
   static const Color backgroundLight = Color(0xFFFFFFFF);
-  static const Color backgroundDark = Color(0xFFEEEEEE);
+  static const Color backgroundDark = Color(0xFFE8F5F3);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF8F9FA);
+  static const Color surfaceVariant = Color(0xFFF0FAF8);
 
   // Border colors
   static const Color border = Color(0xFFE0E0E0);
@@ -113,6 +113,9 @@ class AppColors {
   static const Color inputBackground = Color(0xFFF5F5F5);
   static const Color inputBorder = Color(0xFFE0E0E0);
   static const Color inputFocused = Color(0xFF6A57FF);
+  static const Color outline = Color(0xFFE0E0E0);
+  static const Color onSurfaceVariant = Color(0xFF898491);
+  static const Color onPrimary = Color(0xFFFFFFFF);
 
   // Ticket status colors
   static Color getTicketStatusColor(String status) {

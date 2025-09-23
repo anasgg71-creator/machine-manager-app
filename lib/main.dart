@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/supabase_service.dart';
 import 'services/ticket_expiration_service.dart';
+import 'services/machine_seed_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/ticket_provider.dart';
 import 'config/colors.dart';
@@ -27,6 +28,14 @@ void main() async {
     print('✅ Ticket Expiration Service initialized successfully');
   } catch (e) {
     print('❌ Failed to initialize Ticket Expiration Service: $e');
+  }
+
+  // Seed machines if empty
+  try {
+    await MachineSeedService.seedMachinesIfEmpty();
+    print('✅ Machine seeding completed');
+  } catch (e) {
+    print('❌ Failed to seed machines: $e');
   }
 
   runApp(const MyApp());
