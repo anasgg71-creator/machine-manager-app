@@ -31,7 +31,14 @@
       "Bash(nc:*)",
       "Bash(while read line)",
       "Bash(do echo $line)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(where chrome)",
+      "Bash(curl:*)",
+      "Bash(C:/Flutter/flutter/bin/flutter --version)",
+      "Bash(C:/Flutter/flutter/bin/flutter pub get)",
+      "Bash(C:/Flutter/flutter/bin/flutter devices)",
+      "Bash(C:/Flutter/flutter/bin/flutter run -d windows)",
+      "Bash(C:/Flutter/flutter/bin/flutter run -d edge --web-port=8080)"
     ],
     "deny": [],
     "ask": []
