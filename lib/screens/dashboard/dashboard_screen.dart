@@ -10,6 +10,7 @@ import '../../widgets/animated_button.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../widgets/animated_form_field.dart';
 import '../../widgets/enhanced_ticket_card.dart';
+import '../../widgets/app_navigation_bar.dart';
 
 // NEW DESIGN: Modern colors, enhanced tickets with time countdown, chat & close buttons
 
@@ -339,6 +340,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             if (_showSolverModal) _buildSolverModal(),
           ],
         ),
+      ),
+      bottomNavigationBar: AppNavigationBar(
+        currentScreen: _currentScreen,
+        onScreenChanged: (screen) {
+          setState(() {
+            _currentScreen = screen;
+          });
+        },
       ),
     );
   }

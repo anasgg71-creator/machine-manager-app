@@ -38,7 +38,8 @@
       "Bash(C:/Flutter/flutter/bin/flutter pub get)",
       "Bash(C:/Flutter/flutter/bin/flutter devices)",
       "Bash(C:/Flutter/flutter/bin/flutter run -d windows)",
-      "Bash(C:/Flutter/flutter/bin/flutter run -d edge --web-port=8080)"
+      "Bash(C:/Flutter/flutter/bin/flutter run -d edge --web-port=8080)",
+      "Bash(start microsoft-edge:http://localhost:8080)"
     ],
     "deny": [],
     "ask": []
