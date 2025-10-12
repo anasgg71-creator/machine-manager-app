@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/ticket_provider.dart';
 import '../../services/supabase_service.dart';
 import '../../config/colors.dart';
 import '../../models/chat_message.dart';
+import '../../models/user_profile.dart';
 
 class ChatScreen extends StatefulWidget {
   final String ticketId;
@@ -28,12 +30,16 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
   bool _isSending = false;
   StreamSubscription? _messagesSubscription;
+  RealtimeChannel? _presenceChannel;
+  int _viewerCount = 0;
+  Map<String, UserProfile> _viewers = {};
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
     _subscribeToMessages();
+    _setupPresence();
   }
 
   @override
@@ -41,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     _messagesSubscription?.cancel();
+    _presenceChannel?.unsubscribe();
     super.dispose();
   }
 
@@ -70,6 +77,120 @@ class _ChatScreenState extends State<ChatScreen> {
     }, onError: (error) {
       _showError('Real-time updates failed: ${error.toString()}');
     });
+  }
+
+  void _setupPresence() async {
+    final channelName = 'ticket:${widget.ticketId}';
+    final currentUserId = SupabaseService.getCurrentUserId();
+
+    if (currentUserId == null) return;
+
+    try {
+      // Get current user profile first
+      final currentUserProfile = await SupabaseService.getUserProfile(currentUserId);
+
+      _presenceChannel = SupabaseService.client.channel(channelName);
+
+      _presenceChannel!
+          .onPresenceSync((_) {
+            _updateViewers();
+          })
+          .onPresenceJoin((payload) {
+            _updateViewers();
+          })
+          .onPresenceLeave((payload) {
+            _updateViewers();
+          })
+          .subscribe((status, error) async {
+            if (status == RealtimeSubscribeStatus.subscribed) {
+              // Send user profile data with presence
+              await _presenceChannel!.track({
+                'user_id': currentUserId,
+                'full_name': currentUserProfile.fullName ?? currentUserProfile.email,
+              });
+            }
+          });
+    } catch (e) {
+      print('Error setting up presence: $e');
+    }
+  }
+
+  void _updateViewers() async {
+    try {
+      final state = _presenceChannel!.presenceState();
+      print('=== DEBUG: Presence State ===');
+      print('State length: ${state.length}');
+      print('State type: ${state.runtimeType}');
+
+      final viewers = <String, UserProfile>{};
+
+      // Extract user info from presence state
+      for (var i = 0; i < state.length; i++) {
+        final presenceItem = state[i];
+        print('--- Presence Item $i ---');
+        print('Item type: ${presenceItem.runtimeType}');
+
+        // Access the presences property using dynamic
+        try {
+          // Try to access presences property
+          final presences = (presenceItem as dynamic).presences as List?;
+          print('Presences list length: ${presences?.length}');
+
+          if (presences != null && presences.isNotEmpty) {
+            final presence = presences.first;
+            print('Presence data type: ${presence.runtimeType}');
+            print('Presence data: $presence');
+
+            // Access the payload property from the Presence object
+            final payload = (presence as dynamic).payload as Map<String, dynamic>?;
+            print('Payload: $payload');
+
+            final userId = payload?['user_id'] as String?;
+            final fullName = payload?['full_name'] as String?;
+
+            print('Extracted userId: $userId');
+            print('Extracted fullName: $fullName');
+
+            if (userId != null) {
+              viewers[userId] = UserProfile(
+                id: userId,
+                email: '',
+                fullName: fullName,
+                role: 'member',
+                avatarUrl: null,
+                points: 0,
+                ticketsSolved: 0,
+                totalRatings: 0,
+                averageRating: 0.0,
+                isOnline: true,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
+              print('✓ Added viewer: $fullName ($userId)');
+            }
+          }
+        } catch (e) {
+          print('Error parsing presence item: $e');
+          print('Stack trace: ${StackTrace.current}');
+        }
+      }
+
+      print('Total viewers map size: ${viewers.length}');
+      print('Viewer names: ${viewers.values.map((v) => v.fullName).join(", ")}');
+      print('=== END DEBUG ===\n');
+
+      setState(() {
+        _viewerCount = state.length;
+        _viewers = viewers;
+      });
+    } catch (e) {
+      print('Error updating viewers: $e');
+      print('Stack trace: ${StackTrace.current}');
+      setState(() {
+        _viewerCount = 0;
+        _viewers = {};
+      });
+    }
   }
 
   Future<void> _sendMessage() async {
@@ -120,7 +241,25 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.ticketTitle ?? 'Chat'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.ticketTitle ?? 'Chat'),
+            if (_viewerCount > 0)
+              Text(
+                _viewers.isNotEmpty
+                    ? '$_viewerCount ${_viewerCount == 1 ? 'person' : 'people'} viewing: ${_viewers.values.map((v) => v.fullName ?? 'Unknown').join(', ')}'
+                    : '$_viewerCount ${_viewerCount == 1 ? 'person' : 'people'} viewing',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
