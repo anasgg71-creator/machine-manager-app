@@ -142,6 +142,7 @@ class _AnimatedFormFieldState extends State<AnimatedFormField>
                     _validateField(value);
                     widget.onChanged?.call(value);
                   },
+                  // Spell check removed for web compatibility - browsers have built-in spell check
                   decoration: InputDecoration(
                     labelText: widget.label,
                     hintText: widget.hintText,

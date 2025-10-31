@@ -7,6 +7,8 @@ class EnhancedTicketCard extends StatefulWidget {
   final VoidCallback? onChatPressed;
   final VoidCallback? onClosePressed;
   final VoidCallback? onExtendPressed;
+  final VoidCallback? onEditPressed;
+  final String? currentUserId;
 
   const EnhancedTicketCard({
     super.key,
@@ -14,6 +16,8 @@ class EnhancedTicketCard extends StatefulWidget {
     this.onChatPressed,
     this.onClosePressed,
     this.onExtendPressed,
+    this.onEditPressed,
+    this.currentUserId,
   });
 
   @override
@@ -141,6 +145,32 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                           ),
                         ),
                       ),
+                      // Updated badge (if ticket has been updated)
+                      if (widget.ticket['last_updated_at'] != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.orange.withOpacity(0.5),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Text(
+                            'UPDATED',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                       const Spacer(),
                       // Time remaining with icon
                       Container(
@@ -270,6 +300,30 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                         ),
                       ),
                       const SizedBox(width: 8),
+
+                      // Edit button (only for creator)
+                      if (widget.currentUserId != null &&
+                          widget.ticket['creator_id'] == widget.currentUserId &&
+                          widget.onEditPressed != null)
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: widget.onEditPressed,
+                            icon: const Icon(Icons.edit, size: 16),
+                            label: const Text('Edit'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (widget.currentUserId != null &&
+                          widget.ticket['creator_id'] == widget.currentUserId &&
+                          widget.onEditPressed != null)
+                        const SizedBox(width: 8),
 
                       // Close button
                       Expanded(

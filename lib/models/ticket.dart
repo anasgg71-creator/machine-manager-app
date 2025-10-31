@@ -19,6 +19,9 @@ class Ticket {
   final DateTime? resolvedAt;
   final DateTime expiresAt;
   final bool autoCloseWarned;
+  final List<String>? fishboneAnalysis;
+  final List<Map<String, dynamic>>? updateHistory;
+  final DateTime? lastUpdatedAt;
 
   // Related objects
   final UserProfile? creator;
@@ -44,6 +47,9 @@ class Ticket {
     this.resolvedAt,
     required this.expiresAt,
     this.autoCloseWarned = false,
+    this.fishboneAnalysis,
+    this.updateHistory,
+    this.lastUpdatedAt,
     this.creator,
     this.assignee,
     this.resolver,
@@ -71,6 +77,15 @@ class Ticket {
           : null,
       expiresAt: DateTime.parse(json['expires_at'] as String),
       autoCloseWarned: json['auto_close_warned'] as bool? ?? false,
+      fishboneAnalysis: json['fishbone_analysis'] != null
+          ? List<String>.from(json['fishbone_analysis'] as List)
+          : null,
+      updateHistory: json['update_history'] != null
+          ? List<Map<String, dynamic>>.from(json['update_history'] as List)
+          : null,
+      lastUpdatedAt: json['last_updated_at'] != null
+          ? DateTime.parse(json['last_updated_at'] as String)
+          : null,
       creator: json['creator'] != null
           ? UserProfile.fromJson(json['creator'] as Map<String, dynamic>)
           : null,
@@ -105,6 +120,9 @@ class Ticket {
       'resolved_at': resolvedAt?.toIso8601String(),
       'expires_at': expiresAt.toIso8601String(),
       'auto_close_warned': autoCloseWarned,
+      'fishbone_analysis': fishboneAnalysis,
+      'update_history': updateHistory,
+      'last_updated_at': lastUpdatedAt?.toIso8601String(),
     };
   }
 
@@ -126,6 +144,9 @@ class Ticket {
     DateTime? resolvedAt,
     DateTime? expiresAt,
     bool? autoCloseWarned,
+    List<String>? fishboneAnalysis,
+    List<Map<String, dynamic>>? updateHistory,
+    DateTime? lastUpdatedAt,
     UserProfile? creator,
     UserProfile? assignee,
     UserProfile? resolver,
@@ -149,6 +170,9 @@ class Ticket {
       resolvedAt: resolvedAt ?? this.resolvedAt,
       expiresAt: expiresAt ?? this.expiresAt,
       autoCloseWarned: autoCloseWarned ?? this.autoCloseWarned,
+      fishboneAnalysis: fishboneAnalysis ?? this.fishboneAnalysis,
+      updateHistory: updateHistory ?? this.updateHistory,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
       creator: creator ?? this.creator,
       assignee: assignee ?? this.assignee,
       resolver: resolver ?? this.resolver,
@@ -234,6 +258,9 @@ class Ticket {
 
   Duration get timeToExpiry => expiresAt.difference(DateTime.now());
   Duration get age => DateTime.now().difference(createdAt);
+
+  bool get hasBeenUpdated => lastUpdatedAt != null;
+  bool get hasFishboneAnalysis => fishboneAnalysis != null && fishboneAnalysis!.isNotEmpty;
 
   String get timeToExpiryDisplay {
     if (isExpired) return 'Expired';

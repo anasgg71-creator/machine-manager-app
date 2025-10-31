@@ -129,6 +129,7 @@ class TicketProvider extends ChangeNotifier {
     required String machineId,
     required String problemType,
     required String priority,
+    List<String>? fishboneAnalysis,
   }) async {
     try {
       print('🐛 PROVIDER: Starting ticket creation...');
@@ -137,6 +138,7 @@ class TicketProvider extends ChangeNotifier {
       print('🐛 PROVIDER: Machine ID: "$machineId"');
       print('🐛 PROVIDER: Problem Type: "$problemType"');
       print('🐛 PROVIDER: Priority: "$priority"');
+      print('🐛 PROVIDER: Fishbone Analysis: ${fishboneAnalysis?.length ?? 0} items');
 
       _isLoading = true;
       _errorMessage = null;
@@ -156,6 +158,7 @@ class TicketProvider extends ChangeNotifier {
         machineId: machineId,
         problemType: problemType,
         priority: priority,
+        fishboneAnalysis: fishboneAnalysis,
       );
 
       print('✅ PROVIDER: Ticket created successfully with ID: ${ticket.id}');
@@ -176,6 +179,47 @@ class TicketProvider extends ChangeNotifier {
 
   Future<bool> updateTicket(String ticketId, Map<String, dynamic> updates) async {
     try {
+      // Get the old ticket to track changes
+      final oldTicket = getTicketById(ticketId);
+      if (oldTicket != null && updates.containsKey('last_updated_at')) {
+        // Build update history entry with before/after comparison
+        final changes = <String, Map<String, dynamic>>{};
+
+        if (updates.containsKey('title') && updates['title'] != oldTicket.title) {
+          changes['title'] = {'old': oldTicket.title, 'new': updates['title']};
+        }
+        if (updates.containsKey('description') && updates['description'] != oldTicket.description) {
+          changes['description'] = {'old': oldTicket.description, 'new': updates['description']};
+        }
+        if (updates.containsKey('priority') && updates['priority'] != oldTicket.priority) {
+          changes['priority'] = {'old': oldTicket.priority, 'new': updates['priority']};
+        }
+        if (updates.containsKey('machine_id') && updates['machine_id'] != oldTicket.machineId) {
+          changes['machine_id'] = {'old': oldTicket.machineId, 'new': updates['machine_id']};
+        }
+        if (updates.containsKey('fishbone_analysis')) {
+          changes['fishbone_analysis'] = {
+            'old': oldTicket.fishboneAnalysis,
+            'new': updates['fishbone_analysis']
+          };
+        }
+
+        // Only add to update history if there are actual changes
+        if (changes.isNotEmpty) {
+          final currentUserId = SupabaseService.getCurrentUserId();
+          final updateEntry = {
+            'updated_at': DateTime.now().toIso8601String(),
+            'updated_by': currentUserId,
+            'changes': changes,
+          };
+
+          // Get existing history and append new entry
+          final existingHistory = oldTicket.updateHistory ?? [];
+          final newHistory = [...existingHistory, updateEntry];
+          updates['update_history'] = newHistory;
+        }
+      }
+
       await SupabaseService.updateTicket(ticketId, updates);
 
       // Update local ticket

@@ -43,7 +43,7 @@ class ErrorState extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -137,7 +137,7 @@ class EmptyState extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -190,7 +190,7 @@ class LoadingOverlay extends StatelessWidget {
                     Text(
                       loadingText!,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.onSurface,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],

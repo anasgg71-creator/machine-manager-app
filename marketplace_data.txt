@@ -1,0 +1,111 @@
+// Machine Marketplace comprehensive Tetra Pak machine types data structure
+// This will be added to the dashboard_screen.dart file
+
+static const List<Map<String, dynamic>> tetraPakMachineTypes = [
+  {
+    'group': '🏭 Aseptic Filling Machines',
+    'options': [
+      'Tetra Pak A1',
+      'Tetra Pak A3/Speed',
+      'Tetra Pak A3/Flex',
+      'Tetra Pak A3/Compact Flex',
+      'Tetra Pak A6',
+      'Tetra Pak D/Flex',
+      'Tetra Pak E3/Speed',
+      'Tetra Pak E/Flex',
+    ],
+  },
+  {
+    'group': '📦 Aseptic Carton Packages',
+    'options': [
+      'Tetra Brik Aseptic',
+      'Tetra Classic Aseptic',
+      'Tetra Evero Aseptic',
+      'Tetra Fino Aseptic',
+      'Tetra Gemina Aseptic',
+      'Tetra Prisma Aseptic',
+      'Tetra Wedge Aseptic',
+    ],
+  },
+  {
+    'group': '🥛 Chilled Products',
+    'options': [
+      'Tetra Brik (Chilled)',
+      'Tetra Rex (Gable Top)',
+      'Tetra Stelo Aseptic',
+      'Tetra Top',
+    ],
+  },
+  {
+    'group': '🍨 Specialty Packaging',
+    'options': [
+      'Tetra Recart (Retort)',
+      'Tetra Therm Aseptic (Ice Cream)',
+    ],
+  },
+  {
+    'group': '🔥 Processing - Heat Treatment',
+    'options': [
+      'Tetra Pak Pasteurizer',
+      'Tetra Pak UHT System (Direct)',
+      'Tetra Pak UHT (Indirect)',
+      'Tetra Therm Aseptic VTIS',
+      'Tetra Spiraflo (Tubular Heat Exchanger)',
+      'Tetra Pak Plate Heat Exchanger',
+    ],
+  },
+  {
+    'group': '⚙️ Processing - Separation & Mixing',
+    'options': [
+      'Tetra Pak Homogenizer',
+      'Tetra Pak Separator',
+      'Tetra Pak Mixer (Static)',
+      'Tetra Pak Blender',
+      'Tetra Almix (Powder Mixing)',
+      'Tetra Lactenso (Evaporator)',
+    ],
+  },
+  {
+    'group': '🧼 Cleaning & Sterilization',
+    'options': [
+      'Tetra Pak CIP System',
+      'Tetra Pak SIP System',
+      'Tetra Pak CIP/SIP Combined',
+    ],
+  },
+  {
+    'group': '🗄️ Storage & Tanks',
+    'options': [
+      'Tetra Pak Buffer Tank',
+      'Tetra Pak Storage Tank (Aseptic)',
+      'Tetra Pak Balance Tank',
+      'Tetra Pak Surge Tank',
+    ],
+  },
+  {
+    'group': '🚚 Material Handling',
+    'options': [
+      'Tetra Pak Conveyor System',
+      'Tetra Pak Accumulator',
+      'Tetra Pak Distribution Unit',
+      'Tetra Pak Case Loader',
+      'Tetra Pak Palletizer',
+    ],
+  },
+  {
+    'group': '🔬 Quality Control',
+    'options': [
+      'Laboratory Equipment',
+      'Leak Detector',
+    ],
+  },
+  {
+    'group': '💡 Utilities & Support',
+    'options': [
+      'Boiler/Steam Generator',
+      'Chiller/Cooling System',
+      'Air Compressor',
+      'Water Treatment System',
+    ],
+  },
+];

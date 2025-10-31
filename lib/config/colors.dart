@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary colors - Bold modern theme
-  static const Color primary = Color(0xFF0D7C66);
-  static const Color primaryDark = Color(0xFF064A40);
-  static const Color primaryLight = Color(0xFFE0F2E7);
+  // Primary colors - Purple theme matching HTML demo
+  static const Color primary = Color(0xFF6A57FF);
+  static const Color primaryDark = Color(0xFF5142CC);
+  static const Color primaryLight = Color(0xFFECE8FF);
 
   // Secondary colors
-  static const Color secondary = Color(0xFF41B3A2);
-  static const Color secondaryDark = Color(0xFF2A736B);
-  static const Color secondaryLight = Color(0xFFBFE3DC);
+  static const Color secondary = Color(0xFF9C88FF);
+  static const Color secondaryDark = Color(0xFF7D6BCC);
+  static const Color secondaryLight = Color(0xFFE3DCFF);
 
   // Status colors
   static const Color success = Color(0xFF4CAF50);
@@ -35,12 +35,12 @@ class AppColors {
   static const Color textOnPrimary = Color(0xFFFFFFFF);
   static const Color textOnSecondary = Color(0xFF231628);
 
-  // Background colors - Fresh modern palette
-  static const Color background = Color(0xFFF7FFFE);
+  // Background colors - Clean white palette matching demo
+  static const Color background = Color(0xFFFAFAFA);
   static const Color backgroundLight = Color(0xFFFFFFFF);
-  static const Color backgroundDark = Color(0xFFE8F5F3);
+  static const Color backgroundDark = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF0FAF8);
+  static const Color surfaceVariant = Color(0xFFF8F9FF);
 
   // Border colors
   static const Color border = Color(0xFFE0E0E0);
@@ -61,7 +61,7 @@ class AppColors {
   static const Color cardBorder = Color(0xFFE6E3EB);
 
   // Button colors
-  static const Color buttonPrimary = Color(0xFF2196F3);
+  static const Color buttonPrimary = Color(0xFF6A57FF);
   static const Color buttonSecondary = Color(0xFFEEEEEE);
   static const Color buttonText = Color(0xFFFFFFFF);
   static const Color buttonTextSecondary = Color(0xFF212121);
@@ -81,7 +81,7 @@ class AppColors {
 
   // Gradient colors
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
+    colors: [Color(0xFF6A57FF), Color(0xFF9C88FF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

@@ -39,7 +39,14 @@
       "Bash(C:/Flutter/flutter/bin/flutter devices)",
       "Bash(C:/Flutter/flutter/bin/flutter run -d windows)",
       "Bash(C:/Flutter/flutter/bin/flutter run -d edge --web-port=8080)",
-      "Bash(start microsoft-edge:http://localhost:8080)"
+      "Bash(start microsoft-edge:http://localhost:8080)",
+      "Bash(C:/Flutter/flutter/bin/flutter run)",
+      "Bash(C:/Flutter/flutter/bin/flutter run -d chrome)",
+      "Bash(C:/Flutter/flutter/bin/flutter clean)",
+      "Bash(C:/Flutter/flutter/bin/flutter run -d chrome --no-pub)",
+      "WebSearch",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_ad23ae3722508e857f2eee79175782db65f0ac57 npx supabase sql:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

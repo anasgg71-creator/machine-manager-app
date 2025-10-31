@@ -246,6 +246,7 @@ class SupabaseService {
     required String machineId,
     required String problemType,
     required String priority,
+    List<String>? fishboneAnalysis,
   }) async {
     try {
       print('🐛 SUPABASE: Starting ticket creation...');
@@ -267,6 +268,8 @@ class SupabaseService {
         'priority': priority,
         'creator_id': currentUser!.id,
         'expires_at': expiresAt.toIso8601String(),
+        'fishbone_analysis': fishboneAnalysis,
+        'update_history': [],
       };
 
       print('🐛 SUPABASE: Ticket data to insert: $ticketData');
