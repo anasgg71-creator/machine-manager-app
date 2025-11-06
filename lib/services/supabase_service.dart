@@ -268,8 +268,6 @@ class SupabaseService {
         'priority': priority,
         'creator_id': currentUser!.id,
         'expires_at': expiresAt.toIso8601String(),
-        'fishbone_analysis': fishboneAnalysis,
-        'update_history': [],
       };
 
       print('🐛 SUPABASE: Ticket data to insert: $ticketData');
