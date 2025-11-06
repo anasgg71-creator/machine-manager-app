@@ -392,17 +392,25 @@ class SupabaseService {
     String? attachmentUrl,
   }) async {
     try {
+      print('🔷 SUPABASE: sendMessage called');
+      print('🔷 SUPABASE: ticketId: $ticketId');
+      print('🔷 SUPABASE: message: $message');
+      print('🔷 SUPABASE: currentUser: ${currentUser?.id}');
+
       if (currentUser == null) {
+        print('❌ SUPABASE: User not authenticated');
         throw Exception('User not authenticated');
       }
 
+      // Only include fields that exist in the database schema
       final messageData = {
         'ticket_id': ticketId,
         'sender_id': currentUser!.id,
         'message': message,
-        'message_type': messageType,
-        'attachment_url': attachmentUrl,
       };
+
+      print('🔷 SUPABASE: Message data to insert: $messageData');
+      print('🔷 SUPABASE: Inserting into chat_messages table...');
 
       final response = await client
           .from('chat_messages')
@@ -413,8 +421,13 @@ class SupabaseService {
           ''')
           .single();
 
+      print('✅ SUPABASE: Message inserted successfully');
+      print('✅ SUPABASE: Response: $response');
+
       return ChatMessage.fromJson(response);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ SUPABASE: Error sending message: $e');
+      print('❌ SUPABASE: Stack trace: $stackTrace');
       rethrow;
     }
   }

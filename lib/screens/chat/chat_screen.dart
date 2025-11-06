@@ -40,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   RealtimeChannel? _presenceChannel;
   int _viewerCount = 0;
   Map<String, UserProfile> _viewers = {};
+  String _selectedLanguage = 'English'; // Default language
 
   @override
   void initState() {
@@ -218,22 +219,41 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     final message = _messageController.text.trim();
-    if (message.isEmpty) return;
+    if (message.isEmpty) {
+      print('💬 CHAT: Message is empty, not sending');
+      return;
+    }
+
+    print('💬 CHAT: Starting to send message...');
+    print('💬 CHAT: Ticket ID: ${widget.ticketId}');
+    print('💬 CHAT: Message length: ${message.length}');
+    print('💬 CHAT: Current user: ${SupabaseService.getCurrentUserId()}');
 
     setState(() => _isSending = true);
 
     try {
-      await SupabaseService.sendMessage(
+      print('💬 CHAT: Calling SupabaseService.sendMessage...');
+      final sentMessage = await SupabaseService.sendMessage(
         ticketId: widget.ticketId,
         message: message,
       );
+      print('✅ CHAT: Message sent successfully: ${sentMessage.id}');
+
+      // Immediately add the message to the local list for instant display
+      setState(() {
+        _messages.add(sentMessage);
+      });
 
       _messageController.clear();
       _scrollToBottom();
-    } catch (e) {
+      print('✅ CHAT: Message added to list, cleared input, and scrolled to bottom');
+    } catch (e, stackTrace) {
+      print('❌ CHAT: Error sending message: $e');
+      print('❌ CHAT: Stack trace: $stackTrace');
       _showError('Failed to send message: ${e.toString()}');
     } finally {
       setState(() => _isSending = false);
+      print('💬 CHAT: Send operation completed, _isSending = false');
     }
   }
 
@@ -520,6 +540,48 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         actions: [
+          // Multi-language input dropdown
+          PopupMenuButton<String>(
+            icon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.language, size: 20),
+                const SizedBox(width: 4),
+                Text(
+                  _getLanguageFlag(_selectedLanguage),
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            tooltip: 'Select Language: $_selectedLanguage',
+            onSelected: (String language) {
+              setState(() {
+                _selectedLanguage = language;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Chat language set to $_selectedLanguage'),
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: AppColors.primary,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            itemBuilder: (BuildContext context) => [
+              _buildLanguageMenuItem('English', '🇬🇧'),
+              _buildLanguageMenuItem('العربية', '🇸🇦'),
+              _buildLanguageMenuItem('Español', '🇪🇸'),
+              _buildLanguageMenuItem('Français', '🇫🇷'),
+              _buildLanguageMenuItem('Deutsch', '🇩🇪'),
+              _buildLanguageMenuItem('中文', '🇨🇳'),
+              _buildLanguageMenuItem('日本語', '🇯🇵'),
+              _buildLanguageMenuItem('한국어', '🇰🇷'),
+              _buildLanguageMenuItem('Русский', '🇷🇺'),
+              _buildLanguageMenuItem('Português', '🇵🇹'),
+              _buildLanguageMenuItem('Italiano', '🇮🇹'),
+              _buildLanguageMenuItem('हिन्दी', '🇮🇳'),
+            ],
+          ),
           // Attachments button
           IconButton(
             onPressed: () {
@@ -964,6 +1026,49 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       return '${dateTime.day}/${dateTime.month}';
     }
+  }
+
+  PopupMenuItem<String> _buildLanguageMenuItem(String language, String flag) {
+    final isSelected = _selectedLanguage == language;
+    return PopupMenuItem<String>(
+      value: language,
+      child: Row(
+        children: [
+          Text(flag, style: const TextStyle(fontSize: 20)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              language,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+              ),
+            ),
+          ),
+          if (isSelected)
+            const Icon(Icons.check, color: AppColors.primary, size: 20),
+        ],
+      ),
+    );
+  }
+
+  String _getLanguageFlag(String language) {
+    final Map<String, String> flagMap = {
+      'English': '🇬🇧',
+      'العربية': '🇸🇦',
+      'Español': '🇪🇸',
+      'Français': '🇫🇷',
+      'Deutsch': '🇩🇪',
+      '中文': '🇨🇳',
+      '日本語': '🇯🇵',
+      '한국어': '🇰🇷',
+      'Русский': '🇷🇺',
+      'Português': '🇵🇹',
+      'Italiano': '🇮🇹',
+      'हिन्दी': '🇮🇳',
+    };
+    return flagMap[language] ?? '🌐';
   }
 
   Widget _buildAttachmentCard(TicketAttachment attachment) {

@@ -5754,7 +5754,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Icon(
                           Icons.star,
                           size: 32,
-                          color: index < _urgencyRating
+                          color: index == _urgencyRating - 1
                               ? _getUrgencyColor(index + 1)
                               : Colors.grey.withOpacity(0.3),
                         ),
@@ -5764,7 +5764,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: index < _urgencyRating
+                            color: index == _urgencyRating - 1
                                 ? _getUrgencyColor(index + 1)
                                 : AppColors.textSecondary,
                           ),
