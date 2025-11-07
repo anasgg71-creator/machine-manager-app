@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/ticket_provider.dart';
 import '../../services/supabase_service.dart';
 import '../../services/file_upload_service.dart';
+import '../../services/translation_service.dart';
 import '../../config/colors.dart';
 import '../../models/chat_message.dart';
 import '../../models/user_profile.dart';
@@ -226,16 +227,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
     print('💬 CHAT: Starting to send message...');
     print('💬 CHAT: Ticket ID: ${widget.ticketId}');
-    print('💬 CHAT: Message length: ${message.length}');
+    print('💬 CHAT: Original message: $message');
+    print('💬 CHAT: Selected language: $_selectedLanguage');
     print('💬 CHAT: Current user: ${SupabaseService.getCurrentUserId()}');
 
     setState(() => _isSending = true);
 
     try {
+      // Get language code for the selected language
+      final sourceLanguageCode = _getLanguageCode(_selectedLanguage);
+      print('💬 CHAT: Sending message in original language: $_selectedLanguage ($sourceLanguageCode)');
+
       print('💬 CHAT: Calling SupabaseService.sendMessage...');
       final sentMessage = await SupabaseService.sendMessage(
         ticketId: widget.ticketId,
-        message: message,
+        message: message, // Send original message (no translation)
+        sourceLanguage: sourceLanguageCode,
       );
       print('✅ CHAT: Message sent successfully: ${sentMessage.id}');
 
@@ -257,6 +264,24 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  String _getLanguageCode(String language) {
+    final Map<String, String> languageCodes = {
+      'English': 'en',
+      'العربية': 'ar',
+      'Español': 'es',
+      'Français': 'fr',
+      'Deutsch': 'de',
+      '中文': 'zh',
+      '日本語': 'ja',
+      '한국어': 'ko',
+      'Русский': 'ru',
+      'Português': 'pt',
+      'Italiano': 'it',
+      'हिन्दी': 'hi',
+    };
+    return languageCodes[language] ?? 'auto';
+  }
+
   Future<void> _capturePhoto() async {
     setState(() => _isSending = true);
 
@@ -274,6 +299,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await SupabaseService.sendMessage(
           ticketId: widget.ticketId,
           message: '📷 Photo attached: ${attachment.fileName}',
+          sourceLanguage: 'en', // System message in English
         );
 
         _showSuccess('Photo uploaded successfully');
@@ -302,6 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await SupabaseService.sendMessage(
           ticketId: widget.ticketId,
           message: '🖼️ Image attached: ${attachment.fileName}',
+          sourceLanguage: 'en', // System message in English
         );
 
         _showSuccess('Image uploaded successfully');
@@ -330,6 +357,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await SupabaseService.sendMessage(
           ticketId: widget.ticketId,
           message: '📄 Document attached: ${attachment.fileName}',
+          sourceLanguage: 'en', // System message in English
         );
 
         _showSuccess('Document uploaded successfully');
@@ -358,6 +386,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await SupabaseService.sendMessage(
           ticketId: widget.ticketId,
           message: '🎥 Video attached: ${attachment.fileName}',
+          sourceLanguage: 'en', // System message in English
         );
 
         _showSuccess('Video uploaded successfully');
@@ -883,7 +912,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type a message...',
+                      hintText: 'Type in $_selectedLanguage (others will see it in their language)...',
+                      hintStyle: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textHint.withOpacity(0.7),
+                      ),
                       filled: true,
                       fillColor: AppColors.background,
                       border: OutlineInputBorder(
@@ -997,13 +1030,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            child: Text(
-              message.message,
-              style: TextStyle(
-                color: isOwn ? AppColors.textOnPrimary : AppColors.textPrimary,
-                fontSize: 14,
-                height: 1.4,
-              ),
+            child: _TranslatedMessageText(
+              message: message,
+              targetLanguage: _selectedLanguage,
+              isOwn: isOwn,
             ),
           ),
         ],
@@ -1170,5 +1200,119 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       _showError('Failed to open attachment: ${e.toString()}');
     }
+  }
+
+  // Helper method to get language code from full language name
+  String _getLanguageCodeFromName(String languageName) {
+    final Map<String, String> languageCodes = {
+      'English': 'en',
+      'العربية': 'ar',
+      'Español': 'es',
+      'Français': 'fr',
+      'Deutsch': 'de',
+      '中文': 'zh',
+      '日本語': 'ja',
+      '한국어': 'ko',
+      'Русский': 'ru',
+      'Português': 'pt',
+      'Italiano': 'it',
+      'हिन्दी': 'hi',
+    };
+    return languageCodes[languageName] ?? 'en';
+  }
+}
+
+// Widget that displays a chat message with automatic translation
+class _TranslatedMessageText extends StatelessWidget {
+  final ChatMessage message;
+  final String targetLanguage; // User's selected language (full name like "English", "العربية")
+  final bool isOwn;
+
+  const _TranslatedMessageText({
+    required this.message,
+    required this.targetLanguage,
+    required this.isOwn,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Get language codes
+    final targetLangCode = _getLanguageCode(targetLanguage);
+    final sourceLangCode = message.sourceLanguage;
+
+    // If message is already in target language, show directly
+    if (sourceLangCode == targetLangCode) {
+      return Text(
+        message.message,
+        style: TextStyle(
+          color: isOwn ? AppColors.textOnPrimary : AppColors.textPrimary,
+          fontSize: 14,
+          height: 1.4,
+        ),
+      );
+    }
+
+    // Otherwise, translate the message
+    return FutureBuilder<String>(
+      future: TranslationService.translate(
+        message.message,
+        sourceLang: sourceLangCode,
+        targetLang: targetLangCode,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show original message while translating
+          return Text(
+            message.message,
+            style: TextStyle(
+              color: isOwn ? AppColors.textOnPrimary.withOpacity(0.7) : AppColors.textPrimary.withOpacity(0.7),
+              fontSize: 14,
+              height: 1.4,
+              fontStyle: FontStyle.italic,
+            ),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          // Show original message if translation fails
+          return Text(
+            message.message,
+            style: TextStyle(
+              color: isOwn ? AppColors.textOnPrimary : AppColors.textPrimary,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          );
+        }
+
+        // Show translated message
+        return Text(
+          snapshot.data!,
+          style: TextStyle(
+            color: isOwn ? AppColors.textOnPrimary : AppColors.textPrimary,
+            fontSize: 14,
+            height: 1.4,
+          ),
+        );
+      },
+    );
+  }
+
+  String _getLanguageCode(String language) {
+    final Map<String, String> languageCodes = {
+      'English': 'en',
+      'العربية': 'ar',
+      'Español': 'es',
+      'Français': 'fr',
+      'Deutsch': 'de',
+      '中文': 'zh',
+      '日本語': 'ja',
+      '한국어': 'ko',
+      'Русский': 'ru',
+      'Português': 'pt',
+      'Italiano': 'it',
+      'हिन्दी': 'hi',
+    };
+    return languageCodes[language] ?? 'en';
   }
 }

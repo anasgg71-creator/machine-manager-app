@@ -7,6 +7,7 @@ class ChatMessage {
   final String message;
   final String messageType;
   final String? attachmentUrl;
+  final String sourceLanguage; // Language the message was written in
   final DateTime createdAt;
   final UserProfile? sender;
 
@@ -17,6 +18,7 @@ class ChatMessage {
     required this.message,
     required this.messageType,
     this.attachmentUrl,
+    required this.sourceLanguage,
     required this.createdAt,
     this.sender,
   });
@@ -29,6 +31,7 @@ class ChatMessage {
       message: json['message'] as String,
       messageType: json['message_type'] as String? ?? 'text',
       attachmentUrl: json['attachment_url'] as String?,
+      sourceLanguage: json['source_language'] as String? ?? 'en', // Default to English for old messages
       createdAt: DateTime.parse(json['created_at'] as String),
       sender: json['sender'] != null
           ? UserProfile.fromJson(json['sender'] as Map<String, dynamic>)
@@ -44,6 +47,7 @@ class ChatMessage {
       'message': message,
       'message_type': messageType,
       'attachment_url': attachmentUrl,
+      'source_language': sourceLanguage,
       'created_at': createdAt.toIso8601String(),
     };
   }

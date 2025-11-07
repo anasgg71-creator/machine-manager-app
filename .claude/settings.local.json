@@ -46,7 +46,8 @@
       "Bash(C:/Flutter/flutter/bin/flutter run -d chrome --no-pub)",
       "WebSearch",
       "Bash(SUPABASE_ACCESS_TOKEN=sbp_ad23ae3722508e857f2eee79175782db65f0ac57 npx supabase sql:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(start microsoft-edge:https://supabase.com/dashboard/project/xsrvoyjdrylusvmdwppl/sql/new)"
     ],
     "deny": [],
     "ask": []

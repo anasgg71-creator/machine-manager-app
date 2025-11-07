@@ -388,6 +388,7 @@ class SupabaseService {
   static Future<ChatMessage> sendMessage({
     required String ticketId,
     required String message,
+    required String sourceLanguage, // Language code (e.g., 'en', 'ar', 'fr')
     String messageType = 'text',
     String? attachmentUrl,
   }) async {
@@ -395,6 +396,7 @@ class SupabaseService {
       print('🔷 SUPABASE: sendMessage called');
       print('🔷 SUPABASE: ticketId: $ticketId');
       print('🔷 SUPABASE: message: $message');
+      print('🔷 SUPABASE: sourceLanguage: $sourceLanguage');
       print('🔷 SUPABASE: currentUser: ${currentUser?.id}');
 
       if (currentUser == null) {
@@ -407,6 +409,7 @@ class SupabaseService {
         'ticket_id': ticketId,
         'sender_id': currentUser!.id,
         'message': message,
+        'source_language': sourceLanguage,
       };
 
       print('🔷 SUPABASE: Message data to insert: $messageData');
