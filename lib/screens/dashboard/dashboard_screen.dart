@@ -5916,13 +5916,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                  ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Responsive grid columns based on screen width
+                    final width = constraints.maxWidth;
+                    final crossAxisCount = width > 600 ? 3 : 2;
+                    final itemWidth = (width - (16 * (crossAxisCount + 1))) / crossAxisCount;
+                    final itemHeight = itemWidth * 1.15;
+
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: itemWidth / itemHeight,
+                      ),
                   itemCount: _getRooms().length,
                   itemBuilder: (context, index) {
                     final room = _getRooms()[index];
@@ -6056,6 +6064,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       ),
+                    );
+                  },
                     );
                   },
                 ),
