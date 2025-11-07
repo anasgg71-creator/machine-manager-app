@@ -47,7 +47,18 @@
       "WebSearch",
       "Bash(SUPABASE_ACCESS_TOKEN=sbp_ad23ae3722508e857f2eee79175782db65f0ac57 npx supabase sql:*)",
       "Bash(cat:*)",
-      "Bash(start microsoft-edge:https://supabase.com/dashboard/project/xsrvoyjdrylusvmdwppl/sql/new)"
+      "Bash(start microsoft-edge:https://supabase.com/dashboard/project/xsrvoyjdrylusvmdwppl/sql/new)",
+      "Bash(flutter run:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(supabase --version:*)",
+      "Bash(powershell -Command \"Add-Type -AssemblyName ''System.Web''; [System.Web.Security.Membership]::GeneratePassword(20, 5)\")",
+      "Bash(powershell -Command \"-join ((65..90) + (97..122) + (48..57) | Get-Random -Count 24 | ForEach-Object {[char]$_)\")",
+      "Bash(where:*)",
+      "Bash(dir:*)",
+      "Bash(nul)",
+      "Bash(powershell:*)",
+      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -genkeypair -v -keystore android/app/optirva-dairytalk-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias optirva-dairytalk-key -storepass OpT1rv4Da1ryT4lk2025KeySecure -keypass OpT1rv4Da1ryT4lk2025KeySecure -dname \"CN=Optirva, OU=Development, O=Optirva, C=US\":*)",
+      "Bash(C:/Flutter/flutter/bin/flutter build:*)"
     ],
     "deny": [],
     "ask": []
