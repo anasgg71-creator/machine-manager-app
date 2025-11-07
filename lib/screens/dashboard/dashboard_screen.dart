@@ -5922,7 +5922,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     final width = constraints.maxWidth;
                     final crossAxisCount = width > 600 ? 3 : 2;
                     final itemWidth = (width - (16 * (crossAxisCount + 1))) / crossAxisCount;
-                    final itemHeight = itemWidth * 1.15;
+                    final itemHeight = itemWidth * 1.45; // Increased from 1.15 to 1.45 for more height
 
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
