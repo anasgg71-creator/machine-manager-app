@@ -388,7 +388,7 @@ class SupabaseService {
   static Future<ChatMessage> sendMessage({
     required String ticketId,
     required String message,
-    required String sourceLanguage, // Language code (e.g., 'en', 'ar', 'fr')
+    String sourceLanguage = 'en', // Language code (e.g., 'en', 'ar', 'fr') - now optional with default
     String messageType = 'text',
     String? attachmentUrl,
   }) async {
@@ -405,11 +405,12 @@ class SupabaseService {
       }
 
       // Only include fields that exist in the database schema
+      // Temporarily exclude source_language until database migration is applied
       final messageData = {
         'ticket_id': ticketId,
         'sender_id': currentUser!.id,
         'message': message,
-        'source_language': sourceLanguage,
+        // 'source_language': sourceLanguage, // TODO: Uncomment after database migration
       };
 
       print('🔷 SUPABASE: Message data to insert: $messageData');

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/colors.dart';
 import '../../config/constants.dart';
@@ -24,6 +25,28 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginMode = true;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('saved_email');
+    final savedPassword = prefs.getString('saved_password');
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+
+    if (rememberMe && savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -214,6 +237,29 @@ class _LoginScreenState extends State<LoginScreen> {
               return null;
             },
           ),
+
+          // Remember Me checkbox (only for login)
+          if (_isLoginMode) ...[
+            const SizedBox(height: 12),
+            CheckboxListTile(
+              value: _rememberMe,
+              onChanged: (value) {
+                setState(() {
+                  _rememberMe = value ?? false;
+                });
+              },
+              title: const Text(
+                'Remember Me',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              activeColor: AppColors.primary,
+            ),
+          ],
 
           // Confirm Password (only for register)
           if (!_isLoginMode) ...[
@@ -418,6 +464,20 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // Save or clear credentials based on "Remember Me" checkbox
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe) {
+          await prefs.setString('saved_email', _emailController.text.trim());
+          await prefs.setString('saved_password', _passwordController.text);
+          await prefs.setBool('remember_me', true);
+        } else {
+          await prefs.remove('saved_email');
+          await prefs.remove('saved_password');
+          await prefs.setBool('remember_me', false);
+        }
+      }
     } else {
       success = await authProvider.signUp(
         email: _emailController.text.trim(),
