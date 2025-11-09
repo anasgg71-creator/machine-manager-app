@@ -6,6 +6,7 @@ import '../../providers/language_provider.dart';
 import '../../config/colors.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/skeleton_loader.dart';
+import '../../widgets/global_language_selector.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,9 +33,15 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     super.dispose();
   }
 
+  // Language translation helper - simplified for now
   String _translate(BuildContext context, String key) {
-    final languageProvider = context.watch<LanguageProvider>();
-    return languageProvider.translate(key);
+    // For now, return English text. Future: implement full translation
+    final translations = {
+      'language': 'Language',
+      'select_language': 'Select Language',
+      'language_changed': 'Language changed to',
+    };
+    return translations[key] ?? key;
   }
 
   @override
@@ -121,6 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         ),
       ),
       actions: [
+        const GlobalLanguageSelector(),
         IconButton(
           icon: const Icon(Icons.edit, color: Colors.white),
           onPressed: () => _showEditProfileDialog(context),
@@ -636,7 +644,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         return _buildSettingTile(
           icon: Icons.language,
           title: _translate(context, 'language'),
-          subtitle: currentLanguage.nativeName,
+          subtitle: currentLanguage.name,
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -693,7 +701,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 itemBuilder: (context, index) {
                   final language = LanguageProvider.supportedLanguages[index];
                   final languageProvider = context.read<LanguageProvider>();
-                  final isSelected = languageProvider.currentLanguageCode == language.code;
+                  final isSelected = languageProvider.selectedLanguageCode == language.code;
 
                   return ListTile(
                     leading: Text(
@@ -701,7 +709,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       style: const TextStyle(fontSize: 32),
                     ),
                     title: Text(
-                      language.nativeName,
+                      language.name,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -709,7 +717,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       ),
                     ),
                     subtitle: Text(
-                      language.name,
+                      language.code.toUpperCase(),
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -719,11 +727,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         ? const Icon(Icons.check_circle, color: AppColors.primary)
                         : null,
                     onTap: () {
-                      languageProvider.setLanguage(language.code);
+                      languageProvider.setLanguage(language);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${_translate(context, 'language_changed')} ${language.nativeName}'),
+                          content: Text('${_translate(context, 'language_changed')} ${language.name}'),
                           backgroundColor: AppColors.success,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(

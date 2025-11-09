@@ -33,9 +33,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _currentFilter = 'all';
   String _selectedRoom = 'room1';
 
+  // Language translation helper - simplified for now
   String _translate(String key) {
-    final languageProvider = context.read<LanguageProvider>();
-    return languageProvider.translate(key);
+    // For now, return English text. Future: implement full translation
+    final translations = {
+      'tetra_support': 'Tetra Support',
+      'status_running': 'Running',
+      'tetra_support_desc': 'Technical support for Tetra machines',
+      'supplier_parts': 'Supplier Parts',
+      'status_active': 'Active',
+      'supplier_parts_desc': 'Manage supplier parts and orders',
+      'quality_lab': 'Quality Lab',
+      'quality_lab_desc': 'Quality control and lab analysis',
+      'optirva_support': 'Optirva Support',
+      'status_available': 'Available',
+      'optirva_support_desc': 'Support for Optirva systems',
+      'machine_market': 'Machine Market',
+      'status_open': 'Open',
+      'machine_market_desc': 'Buy and sell machines',
+      'ask_question': 'Ask Question',
+      'ask_question_desc': 'Get help from experts',
+      'report_problem': 'Report Problem',
+      'report_problem_desc': 'Report machine issues',
+      'active_issues': 'Active Issues',
+      'active_issues_desc': 'View ongoing problems',
+      'history': 'History',
+      'history_desc': 'View past tickets',
+      'team': 'Team',
+      'team_desc': 'View team leaderboard',
+      'machine_categories': 'Machine Categories',
+      'machine_categories_desc': 'Browse machines by category',
+    };
+    return translations[key] ?? key;
   }
 
   List<Map<String, String>> _getRooms() {
