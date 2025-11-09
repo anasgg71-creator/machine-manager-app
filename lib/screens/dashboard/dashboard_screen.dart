@@ -5951,7 +5951,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     final width = constraints.maxWidth;
                     final crossAxisCount = width > 600 ? 3 : 2;
                     final itemWidth = (width - (16 * (crossAxisCount + 1))) / crossAxisCount;
-                    final itemHeight = itemWidth * 1.45; // Increased from 1.15 to 1.45 for more height
+                    final itemHeight = itemWidth * 1.2; // Reduced to 1.2 for better mobile fit
 
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -6002,14 +6002,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ],
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               // Vibrant icon container with gradient
                               Container(
-                                width: 60,
-                                height: 60,
+                                width: 48,
+                                height: 48,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     begin: Alignment.topLeft,
@@ -6030,26 +6030,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 child: _getRoomLogo(room['id']!),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 8),
                               // Room name with gradient text effect
                               Text(
                                 room['name']!,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                   color: roomColor.withOpacity(0.9),
-                                  letterSpacing: 0.3,
+                                  letterSpacing: 0.2,
                                 ),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 3),
                               // Room description/subtitle
                               Text(
                                 room['description'] ?? 'Machine Management',
                                 style: const TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 9,
                                   color: AppColors.textSecondary,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -6057,13 +6057,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 6),
                               // Status badge
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: roomColor.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: roomColor.withOpacity(0.3),
                                     width: 1,
@@ -6074,14 +6074,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   children: [
                                     Icon(
                                       Icons.check_circle,
-                                      size: 12,
+                                      size: 10,
                                       color: roomColor,
                                     ),
-                                    const SizedBox(width: 3),
+                                    const SizedBox(width: 2),
                                     Text(
                                       'Active',
                                       style: TextStyle(
-                                        fontSize: 9,
+                                        fontSize: 8,
                                         color: roomColor,
                                         fontWeight: FontWeight.bold,
                                       ),
