@@ -59,7 +59,9 @@
       "Bash(powershell:*)",
       "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -genkeypair -v -keystore android/app/optirva-dairytalk-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias optirva-dairytalk-key -storepass OpT1rv4Da1ryT4lk2025KeySecure -keypass OpT1rv4Da1ryT4lk2025KeySecure -dname \"CN=Optirva, OU=Development, O=Optirva, C=US\":*)",
       "Bash(C:/Flutter/flutter/bin/flutter build:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(keytool:*)",
+      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\":*)"
     ],
     "deny": [],
     "ask": []
