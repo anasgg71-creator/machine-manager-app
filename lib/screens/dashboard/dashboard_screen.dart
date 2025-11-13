@@ -5947,154 +5947,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    // Responsive grid columns based on screen width
-                    final width = constraints.maxWidth;
-                    final crossAxisCount = width > 600 ? 3 : 2;
-                    final itemWidth = (width - (16 * (crossAxisCount + 1))) / crossAxisCount;
-                    final itemHeight = itemWidth * 1.2; // Reduced to 1.2 for better mobile fit
+                    // Vertical ladder layout
+                    return ListView.builder(
+                      itemCount: _getRooms().length,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemBuilder: (context, index) {
+                        final room = _getRooms()[index];
+                        final roomColor = _getRoomColor(room['id']!);
 
-                    return GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: itemWidth / itemHeight,
-                      ),
-                  itemCount: _getRooms().length,
-                  itemBuilder: (context, index) {
-                    final room = _getRooms()[index];
-                    final roomColor = _getRoomColor(room['id']!);
-                    final roomIcon = _getRoomIcon(room['id']!);
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedRoom = room['id']!;
-                          _currentScreen = 'roomDetail';
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              roomColor.withOpacity(0.08),
-                              roomColor.withOpacity(0.02),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: roomColor.withOpacity(0.3),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: roomColor.withOpacity(0.15),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Vibrant icon container with gradient
-                              Container(
-                                width: 48,
-                                height: 48,
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _selectedRoom = room['id']!;
+                                  _currentScreen = 'roomDetail';
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      roomColor,
-                                      roomColor.withOpacity(0.7),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: roomColor.withOpacity(0.4),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: _getRoomLogo(room['id']!),
-                              ),
-                              const SizedBox(height: 8),
-                              // Room name with gradient text effect
-                              Text(
-                                room['name']!,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: roomColor.withOpacity(0.9),
-                                  letterSpacing: 0.2,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 3),
-                              // Room description/subtitle
-                              Text(
-                                room['description'] ?? 'Machine Management',
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6),
-                              // Status badge
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: roomColor.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: roomColor.withOpacity(0.3),
+                                    color: AppColors.cardBorder.withOpacity(0.3),
                                     width: 1,
                                   ),
                                 ),
                                 child: Row(
-                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 10,
-                                      color: roomColor,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      'Active',
-                                      style: TextStyle(
-                                        fontSize: 8,
-                                        color: roomColor,
-                                        fontWeight: FontWeight.bold,
+                                    // Logo without background
+                                    Container(
+                                      width: 56,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            roomColor,
+                                            roomColor.withOpacity(0.8),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
+                                      child: Center(
+                                        child: _getRoomLogo(room['id']!),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    // Room name
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            room['name']!,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.textPrimary,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            room['description'] ?? 'Machine Management',
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Arrow icon
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 18,
+                                      color: roomColor,
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
+                        );
+                      },
                     );
                   },
                 ),
