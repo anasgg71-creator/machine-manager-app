@@ -36,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
   bool _isLoadingAttachments = false;
   bool _isSending = false;
-  bool _showAttachments = true; // Show attachments by default
+  bool _showAttachments = false; // Hide attachments by default
   StreamSubscription? _messagesSubscription;
   RealtimeChannel? _presenceChannel;
   int _viewerCount = 0;
@@ -550,14 +550,18 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(widget.ticketTitle ?? 'Chat'),
+            Text(
+              widget.ticketTitle ?? 'Chat',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             if (_viewerCount > 0)
               Text(
                 _viewers.isNotEmpty
                     ? '$_viewerCount ${_viewerCount == 1 ? 'person' : 'people'} viewing: ${_viewers.values.map((v) => v.fullName ?? 'Unknown').join(', ')}'
                     : '$_viewerCount ${_viewerCount == 1 ? 'person' : 'people'} viewing',
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.normal,
                 ),
                 maxLines: 1,
@@ -688,7 +692,7 @@ class _ChatScreenState extends State<ChatScreen> {
           // Attachments section
           if (_showAttachments)
             Container(
-              height: 200,
+              height: 150,
               decoration: const BoxDecoration(
                 color: AppColors.surface,
                 border: Border(
@@ -722,30 +726,25 @@ class _ChatScreenState extends State<ChatScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               child: Row(
                                 children: [
                                   const Icon(
                                     Icons.attachment,
-                                    size: 20,
+                                    size: 18,
                                     color: AppColors.primary,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'Ticket Attachments (${_attachments.length})',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Text(
-                                    'Photos, Documents & Videos',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary,
-                                      fontStyle: FontStyle.italic,
+                                  Expanded(
+                                    child: Text(
+                                      'Attachments (${_attachments.length})',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
@@ -754,7 +753,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             Expanded(
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                                 itemCount: _attachments.length,
                                 itemBuilder: (context, index) {
                                   final attachment = _attachments[index];
@@ -811,128 +810,129 @@ class _ChatScreenState extends State<ChatScreen> {
 
           // Message input
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: const BoxDecoration(
               color: AppColors.surface,
               border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: Row(
               children: [
-                // Camera button
+                // Attachment options button
                 Container(
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.border),
                   ),
-                  child: IconButton(
-                    onPressed: _isSending ? null : _capturePhoto,
+                  child: PopupMenuButton<String>(
                     icon: const Icon(
-                      Icons.camera_alt,
+                      Icons.add_circle_outline,
                       color: AppColors.primary,
                     ),
-                    tooltip: 'Take Photo',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Upload Image button
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: IconButton(
-                    onPressed: _isSending ? null : _uploadImage,
-                    icon: const Icon(
-                      Icons.image,
-                      color: AppColors.primary,
-                    ),
-                    tooltip: 'Upload Image',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Upload Document button
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: IconButton(
-                    onPressed: _isSending ? null : _uploadDocument,
-                    icon: const Icon(
-                      Icons.description,
-                      color: AppColors.primary,
-                    ),
-                    tooltip: 'Upload Document',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Upload Video button
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: IconButton(
-                    onPressed: _isSending ? null : _uploadVideo,
-                    icon: const Icon(
-                      Icons.videocam,
-                      color: AppColors.primary,
-                    ),
-                    tooltip: 'Upload Video',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // View Details button
-                Consumer<TicketProvider>(
-                  builder: (context, ticketProvider, child) {
-                    final ticket = ticketProvider.getTicketById(widget.ticketId);
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: IconButton(
-                        onPressed: () => _showTicketDetails(ticket),
-                        icon: const Icon(
-                          Icons.info_outline,
-                          color: AppColors.primary,
+                    tooltip: 'Attachments',
+                    enabled: !_isSending,
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'camera':
+                          _capturePhoto();
+                          break;
+                        case 'image':
+                          _uploadImage();
+                          break;
+                        case 'document':
+                          _uploadDocument();
+                          break;
+                        case 'video':
+                          _uploadVideo();
+                          break;
+                        case 'details':
+                          final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+                          final ticket = ticketProvider.getTicketById(widget.ticketId);
+                          _showTicketDetails(ticket);
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'camera',
+                        child: Row(
+                          children: [
+                            Icon(Icons.camera_alt, size: 20, color: AppColors.primary),
+                            SizedBox(width: 12),
+                            Text('Take Photo'),
+                          ],
                         ),
-                        tooltip: 'View Details',
                       ),
-                    );
-                  },
+                      const PopupMenuItem(
+                        value: 'image',
+                        child: Row(
+                          children: [
+                            Icon(Icons.image, size: 20, color: AppColors.primary),
+                            SizedBox(width: 12),
+                            Text('Upload Image'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'document',
+                        child: Row(
+                          children: [
+                            Icon(Icons.description, size: 20, color: AppColors.primary),
+                            SizedBox(width: 12),
+                            Text('Upload Document'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'video',
+                        child: Row(
+                          children: [
+                            Icon(Icons.videocam, size: 20, color: AppColors.primary),
+                            SizedBox(width: 12),
+                            Text('Upload Video'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'details',
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, size: 20, color: AppColors.primary),
+                            SizedBox(width: 12),
+                            Text('View Ticket Details'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    maxLines: 1,
                     decoration: InputDecoration(
-                      hintText: 'Type in $_selectedLanguage (others will see it in their language)...',
+                      hintText: 'Type message...',
                       hintStyle: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: AppColors.textHint.withOpacity(0.7),
                       ),
                       filled: true,
                       fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
-                        vertical: 12,
+                        vertical: 10,
                       ),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                     textInputAction: TextInputAction.send,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Container(
                   decoration: const BoxDecoration(
                     color: AppColors.primary,
@@ -1105,11 +1105,12 @@ class _ChatScreenState extends State<ChatScreen> {
     return GestureDetector(
       onTap: () => _openAttachment(attachment),
       child: Container(
-        width: 140,
-        margin: const EdgeInsets.only(right: 12, bottom: 8),
+        width: 120,
+        height: 120,
+        margin: const EdgeInsets.only(right: 8, bottom: 0),
         decoration: BoxDecoration(
           color: AppColors.background,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
@@ -1123,64 +1124,71 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Preview/Icon section
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              ),
-              child: Center(
-                child: attachment.isImage
-                    ? ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                        child: CachedNetworkImage(
-                          imageUrl: attachment.fileUrl,
-                          width: double.infinity,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(),
+            Flexible(
+              child: Container(
+                height: 70,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                ),
+                child: Center(
+                  child: attachment.isImage
+                      ? ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            imageUrl: attachment.fileUrl,
+                            width: double.infinity,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => const Icon(
+                              Icons.error,
+                              color: AppColors.error,
+                            ),
                           ),
-                          errorWidget: (context, url, error) => const Icon(
-                            Icons.error,
-                            color: AppColors.error,
-                          ),
+                        )
+                      : Icon(
+                          attachment.isVideo ? Icons.videocam : Icons.description,
+                          size: 40,
+                          color: AppColors.primary,
                         ),
-                      )
-                    : Icon(
-                        attachment.isVideo ? Icons.videocam : Icons.description,
-                        size: 48,
-                        color: AppColors.primary,
-                      ),
+                ),
               ),
             ),
             // File info section
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+            Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
                       attachment.fileName,
                       style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
+                        height: 1.2,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
-                    Text(
-                      attachment.fileSizeFormatted,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppColors.textSecondary,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    attachment.fileSizeFormatted,
+                    style: const TextStyle(
+                      fontSize: 9,
+                      color: AppColors.textSecondary,
                     ),
-                  ],
-                ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ],
@@ -1192,13 +1200,18 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _openAttachment(TicketAttachment attachment) async {
     try {
       final uri = Uri.parse(attachment.fileUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        _showError('Could not open attachment');
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        // Try with default browser mode
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
       }
     } catch (e) {
-      _showError('Failed to open attachment: ${e.toString()}');
+      print('❌ Error opening attachment: $e');
+      _showError('Failed to open attachment. Please check your browser or file viewer.');
     }
   }
 

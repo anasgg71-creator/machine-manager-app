@@ -99,7 +99,7 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
@@ -218,6 +218,8 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
 
@@ -242,14 +244,18 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                             color: AppColors.textSecondary,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            widget.ticket['machine_id'] ?? 'Unknown Machine',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
+                          Expanded(
+                            child: Text(
+                              widget.ticket['machine_id'] ?? 'Unknown Machine',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(

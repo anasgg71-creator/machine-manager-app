@@ -794,12 +794,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: const [
                           Text('🔍', style: TextStyle(fontSize: 24)),
                           SizedBox(width: 12),
-                          Text(
-                            'Search Parts Across All Suppliers',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                          Expanded(
+                            child: Text(
+                              'Search Parts Across All Suppliers',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -862,27 +866,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: const [
-                              Text('⚡', style: TextStyle(fontSize: 24)),
-                              SizedBox(width: 12),
-                              Text(
-                                'Bulk Upload Parts (One Shot)',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                          Expanded(
+                            child: Row(
+                              children: const [
+                                Text('⚡', style: TextStyle(fontSize: 24)),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Bulk Upload Parts (One Shot)',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: _addPartRowToBulk,
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Add Part Row'),
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Add Row', style: TextStyle(fontSize: 12)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.success,
                               foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                           ),
                         ],
@@ -891,9 +903,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const Text(
                         'Add multiple parts with quantities and photos all at once',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: AppColors.textSecondary,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 20),
 
@@ -911,11 +925,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: const [
                                 Icon(Icons.inventory_2, size: 48, color: AppColors.textSecondary),
                                 SizedBox(height: 12),
-                                Text(
-                                  'Click "Add Part Row" to start adding parts',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textSecondary,
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    'Click "Add Part Row" to start adding parts',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -1065,11 +1085,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           children: const [
                                             Icon(Icons.photo_camera, size: 20, color: AppColors.textSecondary),
                                             SizedBox(width: 8),
-                                            Text(
-                                              'Click to upload photos',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: AppColors.textSecondary,
+                                            Flexible(
+                                              child: Text(
+                                                'Click to upload photos',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: AppColors.textSecondary,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                           ],
@@ -1091,7 +1115,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text('Submit All ${_bulkParts.length} Parts'),
+                              child: Text(
+                                'Submit All ${_bulkParts.length} Parts',
+                                style: const TextStyle(fontSize: 14),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
@@ -1114,25 +1143,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            '📦 Registered Suppliers (0)',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                          const Expanded(
+                            child: Text(
+                              '📦 Registered Suppliers (0)',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Add Supplier feature coming soon!')),
                               );
                             },
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Add Supplier'),
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Add', style: TextStyle(fontSize: 12)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                           ),
                         ],
@@ -1141,9 +1176,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const Text(
                         'Click a supplier to view their inventory',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: AppColors.textSecondary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 20),
                       Container(
@@ -1158,19 +1195,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: const [
                               Icon(Icons.business, size: 64, color: AppColors.textSecondary),
                               SizedBox(height: 16),
-                              Text(
-                                'No suppliers registered yet',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.textSecondary,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  'No suppliers registered yet',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               SizedBox(height: 8),
-                              Text(
-                                'Click "Add Supplier" to get started',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textDisabled,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  'Click "Add Supplier" to get started',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textDisabled,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
@@ -2977,8 +3026,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               }),
               // Search and Filter Section
               Container(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Search Bar
                     AnimatedFormField(
@@ -2991,19 +3041,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         });
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     // Quick Filter Buttons
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildFilterButton('👤 My Tickets', _currentFilter == 'my', () => _applyMyTicketsFilter(ticketProvider)),
-                          const SizedBox(width: 8),
-                          _buildFilterButton('⏰ Expiring Soon', _currentFilter == 'expiring', () => _applyExpiringSoonFilter(ticketProvider)),
-                          const SizedBox(width: 8),
-                          _buildFilterButton('❗ High Priority', _currentFilter == 'priority', () => _applyHighPriorityFilter(ticketProvider)),
-                        ],
+                    SizedBox(
+                      height: 36,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFilterButton('👤 My Tickets', _currentFilter == 'my', () => _applyMyTicketsFilter(ticketProvider)),
+                            const SizedBox(width: 8),
+                            _buildFilterButton('⏰ Expiring Soon', _currentFilter == 'expiring', () => _applyExpiringSoonFilter(ticketProvider)),
+                            const SizedBox(width: 8),
+                            _buildFilterButton('❗ High Priority', _currentFilter == 'priority', () => _applyHighPriorityFilter(ticketProvider)),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -3011,7 +3064,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ticketProvider.isLoading
                       ? ListView.builder(
                           itemCount: 5,
@@ -3724,12 +3777,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildAppHeader(String title, String subtitle, {VoidCallback? onBack}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
         ),
       ),
       child: SafeArea(
@@ -3748,30 +3801,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: const Icon(
                     Icons.arrow_back_ios,
                     color: AppColors.textOnPrimary,
-                    size: 20,
+                    size: 18,
                   ),
                 ),
               ),
-            if (onBack != null) const SizedBox(width: 16),
+            if (onBack != null) const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textOnPrimary,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: AppColors.textOnPrimary.withOpacity(0.8),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -5947,95 +6005,154 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    // Vertical ladder layout
-                    return ListView.builder(
-                      itemCount: _getRooms().length,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemBuilder: (context, index) {
-                        final room = _getRooms()[index];
-                        final roomColor = _getRoomColor(room['id']!);
+                    // Responsive grid columns based on screen width
+                    final width = constraints.maxWidth;
+                    final crossAxisCount = width > 600 ? 3 : 2;
+                    final itemWidth = (width - (16 * (crossAxisCount + 1))) / crossAxisCount;
+                    final itemHeight = itemWidth * 1.15;
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _selectedRoom = room['id']!;
-                                  _currentScreen = 'roomDetail';
-                                });
-                              },
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: itemWidth / itemHeight,
+                      ),
+                  itemCount: _getRooms().length,
+                  itemBuilder: (context, index) {
+                    final room = _getRooms()[index];
+                    final roomColor = _getRoomColor(room['id']!);
+                    final roomIcon = _getRoomIcon(room['id']!);
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedRoom = room['id']!;
+                          _currentScreen = 'roomDetail';
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              roomColor.withOpacity(0.08),
+                              roomColor.withOpacity(0.02),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: roomColor.withOpacity(0.3),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: roomColor.withOpacity(0.15),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Vibrant icon container with gradient
+                              Container(
+                                width: 60,
+                                height: 60,
                                 decoration: BoxDecoration(
-                                  color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      roomColor,
+                                      roomColor.withOpacity(0.7),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(18),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: roomColor.withOpacity(0.4),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: _getRoomLogo(room['id']!),
+                              ),
+                              const SizedBox(height: 10),
+                              // Room name with gradient text effect
+                              Text(
+                                room['name']!,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: roomColor.withOpacity(0.9),
+                                  letterSpacing: 0.3,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              // Room description/subtitle
+                              Text(
+                                room['description'] ?? 'Machine Management',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              // Status badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: roomColor.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: AppColors.cardBorder.withOpacity(0.3),
+                                    color: roomColor.withOpacity(0.3),
                                     width: 1,
                                   ),
                                 ),
                                 child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // Logo without background
-                                    Container(
-                                      width: 56,
-                                      height: 56,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            roomColor,
-                                            roomColor.withOpacity(0.8),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Center(
-                                        child: _getRoomLogo(room['id']!),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    // Room name
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            room['name']!,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.textPrimary,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            room['description'] ?? 'Machine Management',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: AppColors.textSecondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Arrow icon
                                     Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 18,
+                                      Icons.check_circle,
+                                      size: 12,
                                       color: roomColor,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      'Active',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        color: roomColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        );
-                      },
+                        ),
+                      ),
+                    );
+                  },
                     );
                   },
                 ),

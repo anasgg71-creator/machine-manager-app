@@ -19,7 +19,6 @@ class AppNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 72,
       decoration: BoxDecoration(
         color: AppColors.surface,
         boxShadow: [
@@ -32,9 +31,11 @@ class AppNavigationBar extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
+        child: SizedBox(
+          height: 68,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
             _buildNavItem(
               context,
               icon: PhosphorIcons.house(PhosphorIconsStyle.fill),
@@ -64,6 +65,7 @@ class AppNavigationBar extends StatelessWidget {
               isActive: currentScreen == 'team',
             ),
           ],
+          ),
         ),
       ),
     );
@@ -83,6 +85,7 @@ class AppNavigationBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
@@ -90,12 +93,17 @@ class AppNavigationBar extends StatelessWidget {
                 color: isActive ? AppColors.primary : AppColors.textSecondary,
               ),
               const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                  color: isActive ? AppColors.primary : AppColors.textSecondary,
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                    color: isActive ? AppColors.primary : AppColors.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
