@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:machine_manager_app/config/colors.dart';
 import 'package:machine_manager_app/models/job_seeker_profile.dart';
 import 'package:machine_manager_app/models/job_posting.dart';
+import 'package:machine_manager_app/screens/job_marketplace/create_job_seeker_profile_screen.dart';
+import 'package:machine_manager_app/screens/job_marketplace/create_job_posting_screen.dart';
 import 'package:intl/intl.dart';
 
 class JobMarketplaceScreen extends StatefulWidget {
@@ -40,50 +42,212 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
   bool _availableOnly = true;
 
   // Filter options
-  final List<String> _countries = [
-    'All Countries',
+  final List<String> _popularCountries = [
     'United States',
-    'Canada',
     'United Kingdom',
     'Germany',
+    'Canada',
     'France',
-    'Italy',
-    'Spain',
-    'Netherlands',
-    'Belgium',
-    'Switzerland',
-    'Austria',
-    'Poland',
-    'Czech Republic',
-    'Sweden',
-    'Norway',
-    'Denmark',
-    'Finland',
-    'Ireland',
-    'Portugal',
-    'Greece',
-    'Romania',
-    'Hungary',
     'Australia',
-    'New Zealand',
-    'Japan',
-    'South Korea',
-    'Singapore',
-    'India',
-    'China',
-    'Brazil',
-    'Mexico',
+  ];
+
+  final List<String> _allCountries = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Andorra',
+    'Angola',
     'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahamas',
+    'Bahrain',
+    'Bangladesh',
+    'Barbados',
+    'Belarus',
+    'Belgium',
+    'Belize',
+    'Benin',
+    'Bhutan',
+    'Bolivia',
+    'Bosnia and Herzegovina',
+    'Botswana',
+    'Brazil',
+    'Brunei',
+    'Bulgaria',
+    'Burkina Faso',
+    'Burundi',
+    'Cambodia',
+    'Cameroon',
+    'Canada',
+    'Cape Verde',
+    'Central African Republic',
+    'Chad',
     'Chile',
+    'China',
     'Colombia',
-    'United Arab Emirates',
-    'Saudi Arabia',
+    'Comoros',
+    'Congo',
+    'Costa Rica',
+    'Croatia',
+    'Cuba',
+    'Cyprus',
+    'Czech Republic',
+    'Denmark',
+    'Djibouti',
+    'Dominica',
+    'Dominican Republic',
+    'East Timor',
+    'Ecuador',
     'Egypt',
+    'El Salvador',
+    'Equatorial Guinea',
+    'Eritrea',
+    'Estonia',
+    'Ethiopia',
+    'Fiji',
+    'Finland',
+    'France',
+    'Gabon',
+    'Gambia',
+    'Georgia',
+    'Germany',
+    'Ghana',
+    'Greece',
+    'Grenada',
+    'Guatemala',
+    'Guinea',
+    'Guinea-Bissau',
+    'Guyana',
+    'Haiti',
+    'Honduras',
+    'Hungary',
+    'Iceland',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Ivory Coast',
+    'Jamaica',
+    'Japan',
+    'Jordan',
+    'Kazakhstan',
+    'Kenya',
+    'Kiribati',
+    'Kuwait',
+    'Kyrgyzstan',
+    'Laos',
+    'Latvia',
+    'Lebanon',
+    'Lesotho',
+    'Liberia',
+    'Libya',
+    'Liechtenstein',
+    'Lithuania',
+    'Luxembourg',
+    'Madagascar',
+    'Malawi',
+    'Malaysia',
+    'Maldives',
+    'Mali',
+    'Malta',
+    'Marshall Islands',
+    'Mauritania',
+    'Mauritius',
+    'Mexico',
+    'Micronesia',
+    'Moldova',
+    'Monaco',
+    'Mongolia',
+    'Montenegro',
+    'Morocco',
+    'Mozambique',
+    'Myanmar',
+    'Namibia',
+    'Nauru',
+    'Nepal',
+    'Netherlands',
+    'New Zealand',
+    'Nicaragua',
+    'Niger',
+    'Nigeria',
+    'North Korea',
+    'North Macedonia',
+    'Norway',
+    'Oman',
+    'Pakistan',
+    'Palau',
+    'Palestine',
+    'Panama',
+    'Papua New Guinea',
+    'Paraguay',
+    'Peru',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Rwanda',
+    'Saint Kitts and Nevis',
+    'Saint Lucia',
+    'Saint Vincent and the Grenadines',
+    'Samoa',
+    'San Marino',
+    'Sao Tome and Principe',
+    'Saudi Arabia',
+    'Senegal',
+    'Serbia',
+    'Seychelles',
+    'Sierra Leone',
+    'Singapore',
+    'Slovakia',
+    'Slovenia',
+    'Solomon Islands',
+    'Somalia',
     'South Africa',
+    'South Korea',
+    'South Sudan',
+    'Spain',
+    'Sri Lanka',
+    'Sudan',
+    'Suriname',
+    'Sweden',
+    'Switzerland',
+    'Syria',
+    'Taiwan',
+    'Tajikistan',
+    'Tanzania',
+    'Thailand',
+    'Togo',
+    'Tonga',
+    'Trinidad and Tobago',
+    'Tunisia',
+    'Turkey',
+    'Turkmenistan',
+    'Tuvalu',
+    'Uganda',
+    'Ukraine',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States',
+    'Uruguay',
+    'Uzbekistan',
+    'Vanuatu',
+    'Vatican City',
+    'Venezuela',
+    'Vietnam',
+    'Yemen',
+    'Zambia',
+    'Zimbabwe',
   ];
 
   final List<String> _experienceLevels = [
-    'All Levels',
     'Entry Level',
     'Mid Level',
     'Senior Level',
@@ -91,7 +255,6 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
   ];
 
   final List<String> _jobTypes = [
-    'All Types',
     'Engineer',
     'Technician',
     'Supervisor',
@@ -100,7 +263,6 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
   ];
 
   final List<String> _employmentTypes = [
-    'All Types',
     'Full Time',
     'Part Time',
     'Contract',
@@ -121,6 +283,11 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Dynamic colors based on active tab
+    final talentGreen = Color(0xFF10B981); // Emerald green
+    final isOnTalentTab = _tabController.index == 1;
+    final activeColor = isOnTalentTab ? talentGreen : AppColors.primary;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -131,7 +298,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
             color: AppColors.textOnPrimary,
           ),
         ),
-        backgroundColor: AppColors.primary,
+        backgroundColor: activeColor,
         elevation: 0,
         actions: [
           IconButton(
@@ -157,6 +324,9 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
+          onTap: (index) {
+            setState(() {}); // Refresh to update colors
+          },
           indicatorColor: AppColors.textOnPrimary,
           indicatorWeight: 3,
           labelColor: AppColors.textOnPrimary,
@@ -194,7 +364,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
             _showCreateJobPostingDialog();
           }
         },
-        backgroundColor: AppColors.primary,
+        backgroundColor: activeColor,
         icon: const Icon(Icons.add),
         label: Text(
           _tabController.index == 0 ? 'Create Profile' : 'Post a Job',
@@ -218,15 +388,12 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
       }
 
       // Country filter
-      if (_selectedCountry != null &&
-          _selectedCountry != 'All Countries' &&
-          job.country != _selectedCountry) {
+      if (_selectedCountry != null && job.country != _selectedCountry) {
         return false;
       }
 
       // Experience level filter
-      if (_selectedExperienceLevel != null &&
-          _selectedExperienceLevel != 'All Levels') {
+      if (_selectedExperienceLevel != null) {
         final levelMap = {
           'Entry Level': 'entry',
           'Mid Level': 'mid',
@@ -239,15 +406,14 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
       }
 
       // Job type filter
-      if (_selectedJobType != null && _selectedJobType != 'All Types') {
+      if (_selectedJobType != null) {
         if (job.jobTypeDisplay != _selectedJobType) {
           return false;
         }
       }
 
       // Employment type filter
-      if (_selectedEmploymentType != null &&
-          _selectedEmploymentType != 'All Types') {
+      if (_selectedEmploymentType != null) {
         if (job.employmentTypeDisplay != _selectedEmploymentType) {
           return false;
         }
@@ -321,12 +487,10 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
 
   bool _hasActiveFilters() {
     return _searchQuery.isNotEmpty ||
-        (_selectedCountry != null && _selectedCountry != 'All Countries') ||
-        (_selectedExperienceLevel != null &&
-            _selectedExperienceLevel != 'All Levels') ||
-        (_selectedJobType != null && _selectedJobType != 'All Types') ||
-        (_selectedEmploymentType != null &&
-            _selectedEmploymentType != 'All Types') ||
+        _selectedCountry != null ||
+        _selectedExperienceLevel != null ||
+        _selectedJobType != null ||
+        _selectedEmploymentType != null ||
         _remoteOnly ||
         _minSalary > 0 ||
         _maxSalary < 200000;
@@ -370,22 +534,19 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                 _buildFilterChip('Search: "$_searchQuery"', () {
                   setState(() => _searchQuery = '');
                 }),
-              if (_selectedCountry != null &&
-                  _selectedCountry != 'All Countries')
+              if (_selectedCountry != null)
                 _buildFilterChip(_selectedCountry!, () {
                   setState(() => _selectedCountry = null);
                 }),
-              if (_selectedExperienceLevel != null &&
-                  _selectedExperienceLevel != 'All Levels')
+              if (_selectedExperienceLevel != null)
                 _buildFilterChip(_selectedExperienceLevel!, () {
                   setState(() => _selectedExperienceLevel = null);
                 }),
-              if (_selectedJobType != null && _selectedJobType != 'All Types')
+              if (_selectedJobType != null)
                 _buildFilterChip(_selectedJobType!, () {
                   setState(() => _selectedJobType = null);
                 }),
-              if (_selectedEmploymentType != null &&
-                  _selectedEmploymentType != 'All Types')
+              if (_selectedEmploymentType != null)
                 _buildFilterChip(_selectedEmploymentType!, () {
                   setState(() => _selectedEmploymentType = null);
                 }),
@@ -751,6 +912,15 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
   }
 
   Widget _buildJobSeekerCard(JobSeekerProfile seeker) {
+    // Professional green gradient for Find Talent section
+    const talentGradient = LinearGradient(
+      colors: [Color(0xFF10B981), Color(0xFF34D399)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+    const talentColor = Color(0xFF10B981); // Emerald green
+    const talentLightColor = Color(0xFFD1FAE5); // Light green
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -772,7 +942,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
+                      gradient: talentGradient,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -826,6 +996,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                       Icons.work_history,
                       '${seeker.experienceYears} years',
                       'Experience',
+                      talentColor,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -834,6 +1005,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                       Icons.trending_up,
                       seeker.experienceLevelDisplay,
                       'Level',
+                      talentColor,
                     ),
                   ),
                 ],
@@ -884,7 +1056,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: talentLightColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -895,7 +1067,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+                        color: talentColor,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -906,16 +1078,19 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                           Icons.stars,
                           '${seeker.appScore}',
                           'Points',
+                          talentColor,
                         ),
                         _buildMetric(
                           Icons.check_circle,
                           '${seeker.ticketsSolved}',
                           'Solved',
+                          talentColor,
                         ),
                         _buildMetric(
                           Icons.star,
                           seeker.averageRating.toStringAsFixed(1),
                           'Rating',
+                          talentColor,
                         ),
                       ],
                     ),
@@ -931,7 +1106,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
+                    color: talentColor,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -945,17 +1120,18 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: talentLightColor.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.border,
+                          color: talentColor.withOpacity(0.3),
                         ),
                       ),
                       child: Text(
                         skill,
                         style: const TextStyle(
                           fontSize: 11,
-                          color: AppColors.textSecondary,
+                          color: talentColor,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     );
@@ -1039,7 +1215,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String value, String label) {
+  Widget _buildInfoTile(IconData icon, String value, String label, [Color? iconColor]) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -1049,7 +1225,7 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: AppColors.primary),
+          Icon(icon, size: 20, color: iconColor ?? AppColors.primary),
           const SizedBox(height: 4),
           Text(
             value,
@@ -1073,20 +1249,21 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
     );
   }
 
-  Widget _buildMetric(IconData icon, String value, String label) {
+  Widget _buildMetric(IconData icon, String value, String label, [Color? iconColor]) {
+    final color = iconColor ?? AppColors.primary;
     return Column(
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: AppColors.primary),
+            Icon(icon, size: 14, color: color),
             const SizedBox(width: 4),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: color,
               ),
             ),
           ],
@@ -1155,16 +1332,20 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
   }
 
   void _showCreateJobSeekerDialog() {
-    // TODO: Navigate to job seeker profile creation screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Create Job Seeker Profile (Coming Soon)')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateJobSeekerProfileScreen(),
+      ),
     );
   }
 
   void _showCreateJobPostingDialog() {
-    // TODO: Navigate to job posting creation screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Create Job Posting (Coming Soon)')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateJobPostingScreen(),
+      ),
     );
   }
 
@@ -1245,24 +1426,135 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                             ),
                           ),
                           const SizedBox(height: 12),
-                          DropdownButtonFormField<String>(
-                            value: _selectedCountry,
-                            decoration: InputDecoration(
-                              hintText: 'Select Country',
-                              prefixIcon: const Icon(Icons.public),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+
+                          // Popular Countries
+                          const Text(
+                            'Popular:',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
                             ),
-                            items: _countries.map((country) {
-                              return DropdownMenuItem(
-                                value: country,
-                                child: Text(country),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _popularCountries.map((country) {
+                              final isSelected = _selectedCountry == country;
+                              return GestureDetector(
+                                onTap: () {
+                                  setModalState(() {
+                                    _selectedCountry = isSelected ? null : country;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    country,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
-                            onChanged: (value) {
-                              setModalState(() => _selectedCountry = value);
-                            },
+                          ),
+                          const SizedBox(height: 16),
+
+                          // All Countries
+                          const Text(
+                            'All Countries:',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _allCountries.length,
+                              itemBuilder: (context, index) {
+                                final country = _allCountries[index];
+                                final isSelected = _selectedCountry == country;
+                                return InkWell(
+                                  onTap: () {
+                                    setModalState(() {
+                                      _selectedCountry = isSelected ? null : country;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? AppColors.primaryLight
+                                          : null,
+                                      border: Border(
+                                        bottom: index < _allCountries.length - 1
+                                            ? BorderSide(
+                                                color: AppColors.border.withOpacity(0.3))
+                                            : BorderSide.none,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            country,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
+                                              color: isSelected
+                                                  ? AppColors.primary
+                                                  : AppColors.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: AppColors.primary,
+                                            size: 20,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           const SizedBox(height: 24),
 
@@ -1277,23 +1569,46 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                           ),
                           const SizedBox(height: 12),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                            spacing: 10,
+                            runSpacing: 10,
                             children: _experienceLevels.map((level) {
-                              final isSelected =
-                                  _selectedExperienceLevel == level;
-                              return FilterChip(
-                                label: Text(level),
-                                selected: isSelected,
-                                onSelected: (selected) {
+                              final isSelected = _selectedExperienceLevel == level;
+                              return GestureDetector(
+                                onTap: () {
                                   setModalState(() {
-                                    _selectedExperienceLevel =
-                                        selected ? level : null;
+                                    _selectedExperienceLevel = isSelected ? null : level;
                                   });
                                 },
-                                backgroundColor: AppColors.surface,
-                                selectedColor: AppColors.primaryLight,
-                                checkmarkColor: AppColors.primary,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    level,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
                           ),
@@ -1310,21 +1625,46 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                           ),
                           const SizedBox(height: 12),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                            spacing: 10,
+                            runSpacing: 10,
                             children: _jobTypes.map((type) {
                               final isSelected = _selectedJobType == type;
-                              return FilterChip(
-                                label: Text(type),
-                                selected: isSelected,
-                                onSelected: (selected) {
+                              return GestureDetector(
+                                onTap: () {
                                   setModalState(() {
-                                    _selectedJobType = selected ? type : null;
+                                    _selectedJobType = isSelected ? null : type;
                                   });
                                 },
-                                backgroundColor: AppColors.surface,
-                                selectedColor: AppColors.primaryLight,
-                                checkmarkColor: AppColors.primary,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    type,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
                           ),
@@ -1341,22 +1681,46 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                           ),
                           const SizedBox(height: 12),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                            spacing: 10,
+                            runSpacing: 10,
                             children: _employmentTypes.map((type) {
                               final isSelected = _selectedEmploymentType == type;
-                              return FilterChip(
-                                label: Text(type),
-                                selected: isSelected,
-                                onSelected: (selected) {
+                              return GestureDetector(
+                                onTap: () {
                                   setModalState(() {
-                                    _selectedEmploymentType =
-                                        selected ? type : null;
+                                    _selectedEmploymentType = isSelected ? null : type;
                                   });
                                 },
-                                backgroundColor: AppColors.surface,
-                                selectedColor: AppColors.primaryLight,
-                                checkmarkColor: AppColors.primary,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    type,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
                           ),
@@ -1652,25 +2016,135 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                             ),
                           ),
                           const SizedBox(height: 12),
-                          DropdownButtonFormField<String>(
-                            value: _selectedSeekerCountry,
-                            decoration: InputDecoration(
-                              hintText: 'Select Country',
-                              prefixIcon: const Icon(Icons.flag),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+
+                          // Popular Countries
+                          const Text(
+                            'Popular:',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
                             ),
-                            items: _countries.map((country) {
-                              return DropdownMenuItem(
-                                value: country,
-                                child: Text(country),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _popularCountries.map((country) {
+                              final isSelected = _selectedSeekerCountry == country;
+                              return GestureDetector(
+                                onTap: () {
+                                  setModalState(() {
+                                    _selectedSeekerCountry = isSelected ? null : country;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    country,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
-                            onChanged: (value) {
-                              setModalState(
-                                  () => _selectedSeekerCountry = value);
-                            },
+                          ),
+                          const SizedBox(height: 16),
+
+                          // All Countries
+                          const Text(
+                            'All Countries:',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _allCountries.length,
+                              itemBuilder: (context, index) {
+                                final country = _allCountries[index];
+                                final isSelected = _selectedSeekerCountry == country;
+                                return InkWell(
+                                  onTap: () {
+                                    setModalState(() {
+                                      _selectedSeekerCountry = isSelected ? null : country;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? AppColors.primaryLight
+                                          : null,
+                                      border: Border(
+                                        bottom: index < _allCountries.length - 1
+                                            ? BorderSide(
+                                                color: AppColors.border.withOpacity(0.3))
+                                            : BorderSide.none,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            country,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
+                                              color: isSelected
+                                                  ? AppColors.primary
+                                                  : AppColors.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: AppColors.primary,
+                                            size: 20,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           const SizedBox(height: 24),
 
@@ -1685,23 +2159,46 @@ class _JobMarketplaceScreenState extends State<JobMarketplaceScreen>
                           ),
                           const SizedBox(height: 12),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                            spacing: 10,
+                            runSpacing: 10,
                             children: _experienceLevels.map((level) {
-                              final isSelected =
-                                  _selectedSeekerExperienceLevel == level;
-                              return FilterChip(
-                                label: Text(level),
-                                selected: isSelected,
-                                onSelected: (selected) {
+                              final isSelected = _selectedSeekerExperienceLevel == level;
+                              return GestureDetector(
+                                onTap: () {
                                   setModalState(() {
-                                    _selectedSeekerExperienceLevel =
-                                        selected ? level : null;
+                                    _selectedSeekerExperienceLevel = isSelected ? null : level;
                                   });
                                 },
-                                backgroundColor: AppColors.surface,
-                                selectedColor: AppColors.primaryLight,
-                                checkmarkColor: AppColors.primary,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.border,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    level,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
                               );
                             }).toList(),
                           ),
