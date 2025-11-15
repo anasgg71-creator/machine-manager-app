@@ -244,7 +244,8 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                             color: AppColors.textSecondary,
                           ),
                           const SizedBox(width: 4),
-                          Expanded(
+                          Flexible(
+                            flex: 2,
                             child: Text(
                               widget.ticket['machine_id'] ?? 'Unknown Machine',
                               style: const TextStyle(
@@ -256,18 +257,24 @@ class _EnhancedTicketCardState extends State<EnhancedTicketCard>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.getPriorityColor(priority).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              priority.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.getPriorityColor(priority),
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.getPriorityColor(priority).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                priority.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.getPriorityColor(priority),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),

@@ -561,10 +561,25 @@ class SupabaseService {
   }
 
   static Stream<List<Map<String, dynamic>>> subscribeToChatMessages(String ticketId) {
-    return client
+    print('📡 STREAM: Creating stream for ticket_id: $ticketId');
+
+    // Stream without filter - we'll filter client-side
+    // This is more reliable with Supabase Realtime
+    final stream = client
         .from('chat_messages')
         .stream(primaryKey: ['id'])
-        .eq('ticket_id', ticketId);
+        .map((allMessages) {
+          print('📡 STREAM: Received ${allMessages.length} total messages, filtering for ticket $ticketId');
+          // Filter for this ticket on the client side
+          final filtered = allMessages
+              .where((msg) => msg['ticket_id'] == ticketId)
+              .toList();
+          print('📡 STREAM: Filtered to ${filtered.length} messages for this ticket');
+          return filtered;
+        });
+
+    print('📡 STREAM: Stream created successfully');
+    return stream;
   }
 
   static Stream<List<Map<String, dynamic>>> subscribeToTicketTodos(String ticketId) {

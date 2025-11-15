@@ -27,9 +27,10 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  final _messageFocusNode = FocusNode();
 
   List<ChatMessage> _messages = [];
   List<TicketAttachment> _attachments = [];
@@ -46,19 +47,43 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadMessages();
     _loadAttachments();
     _subscribeToMessages();
     _setupPresence();
+
+    // Add listener to scroll when focus changes
+    _messageFocusNode.addListener(() {
+      if (_messageFocusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          _scrollToBottom();
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.dispose();
+    _messageFocusNode.dispose();
     _messagesSubscription?.cancel();
     _presenceChannel?.unsubscribe();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    // Called when keyboard opens/closes
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    if (bottomInset > 0) {
+      // Keyboard is visible, scroll to bottom
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _scrollToBottom();
+      });
+    }
   }
 
   Future<void> _loadMessages() async {
@@ -94,14 +119,26 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _subscribeToMessages() {
     _messagesSubscription?.cancel();
+    print('🔔 REALTIME: Setting up message subscription for ticket ${widget.ticketId}');
     _messagesSubscription = SupabaseService.subscribeToChatMessages(widget.ticketId)
-        .listen((data) {
-      final newMessages = data.map((json) => ChatMessage.fromJson(json)).toList();
-      setState(() => _messages = newMessages);
-      _scrollToBottom();
+        .listen((data) async {
+      print('🔔 REALTIME: Stream event received! Data length: ${data.length}');
+      // The stream only returns basic message data, so we need to fetch full messages
+      // including sender profile information
+      try {
+        print('🔔 REALTIME: Fetching complete messages...');
+        final messages = await SupabaseService.getChatMessages(widget.ticketId);
+        print('🔔 REALTIME: Got ${messages.length} messages, updating UI');
+        setState(() => _messages = messages);
+        _scrollToBottom();
+      } catch (e) {
+        print('❌ REALTIME: Error refreshing messages: $e');
+      }
     }, onError: (error) {
+      print('❌ REALTIME: Stream error: ${error.toString()}');
       _showError('Real-time updates failed: ${error.toString()}');
     });
+    print('🔔 REALTIME: Subscription setup complete');
   }
 
   void _setupPresence() async {
@@ -543,10 +580,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Column(
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          // Clean up subscriptions when leaving chat
+          _messagesSubscription?.cancel();
+          _presenceChannel?.unsubscribe();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+            tooltip: 'Back',
+          ),
+          title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -820,16 +871,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 // Attachment options button
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
                   ),
                   child: PopupMenuButton<String>(
                     icon: const Icon(
-                      Icons.add_circle_outline,
-                      color: AppColors.primary,
+                      Icons.add,
+                      color: AppColors.textOnPrimary,
+                      size: 28,
                     ),
-                    tooltip: 'Attachments',
+                    tooltip: 'Attach',
                     enabled: !_isSending,
                     onSelected: (value) {
                       switch (value) {
@@ -910,6 +961,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    focusNode: _messageFocusNode,
                     maxLines: 1,
                     decoration: InputDecoration(
                       hintText: 'Type message...',
@@ -959,6 +1011,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

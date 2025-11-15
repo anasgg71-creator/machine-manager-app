@@ -64,7 +64,8 @@
       "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\":*)",
       "Bash(C:/Flutter/flutter/bin/flutter run -d RZCX61QDY6L)",
       "Bash(start microsoft-edge:https://supabase.com/dashboard/project/xsrvoyjdrylusvmdwppl/storage/buckets)",
-      "Bash(clip:*)"
+      "Bash(clip:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

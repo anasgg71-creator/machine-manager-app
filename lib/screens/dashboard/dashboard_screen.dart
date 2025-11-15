@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
@@ -32,6 +33,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _searchQuery = '';
   String _currentFilter = 'all';
   String _selectedRoom = 'room1';
+
+  // Double-press-to-exit variables
+  DateTime? _lastBackPressTime;
+  static const _exitTimeLimit = Duration(seconds: 2);
 
   // Language translation helper - simplified for now
   String _translate(String key) {
@@ -621,23 +626,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            _buildCurrentScreen(),
-            if (_showSolverModal) _buildSolverModal(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: AppNavigationBar(
-        currentScreen: _currentScreen,
-        onScreenChanged: (screen) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        // Handle back navigation based on current screen
+        final mainScreens = ['roomSelection', 'activeIssues', 'history', 'team'];
+
+        if (!mainScreens.contains(_currentScreen)) {
+          // If not on a main screen, navigate back to previous screen
           setState(() {
-            _currentScreen = screen;
+            if (_currentScreen == 'roomDetail') {
+              _currentScreen = 'roomSelection';
+            } else if (_currentScreen == 'chat') {
+              _currentScreen = 'activeIssues';
+            } else {
+              _currentScreen = 'roomSelection';
+            }
           });
-        },
+        } else {
+          // On main screen - implement double-press-to-exit
+          final now = DateTime.now();
+          if (_lastBackPressTime == null ||
+              now.difference(_lastBackPressTime!) > _exitTimeLimit) {
+            // First press or timeout - show warning
+            _lastBackPressTime = now;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Press back again to exit'),
+                duration: Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: AppColors.warning,
+              ),
+            );
+          } else {
+            // Second press within time limit - exit app
+            SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              _buildCurrentScreen(),
+              if (_showSolverModal) _buildSolverModal(),
+            ],
+          ),
+        ),
+        bottomNavigationBar: AppNavigationBar(
+          currentScreen: _currentScreen,
+          onScreenChanged: (screen) {
+            setState(() {
+              _currentScreen = screen;
+            });
+          },
+        ),
       ),
     );
   }
@@ -766,17 +812,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSupplierPartsScreen(Map<String, String> currentRoom) {
-    return Column(
-      children: [
-        _buildAppHeader('Supplier Management', 'Manage suppliers and search parts', onBack: () {
-          setState(() {
-            _currentScreen = 'roomSelection';
-          });
-        }),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          _buildAppHeader('Supplier Management', 'Manage suppliers and search parts', onBack: () {
+            setState(() {
+              _currentScreen = 'roomSelection';
+            });
+          }),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Quick Search Section
@@ -1234,6 +1283,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ],
+      ),
     );
   }
 
@@ -3017,6 +3067,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         print('🔄 Consumer builder called - isLoading: ${ticketProvider.isLoading}, tickets: ${ticketProvider.tickets.length}');
         return Scaffold(
           backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: true,
           body: Column(
             children: [
               _buildAppHeader('Active Issues', 'Current open tickets', onBack: () {
@@ -3025,41 +3076,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 });
               }),
               // Search and Filter Section
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Search Bar
-                    AnimatedFormField(
-                      label: 'Search tickets',
-                      hintText: 'Type to search...',
-                      prefixIcon: Icons.search,
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
+              Flexible(
+                flex: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Search Bar
+                      AnimatedFormField(
+                        label: 'Search tickets',
+                        hintText: 'Type to search...',
+                        prefixIcon: Icons.search,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
 
-                    // Quick Filter Buttons
-                    SizedBox(
-                      height: 36,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildFilterButton('👤 My Tickets', _currentFilter == 'my', () => _applyMyTicketsFilter(ticketProvider)),
-                            const SizedBox(width: 8),
-                            _buildFilterButton('⏰ Expiring Soon', _currentFilter == 'expiring', () => _applyExpiringSoonFilter(ticketProvider)),
-                            const SizedBox(width: 8),
-                            _buildFilterButton('❗ High Priority', _currentFilter == 'priority', () => _applyHighPriorityFilter(ticketProvider)),
-                          ],
+                      // Quick Filter Buttons
+                      SizedBox(
+                        height: 36,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _buildFilterButton('👤 My Tickets', _currentFilter == 'my', () => _applyMyTicketsFilter(ticketProvider)),
+                              const SizedBox(width: 8),
+                              _buildFilterButton('⏰ Expiring Soon', _currentFilter == 'expiring', () => _applyExpiringSoonFilter(ticketProvider)),
+                              const SizedBox(width: 8),
+                              _buildFilterButton('❗ High Priority', _currentFilter == 'priority', () => _applyHighPriorityFilter(ticketProvider)),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Expanded(
