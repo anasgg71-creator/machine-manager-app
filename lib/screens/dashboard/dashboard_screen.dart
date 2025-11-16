@@ -1329,14 +1329,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.cardBorder),
                   ),
-                  child: Column(
-                    children: [
-                      // Row 1: Machine Type & Defect Type
-                      Row(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isNarrow = constraints.maxWidth < 500;
+
+                      return Column(
                         children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
+                          // Row 1: Machine Type & Defect Type
+                          if (isNarrow) ...[
+                            DropdownButtonFormField<String>(
                               value: _labMachineType,
+                              isExpanded: true,
                               decoration: const InputDecoration(
                                 labelText: 'Machine Type *',
                                 border: OutlineInputBorder(),
@@ -1358,11 +1361,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 });
                               },
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<String>(
                               value: _labDefectType,
+                              isExpanded: true,
                               decoration: const InputDecoration(
                                 labelText: 'Defect Type *',
                                 border: OutlineInputBorder(),
@@ -1379,30 +1381,144 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 });
                               },
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    value: _labMachineType,
+                                    isExpanded: true,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Machine Type *',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(value: '', child: Text('Select machine')),
+                                      DropdownMenuItem(value: 'Filling Machine A', child: Text('Filling Machine A')),
+                                      DropdownMenuItem(value: 'Filling Machine B', child: Text('Filling Machine B')),
+                                      DropdownMenuItem(value: 'Pasteurizer Unit 1', child: Text('Pasteurizer Unit 1')),
+                                      DropdownMenuItem(value: 'Pasteurizer Unit 2', child: Text('Pasteurizer Unit 2')),
+                                      DropdownMenuItem(value: 'Packaging Line 1', child: Text('Packaging Line 1')),
+                                      DropdownMenuItem(value: 'Packaging Line 2', child: Text('Packaging Line 2')),
+                                      DropdownMenuItem(value: 'Storage Tank A', child: Text('Storage Tank A')),
+                                      DropdownMenuItem(value: 'Storage Tank B', child: Text('Storage Tank B')),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _labMachineType = value == '' ? null : value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    value: _labDefectType,
+                                    isExpanded: true,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Defect Type *',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(value: '', child: Text('Select defect type')),
+                                      DropdownMenuItem(value: 'Blow', child: Text('Blow (Gas production)')),
+                                      DropdownMenuItem(value: 'Curdle', child: Text('Curdle (Coagulation)')),
+                                      DropdownMenuItem(value: 'Both', child: Text('Both (Blow & Curdle)')),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _labDefectType = value == '' ? null : value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          const SizedBox(height: 16),
 
-                      // Row 2: Bacteria Type & Batch Number
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
+                          // Row 2: Bacteria Type & Batch Number
+                          if (isNarrow) ...[
+                            DropdownButtonFormField<String>(
                               value: _labBacteriaType,
+                              isExpanded: true,
                               decoration: const InputDecoration(
                                 labelText: 'Bacteria Type *',
                                 border: OutlineInputBorder(),
                               ),
                               items: const [
-                                DropdownMenuItem(value: '', child: Text('Select bacteria type')),
-                                DropdownMenuItem(value: 'Clostridium', child: Text('Clostridium (Anaerobic spore-former)')),
-                                DropdownMenuItem(value: 'Bacillus', child: Text('Bacillus (Aerobic spore-former)')),
-                                DropdownMenuItem(value: 'Coliform', child: Text('Coliform bacteria')),
-                                DropdownMenuItem(value: 'Lactobacillus', child: Text('Lactobacillus (Lactic acid bacteria)')),
-                                DropdownMenuItem(value: 'Yeast', child: Text('Yeast contamination')),
-                                DropdownMenuItem(value: 'Mold', child: Text('Mold contamination')),
-                                DropdownMenuItem(value: 'Unknown', child: Text('Unknown / Not tested yet')),
+                                DropdownMenuItem(
+                                  value: '',
+                                  child: Text(
+                                    'Select bacteria type',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Clostridium',
+                                  child: Text(
+                                    'Clostridium (Anaerobic spore-former)',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Bacillus',
+                                  child: Text(
+                                    'Bacillus (Aerobic spore-former)',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Coliform',
+                                  child: Text(
+                                    'Coliform bacteria',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Lactobacillus',
+                                  child: Text(
+                                    'Lactobacillus (Lactic acid bacteria)',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Yeast',
+                                  child: Text(
+                                    'Yeast contamination',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Mold',
+                                  child: Text(
+                                    'Mold contamination',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Unknown',
+                                  child: Text(
+                                    'Unknown / Not tested yet',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
                               ],
                               onChanged: (value) {
                                 setState(() {
@@ -1410,10 +1526,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 });
                               },
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextField(
+                            const SizedBox(height: 16),
+                            TextField(
                               controller: _labBatchNumberController,
                               decoration: const InputDecoration(
                                 labelText: 'Batch Number',
@@ -1421,42 +1535,139 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 border: OutlineInputBorder(),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    value: _labBacteriaType,
+                                    isExpanded: true,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Bacteria Type *',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: '',
+                                        child: Text(
+                                          'Select bacteria type',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Clostridium',
+                                        child: Text(
+                                          'Clostridium (Anaerobic spore-former)',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Bacillus',
+                                        child: Text(
+                                          'Bacillus (Aerobic spore-former)',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Coliform',
+                                        child: Text(
+                                          'Coliform bacteria',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Lactobacillus',
+                                        child: Text(
+                                          'Lactobacillus (Lactic acid bacteria)',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Yeast',
+                                        child: Text(
+                                          'Yeast contamination',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Mold',
+                                        child: Text(
+                                          'Mold contamination',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Unknown',
+                                        child: Text(
+                                          'Unknown / Not tested yet',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _labBacteriaType = value == '' ? null : value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _labBatchNumberController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Batch Number',
+                                      hintText: 'e.g., BATCH-2024-001',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          const SizedBox(height: 16),
 
-                      // Row 3: Defect Packs, Total Packs, Defect Rate
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
+                          // Row 3: Defect Packs, Total Packs, Defect Rate
+                          if (isNarrow) ...[
+                            TextField(
                               controller: _labDefectPacksController,
                               decoration: const InputDecoration(
-                                labelText: 'Number of Defect Packs *',
+                                labelText: 'Defect Packs *',
                                 hintText: '0',
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.number,
                               onChanged: (value) => _calculateDefectRate(),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextField(
+                            const SizedBox(height: 16),
+                            TextField(
                               controller: _labTotalPacksController,
                               decoration: const InputDecoration(
-                                labelText: 'Total Packs Inspected *',
+                                labelText: 'Total Packs *',
                                 hintText: '0',
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.number,
                               onChanged: (value) => _calculateDefectRate(),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextField(
+                            const SizedBox(height: 16),
+                            TextField(
                               decoration: InputDecoration(
                                 labelText: 'Defect Rate (%)',
                                 hintText: '0.00%',
@@ -1467,96 +1678,140 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               readOnly: true,
                               controller: TextEditingController(text: '$_labDefectRate%'),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Detailed Description
-                      TextField(
-                        controller: _labDescriptionController,
-                        decoration: const InputDecoration(
-                          labelText: 'Detailed Description',
-                          hintText: 'Describe the defect symptoms, appearance, timing, etc...',
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 3,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // File Upload Area
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Attach Photos/Documents',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _labDefectPacksController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Defect Packs *',
+                                      hintText: '0',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) => _calculateDefectRate(),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _labTotalPacksController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Total Packs *',
+                                      hintText: '0',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) => _calculateDefectRate(),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      labelText: 'Defect Rate (%)',
+                                      hintText: '0.00%',
+                                      border: const OutlineInputBorder(),
+                                      filled: true,
+                                      fillColor: AppColors.inputBackground,
+                                    ),
+                                    readOnly: true,
+                                    controller: TextEditingController(text: '$_labDefectRate%'),
+                                  ),
+                                ),
+                              ],
                             ),
+                          ],
+                          const SizedBox(height: 16),
+
+                          // Detailed Description
+                          TextField(
+                            controller: _labDescriptionController,
+                            decoration: const InputDecoration(
+                              labelText: 'Detailed Description',
+                              hintText: 'Describe the defect symptoms, appearance, timing, etc...',
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 3,
                           ),
-                          const SizedBox(height: 8),
-                          InkWell(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('File upload feature coming soon!')),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: AppColors.inputBackground,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.cardBorder, width: 2, style: BorderStyle.solid),
+                          const SizedBox(height: 16),
+
+                          // File Upload Area
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Attach Photos/Documents',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text('📎', style: TextStyle(fontSize: 24)),
-                                  SizedBox(width: 12),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Click to attach photos or documents',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.textPrimary,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'JPG, PNG, PDF (Max 10MB each)',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.textSecondary,
-                                        ),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('File upload feature coming soon!')),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.inputBackground,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: AppColors.cardBorder, width: 2, style: BorderStyle.solid),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('📎', style: TextStyle(fontSize: 24)),
+                                      SizedBox(width: 12),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Click to attach photos or documents',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: AppColors.textPrimary,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'JPG, PNG, PDF (Max 10MB each)',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Submit Button
+                          ElevatedButton(
+                            onPressed: _submitLabReport,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
+                            child: const Text('Submit for Diagnosis'),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Submit Button
-                      ElevatedButton(
-                        onPressed: _submitLabReport,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text('Submit for Diagnosis'),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),
