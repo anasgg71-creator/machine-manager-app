@@ -11,6 +11,7 @@ import '../../config/colors.dart';
 import '../../config/constants.dart';
 import '../chat/chat_screen.dart';
 import '../profile/profile_screen.dart';
+import '../job_marketplace/job_marketplace_screen.dart';
 import '../../widgets/animated_button.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../widgets/animated_form_field.dart';
@@ -79,6 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       {'id': 'room3', 'name': _translate('quality_lab'), 'icon': '🔬', 'status': '✓ ${_translate('status_active')}', 'description': _translate('quality_lab_desc')},
       {'id': 'room4', 'name': _translate('optirva_support'), 'icon': '🛠️', 'status': '✓ ${_translate('status_available')}', 'description': _translate('optirva_support_desc')},
       {'id': 'room5', 'name': _translate('machine_market'), 'icon': '🏪', 'status': '✓ ${_translate('status_open')}', 'description': _translate('machine_market_desc')},
+      {'id': 'job_marketplace', 'name': 'Job Marketplace', 'icon': '💼', 'status': '✓ Active', 'description': 'Find jobs or hire talented professionals'},
     ];
   }
 
@@ -6086,10 +6088,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     return GestureDetector(
                       onTap: () {
-                        setState(() {
-                          _selectedRoom = room['id']!;
-                          _currentScreen = 'roomDetail';
-                        });
+                        // Special handling for Job Marketplace
+                        if (room['id'] == 'job_marketplace') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const JobMarketplaceScreen(),
+                            ),
+                          );
+                        } else {
+                          setState(() {
+                            _selectedRoom = room['id']!;
+                            _currentScreen = 'roomDetail';
+                          });
+                        }
                       },
                       child: Container(
                         decoration: BoxDecoration(
