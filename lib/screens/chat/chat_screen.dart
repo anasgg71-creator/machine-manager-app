@@ -16,11 +16,13 @@ import '../../models/ticket_attachment.dart';
 class ChatScreen extends StatefulWidget {
   final String ticketId;
   final String? ticketTitle;
+  final VoidCallback? onBack;
 
   const ChatScreen({
     super.key,
     required this.ticketId,
     this.ticketTitle,
+    this.onBack,
   });
 
   @override
@@ -594,7 +596,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if (widget.onBack != null) {
+                widget.onBack!();
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
             tooltip: 'Back',
           ),
           title: Column(

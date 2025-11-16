@@ -5507,6 +5507,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return ChatScreen(
       ticketId: _selectedTicketId!,
       ticketTitle: 'Ticket Chat',
+      onBack: () {
+        setState(() {
+          _currentScreen = 'activeIssues';
+          _selectedTicketId = null;
+        });
+      },
     );
   }
 
