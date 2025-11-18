@@ -1,100 +1,183 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:translator/translator.dart';
 
+/// Professional translation service for automatic message translation
+/// Supports 26 languages with automatic detection and caching
 class TranslationService {
-  // Using LibreTranslate API (free and open-source)
-  static const String _apiUrl = 'https://libretranslate.com/translate';
+  static final TranslationService _instance = TranslationService._internal();
+  factory TranslationService() => _instance;
+  TranslationService._internal();
 
-  // Cache to avoid re-translating the same messages
-  static final Map<String, String> _cache = {};
+  final GoogleTranslator _translator = GoogleTranslator();
 
-  /// Translate text to target language
-  /// Default target is English ('en')
-  static Future<String> translate(
-    String text, {
-    String targetLang = 'en',
-    String? sourceLang,
-  }) async {
-    // Create cache key
-    final cacheKey = '${sourceLang ?? 'auto'}_${targetLang}_$text';
+  /// Supported languages with ISO 639-1 codes
+  static const Map<String, String> supportedLanguages = {
+    'en': 'English',
+    'ar': 'Arabic',
+    'es': 'Spanish',
+    'fr': 'French',
+    'de': 'German',
+    'it': 'Italian',
+    'pt': 'Portuguese',
+    'ru': 'Russian',
+    'zh': 'Chinese',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'hi': 'Hindi',
+    'tr': 'Turkish',
+    'nl': 'Dutch',
+    'pl': 'Polish',
+    'sv': 'Swedish',
+    'no': 'Norwegian',
+    'da': 'Danish',
+    'fi': 'Finnish',
+    'cs': 'Czech',
+    'el': 'Greek',
+    'he': 'Hebrew',
+    'th': 'Thai',
+    'vi': 'Vietnamese',
+    'id': 'Indonesian',
+    'ms': 'Malay',
+  };
 
-    // Check cache first
-    if (_cache.containsKey(cacheKey)) {
-      return _cache[cacheKey]!;
-    }
+  /// Detect the language of a given text
+  /// Returns ISO 639-1 language code
+  Future<String> detectLanguage(String text) async {
+    if (text.trim().isEmpty) return 'en';
 
     try {
-      final response = await http.post(
-        Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'q': text,
-          'source': sourceLang ?? 'auto',
-          'target': targetLang,
-          'format': 'text',
-        }),
+      final translation = await _translator.translate(
+        text,
+        from: 'auto',
+        to: 'en',
       );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final translatedText = data['translatedText'] as String;
-
-        // Cache the translation
-        _cache[cacheKey] = translatedText;
-
-        return translatedText;
-      } else {
-        print('Translation API error: ${response.statusCode} - ${response.body}');
-        // Return original text on error (silently fail)
-        return text;
-      }
+      return translation.sourceLanguage.code;
     } catch (e) {
-      print('Translation error: $e');
+      print('❌ Translation Error - Language detection failed: $e');
+      return 'en'; // Default to English on error
+    }
+  }
+
+  /// Translate text from source language to target language
+  /// Returns translated text or original text on error
+  Future<String> translate({
+    required String text,
+    required String from,
+    required String to,
+  }) async {
+    // Don't translate if source and target are the same
+    if (from == to) return text;
+    if (text.trim().isEmpty) return text;
+
+    try {
+      print('🌐 Translating from $from to $to');
+      final translation = await _translator.translate(
+        text,
+        from: from,
+        to: to,
+      );
+      print('✅ Translation successful');
+      return translation.text;
+    } catch (e) {
+      print('❌ Translation Error: $e');
       return text; // Return original text on error
     }
   }
 
-  /// Detect language of text
-  static Future<String?> detectLanguage(String text) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://libretranslate.com/detect'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'q': text}),
-      );
+  /// Batch translate text to multiple languages
+  /// Returns a map of language code to translated text
+  /// Used for pre-caching translations
+  Future<Map<String, String>> translateToMultiple({
+    required String text,
+    required String from,
+    required List<String> targetLanguages,
+  }) async {
+    final Map<String, String> translations = {};
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data is List && data.isNotEmpty) {
-          return data[0]['language'] as String?;
-        }
+    for (final targetLang in targetLanguages) {
+      if (targetLang == from) {
+        translations[targetLang] = text;
+        continue;
       }
-    } catch (e) {
-      print('Language detection error: $e');
+
+      try {
+        final translated = await translate(
+          text: text,
+          from: from,
+          to: targetLang,
+        );
+        translations[targetLang] = translated;
+      } catch (e) {
+        print('❌ Error translating to $targetLang: $e');
+        translations[targetLang] = text;
+      }
     }
-    return null;
+
+    return translations;
   }
 
-  /// Clear translation cache
-  static void clearCache() {
-    _cache.clear();
+  /// Get the translated message for a user's preferred language
+  /// Uses cached translation if available, returns original as fallback
+  String getTranslatedMessage({
+    required String originalText,
+    required String originalLang,
+    required String preferredLang,
+    Map<String, dynamic>? cachedTranslations,
+  }) {
+    // Return original if same language
+    if (originalLang == preferredLang) return originalText;
+
+    // Check cached translations
+    if (cachedTranslations != null && cachedTranslations.containsKey(preferredLang)) {
+      final cached = cachedTranslations[preferredLang];
+      if (cached != null && cached.toString().isNotEmpty) {
+        return cached.toString();
+      }
+    }
+
+    // Return original as fallback
+    return originalText;
   }
 
-  /// Get supported languages
-  static List<Map<String, String>> getSupportedLanguages() {
-    return [
-      {'code': 'en', 'name': 'English'},
-      {'code': 'ar', 'name': 'Arabic'},
-      {'code': 'es', 'name': 'Spanish'},
-      {'code': 'fr', 'name': 'French'},
-      {'code': 'de', 'name': 'German'},
-      {'code': 'zh', 'name': 'Chinese'},
-      {'code': 'ja', 'name': 'Japanese'},
-      {'code': 'ko', 'name': 'Korean'},
-      {'code': 'ru', 'name': 'Russian'},
-      {'code': 'pt', 'name': 'Portuguese'},
-      {'code': 'it', 'name': 'Italian'},
-      {'code': 'hi', 'name': 'Hindi'},
-    ];
+  /// Validate if a language code is supported
+  bool isLanguageSupported(String langCode) {
+    return supportedLanguages.containsKey(langCode);
+  }
+
+  /// Get language name from code
+  String getLanguageName(String langCode) {
+    return supportedLanguages[langCode] ?? 'Unknown';
+  }
+
+  /// Get flag emoji for language
+  String getLanguageFlag(String langCode) {
+    const Map<String, String> flagEmojis = {
+      'en': '🇬🇧',
+      'ar': '🇸🇦',
+      'es': '🇪🇸',
+      'fr': '🇫🇷',
+      'de': '🇩🇪',
+      'it': '🇮🇹',
+      'pt': '🇵🇹',
+      'ru': '🇷🇺',
+      'zh': '🇨🇳',
+      'ja': '🇯🇵',
+      'ko': '🇰🇷',
+      'hi': '🇮🇳',
+      'tr': '🇹🇷',
+      'nl': '🇳🇱',
+      'pl': '🇵🇱',
+      'sv': '🇸🇪',
+      'no': '🇳🇴',
+      'da': '🇩🇰',
+      'fi': '🇫🇮',
+      'cs': '🇨🇿',
+      'el': '🇬🇷',
+      'he': '🇮🇱',
+      'th': '🇹🇭',
+      'vi': '🇻🇳',
+      'id': '🇮🇩',
+      'ms': '🇲🇾',
+    };
+    return flagEmojis[langCode] ?? '🌐';
   }
 }
