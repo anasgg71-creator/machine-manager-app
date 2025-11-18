@@ -45,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   RealtimeChannel? _presenceChannel;
   int _viewerCount = 0;
   Map<String, UserProfile> _viewers = {};
+  String _chatTranslationLanguage = 'en'; // Language for translating received messages
 
   @override
   void initState() {
@@ -616,6 +617,52 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         actions: [
+          // Translation Language Selector
+          PopupMenuButton<String>(
+            icon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.translate, size: 20),
+                const SizedBox(width: 4),
+                Text(
+                  _chatTranslationLanguage.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            tooltip: 'Select translation language for received messages',
+            onSelected: (String languageCode) {
+              setState(() {
+                _chatTranslationLanguage = languageCode;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return TranslationService.supportedLanguages.entries.map((entry) {
+                final langCode = entry.key;
+                final langName = entry.value;
+                final flag = TranslationService().getLanguageFlag(langCode);
+
+                return PopupMenuItem<String>(
+                  value: langCode,
+                  child: Row(
+                    children: [
+                      Text(flag, style: const TextStyle(fontSize: 20)),
+                      const SizedBox(width: 12),
+                      Text(langName),
+                      if (langCode == _chatTranslationLanguage)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, size: 16, color: AppColors.success),
+                        ),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+          ),
           // Attachments button
           IconButton(
             onPressed: () {
@@ -1033,14 +1080,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 ),
               ],
             ),
-            child: Consumer<LanguageProvider>(
-              builder: (context, languageProvider, child) {
-                return _TranslatedMessageText(
-                  message: message,
-                  targetLanguageCode: languageProvider.selectedLanguageCode,
-                  isOwn: isOwn,
-                );
-              },
+            child: _TranslatedMessageText(
+              message: message,
+              targetLanguageCode: _chatTranslationLanguage,
+              isOwn: isOwn,
             ),
           ),
         ],
