@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/ticket_provider.dart';
+import '../../providers/language_provider.dart';
 import '../../services/supabase_service.dart';
 import '../../services/file_upload_service.dart';
 import '../../services/translation_service.dart';
@@ -44,7 +45,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   RealtimeChannel? _presenceChannel;
   int _viewerCount = 0;
   Map<String, UserProfile> _viewers = {};
-  String _selectedLanguage = 'English'; // Default language
 
   @override
   void initState() {
@@ -264,24 +264,26 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
     }
 
+    // Get current language from provider
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final selectedLanguageCode = languageProvider.selectedLanguageCode;
+
     print('💬 CHAT: Starting to send message...');
     print('💬 CHAT: Ticket ID: ${widget.ticketId}');
     print('💬 CHAT: Original message: $message');
-    print('💬 CHAT: Selected language: $_selectedLanguage');
+    print('💬 CHAT: Selected language: $selectedLanguageCode');
     print('💬 CHAT: Current user: ${SupabaseService.getCurrentUserId()}');
 
     setState(() => _isSending = true);
 
     try {
-      // Get language code for the selected language
-      final sourceLanguageCode = _getLanguageCode(_selectedLanguage);
-      print('💬 CHAT: Sending message in original language: $_selectedLanguage ($sourceLanguageCode)');
+      print('💬 CHAT: Sending message in original language: $selectedLanguageCode');
 
       print('💬 CHAT: Calling SupabaseService.sendMessage...');
       final sentMessage = await SupabaseService.sendMessage(
         ticketId: widget.ticketId,
         message: message, // Send original message (no translation)
-        sourceLanguage: sourceLanguageCode,
+        sourceLanguage: selectedLanguageCode,
       );
       print('✅ CHAT: Message sent successfully: ${sentMessage.id}');
 
@@ -301,24 +303,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       setState(() => _isSending = false);
       print('💬 CHAT: Send operation completed, _isSending = false');
     }
-  }
-
-  String _getLanguageCode(String language) {
-    final Map<String, String> languageCodes = {
-      'English': 'en',
-      'العربية': 'ar',
-      'Español': 'es',
-      'Français': 'fr',
-      'Deutsch': 'de',
-      '中文': 'zh',
-      '日本語': 'ja',
-      '한국어': 'ko',
-      'Русский': 'ru',
-      'Português': 'pt',
-      'Italiano': 'it',
-      'हिन्दी': 'hi',
-    };
-    return languageCodes[language] ?? 'auto';
   }
 
   Future<void> _capturePhoto() async {
@@ -632,48 +616,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         actions: [
-          // Multi-language input dropdown
-          PopupMenuButton<String>(
-            icon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.language, size: 20),
-                const SizedBox(width: 4),
-                Text(
-                  _getLanguageFlag(_selectedLanguage),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            tooltip: 'Select Language: $_selectedLanguage',
-            onSelected: (String language) {
-              setState(() {
-                _selectedLanguage = language;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Chat language set to $_selectedLanguage'),
-                  duration: const Duration(seconds: 2),
-                  backgroundColor: AppColors.primary,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            itemBuilder: (BuildContext context) => [
-              _buildLanguageMenuItem('English', '🇬🇧'),
-              _buildLanguageMenuItem('العربية', '🇸🇦'),
-              _buildLanguageMenuItem('Español', '🇪🇸'),
-              _buildLanguageMenuItem('Français', '🇫🇷'),
-              _buildLanguageMenuItem('Deutsch', '🇩🇪'),
-              _buildLanguageMenuItem('中文', '🇨🇳'),
-              _buildLanguageMenuItem('日本語', '🇯🇵'),
-              _buildLanguageMenuItem('한국어', '🇰🇷'),
-              _buildLanguageMenuItem('Русский', '🇷🇺'),
-              _buildLanguageMenuItem('Português', '🇵🇹'),
-              _buildLanguageMenuItem('Italiano', '🇮🇹'),
-              _buildLanguageMenuItem('हिन्दी', '🇮🇳'),
-            ],
-          ),
           // Attachments button
           IconButton(
             onPressed: () {
@@ -1091,10 +1033,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 ),
               ],
             ),
-            child: _TranslatedMessageText(
-              message: message,
-              targetLanguage: _selectedLanguage,
-              isOwn: isOwn,
+            child: Consumer<LanguageProvider>(
+              builder: (context, languageProvider, child) {
+                return _TranslatedMessageText(
+                  message: message,
+                  targetLanguageCode: languageProvider.selectedLanguageCode,
+                  isOwn: isOwn,
+                );
+              },
             ),
           ),
         ],
@@ -1117,49 +1063,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     } else {
       return '${dateTime.day}/${dateTime.month}';
     }
-  }
-
-  PopupMenuItem<String> _buildLanguageMenuItem(String language, String flag) {
-    final isSelected = _selectedLanguage == language;
-    return PopupMenuItem<String>(
-      value: language,
-      child: Row(
-        children: [
-          Text(flag, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              language,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? AppColors.primary : AppColors.textPrimary,
-              ),
-            ),
-          ),
-          if (isSelected)
-            const Icon(Icons.check, color: AppColors.primary, size: 20),
-        ],
-      ),
-    );
-  }
-
-  String _getLanguageFlag(String language) {
-    final Map<String, String> flagMap = {
-      'English': '🇬🇧',
-      'العربية': '🇸🇦',
-      'Español': '🇪🇸',
-      'Français': '🇫🇷',
-      'Deutsch': '🇩🇪',
-      '中文': '🇨🇳',
-      '日本語': '🇯🇵',
-      '한국어': '🇰🇷',
-      'Русский': '🇷🇺',
-      'Português': '🇵🇹',
-      'Italiano': '🇮🇹',
-      'हिन्दी': '🇮🇳',
-    };
-    return flagMap[language] ?? '🌐';
   }
 
   Widget _buildAttachmentCard(TicketAttachment attachment) {
@@ -1275,47 +1178,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       _showError('Failed to open attachment. Please check your browser or file viewer.');
     }
   }
-
-  // Helper method to get language code from full language name
-  String _getLanguageCodeFromName(String languageName) {
-    final Map<String, String> languageCodes = {
-      'English': 'en',
-      'العربية': 'ar',
-      'Español': 'es',
-      'Français': 'fr',
-      'Deutsch': 'de',
-      '中文': 'zh',
-      '日本語': 'ja',
-      '한국어': 'ko',
-      'Русский': 'ru',
-      'Português': 'pt',
-      'Italiano': 'it',
-      'हिन्दी': 'hi',
-    };
-    return languageCodes[languageName] ?? 'en';
-  }
 }
 
 // Widget that displays a chat message with automatic translation
 class _TranslatedMessageText extends StatelessWidget {
   final ChatMessage message;
-  final String targetLanguage; // User's selected language (full name like "English", "العربية")
+  final String targetLanguageCode; // User's selected language code (like "en", "ar")
   final bool isOwn;
 
   const _TranslatedMessageText({
     required this.message,
-    required this.targetLanguage,
+    required this.targetLanguageCode,
     required this.isOwn,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Get language codes
-    final targetLangCode = _getLanguageCode(targetLanguage);
+    // Get source language code
     final sourceLangCode = message.sourceLanguage;
 
     // If message is already in target language, show directly
-    if (sourceLangCode == targetLangCode) {
+    if (sourceLangCode == targetLanguageCode) {
       return Text(
         message.message,
         style: TextStyle(
@@ -1331,7 +1214,7 @@ class _TranslatedMessageText extends StatelessWidget {
       future: TranslationService().translate(
         text: message.message,
         from: sourceLangCode,
-        to: targetLangCode,
+        to: targetLanguageCode,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -1370,23 +1253,5 @@ class _TranslatedMessageText extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _getLanguageCode(String language) {
-    final Map<String, String> languageCodes = {
-      'English': 'en',
-      'العربية': 'ar',
-      'Español': 'es',
-      'Français': 'fr',
-      'Deutsch': 'de',
-      '中文': 'zh',
-      '日本語': 'ja',
-      '한국어': 'ko',
-      'Русский': 'ru',
-      'Português': 'pt',
-      'Italiano': 'it',
-      'हिन्दी': 'hi',
-    };
-    return languageCodes[language] ?? 'en';
   }
 }
