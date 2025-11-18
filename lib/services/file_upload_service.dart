@@ -362,4 +362,53 @@ class FileUploadService {
       rethrow;
     }
   }
+
+  /// Generic file upload method for any bucket
+  static Future<String> uploadFile({
+    required Uint8List bytes,
+    required String fileName,
+    required String bucket,
+  }) async {
+    try {
+      // Get current user ID
+      final userId = SupabaseService.getCurrentUserId();
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Generate unique file path
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final extension = fileName.split('.').last;
+      final filePath = '$userId/$timestamp.$extension';
+
+      print('📤 Uploading file: $fileName (${bytes.length} bytes) to $bucket/$filePath');
+
+      // Detect MIME type
+      final mimeType = lookupMimeType(fileName, headerBytes: bytes) ?? 'application/octet-stream';
+
+      // Upload to Supabase Storage
+      await SupabaseService.client.storage
+          .from(bucket)
+          .uploadBinary(
+            filePath,
+            bytes,
+            fileOptions: FileOptions(
+              contentType: mimeType,
+              upsert: false,
+            ),
+          );
+
+      print('✅ File uploaded successfully: $filePath');
+
+      // Get public URL
+      final String fileUrl = SupabaseService.client.storage
+          .from(bucket)
+          .getPublicUrl(filePath);
+
+      return fileUrl;
+    } catch (e) {
+      print('❌ Error uploading file: $e');
+      rethrow;
+    }
+  }
 }
