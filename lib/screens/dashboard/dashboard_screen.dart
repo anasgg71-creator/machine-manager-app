@@ -18,7 +18,6 @@ import '../../widgets/animated_form_field.dart';
 import '../../widgets/enhanced_ticket_card.dart';
 import '../../widgets/app_navigation_bar.dart';
 import '../../widgets/fishbone_diagram.dart';
-import '../../widgets/global_language_selector.dart';
 
 // NEW DESIGN: Modern colors, enhanced tickets with time countdown, chat & close buttons
 
@@ -4146,9 +4145,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
-            // Language Selector
-            const GlobalLanguageSelector(),
             const SizedBox(width: 12),
             // Profile Avatar Button
             Consumer<AuthProvider>(
