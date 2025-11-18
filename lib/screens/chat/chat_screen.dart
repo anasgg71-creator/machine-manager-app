@@ -1328,10 +1328,10 @@ class _TranslatedMessageText extends StatelessWidget {
 
     // Otherwise, translate the message
     return FutureBuilder<String>(
-      future: TranslationService.translate(
-        message.message,
-        sourceLang: sourceLangCode,
-        targetLang: targetLangCode,
+      future: TranslationService().translate(
+        text: message.message,
+        from: sourceLangCode,
+        to: targetLangCode,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
