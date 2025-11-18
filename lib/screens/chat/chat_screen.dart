@@ -13,6 +13,7 @@ import '../../config/colors.dart';
 import '../../models/chat_message.dart';
 import '../../models/user_profile.dart';
 import '../../models/ticket_attachment.dart';
+import '../../widgets/global_language_selector.dart';
 
 class ChatScreen extends StatefulWidget {
   final String ticketId;
@@ -616,6 +617,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         actions: [
+          // Language Selector
+          const GlobalLanguageSelector(),
+          const SizedBox(width: 8),
           // Attachments button
           IconButton(
             onPressed: () {
