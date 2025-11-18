@@ -622,17 +622,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             icon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  TranslationService().getLanguageFlag(_chatTranslationLanguage),
-                  style: const TextStyle(fontSize: 20),
-                ),
+                const Icon(Icons.language, size: 18),
                 const SizedBox(width: 4),
                 Text(
-                  _chatTranslationLanguage,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  TranslationService().getLanguageFlag(_chatTranslationLanguage),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ],
             ),
