@@ -12,6 +12,7 @@ import '../../config/constants.dart';
 import '../chat/chat_screen.dart';
 import '../profile/profile_screen.dart';
 import '../job_marketplace/job_marketplace_screen.dart';
+import '../supplier/supplier_management_screen.dart';
 import '../../widgets/animated_button.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../widgets/animated_form_field.dart';
@@ -1209,8 +1210,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           const SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Add Supplier feature coming soon!')),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SupplierManagementScreen(),
+                                ),
                               );
                             },
                             icon: const Icon(Icons.add, size: 16),
