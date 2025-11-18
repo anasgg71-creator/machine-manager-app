@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../config/colors.dart';
+import '../../services/supabase_service.dart';
+import '../../services/file_upload_service.dart';
 
 class SupplierManagementScreen extends StatefulWidget {
   const SupplierManagementScreen({super.key});
@@ -16,6 +19,9 @@ class _SupplierManagementScreenState extends State<SupplierManagementScreen> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   final _productsController = TextEditingController();
+  String? _logoUrl;
+  bool _isUploading = false;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -28,16 +34,99 @@ class _SupplierManagementScreenState extends State<SupplierManagementScreen> {
     super.dispose();
   }
 
-  void _submitSupplier() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Save supplier to database
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Supplier added successfully!'),
-          backgroundColor: AppColors.success,
-        ),
+  Future<void> _pickAndUploadLogo() async {
+    try {
+      setState(() => _isUploading = true);
+
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
       );
-      Navigator.pop(context);
+
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        final fileName = 'supplier_logo_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+        final url = await FileUploadService.uploadFile(
+          bytes: bytes,
+          fileName: fileName,
+          bucket: 'suppliers',
+        );
+
+        setState(() => _logoUrl = url);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Logo uploaded successfully!'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to upload logo: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
+    }
+  }
+
+  Future<void> _submitSupplier() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        setState(() => _isSaving = true);
+
+        final supplierData = {
+          'company_name': _nameController.text.trim(),
+          'contact_person': _contactController.text.trim(),
+          'email': _emailController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'address': _addressController.text.trim(),
+          'products_services': _productsController.text.trim(),
+          'logo_url': _logoUrl,
+          'created_at': DateTime.now().toIso8601String(),
+        };
+
+        // Save to Supabase
+        await SupabaseService.client
+            .from('suppliers')
+            .insert(supplierData);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Supplier added successfully!'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to add supplier: $e'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isSaving = false);
+        }
+      }
     }
   }
 
@@ -83,6 +172,44 @@ class _SupplierManagementScreenState extends State<SupplierManagementScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+
+              // Company Logo Upload
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    if (_logoUrl != null)
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Image.network(
+                          _logoUrl!,
+                          height: 120,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ListTile(
+                      leading: Icon(
+                        _logoUrl != null ? Icons.check_circle : Icons.add_photo_alternate,
+                        color: _logoUrl != null ? AppColors.success : AppColors.primary,
+                      ),
+                      title: Text(_logoUrl != null ? 'Logo Uploaded' : 'Upload Company Logo'),
+                      subtitle: Text(_logoUrl != null ? 'Tap to change' : 'Tap to select logo'),
+                      trailing: _isUploading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : null,
+                      onTap: _isUploading ? null : _pickAndUploadLogo,
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -195,9 +322,18 @@ class _SupplierManagementScreenState extends State<SupplierManagementScreen> {
 
               // Submit Button
               ElevatedButton.icon(
-                onPressed: _submitSupplier,
-                icon: const Icon(Icons.add_business),
-                label: const Text('Add Supplier'),
+                onPressed: _isSaving ? null : _submitSupplier,
+                icon: _isSaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.add_business),
+                label: Text(_isSaving ? 'Saving...' : 'Add Supplier'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
