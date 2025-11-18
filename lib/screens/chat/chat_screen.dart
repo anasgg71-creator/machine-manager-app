@@ -619,16 +619,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         actions: [
           // Translation Language Selector
           PopupMenuButton<String>(
-            icon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.language, size: 18),
-                const SizedBox(width: 4),
-                Text(
-                  TranslationService().getLanguageFlag(_chatTranslationLanguage),
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ],
+            icon: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.translate, size: 20, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    TranslationService().getLanguageFlag(_chatTranslationLanguage),
+                    style: const TextStyle(fontSize: 22),
+                  ),
+                ],
+              ),
             ),
             tooltip: 'Select translation language for received messages',
             onSelected: (String languageCode) {
