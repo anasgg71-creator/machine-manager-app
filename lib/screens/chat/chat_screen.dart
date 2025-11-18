@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/ticket_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../services/supabase_service.dart';
 import '../../services/file_upload_service.dart';
 import '../../services/translation_service.dart';
@@ -12,6 +13,7 @@ import '../../config/colors.dart';
 import '../../models/chat_message.dart';
 import '../../models/user_profile.dart';
 import '../../models/ticket_attachment.dart';
+import '../../widgets/language_selector.dart';
 
 class ChatScreen extends StatefulWidget {
   final String ticketId;
@@ -41,15 +43,27 @@ class _ChatScreenState extends State<ChatScreen> {
   RealtimeChannel? _presenceChannel;
   int _viewerCount = 0;
   Map<String, UserProfile> _viewers = {};
-  String _selectedLanguage = 'English'; // Default language
+  String _selectedLanguage = 'English'; // Default language (kept for backward compatibility)
+  String _userPreferredLanguage = 'en'; // ISO 639-1 language code for translation
 
   @override
   void initState() {
     super.initState();
+    _loadUserLanguagePreference();
     _loadMessages();
     _loadAttachments();
     _subscribeToMessages();
     _setupPresence();
+  }
+
+  Future<void> _loadUserLanguagePreference() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final currentUser = authProvider.currentUser;
+    if (currentUser != null) {
+      setState(() {
+        _userPreferredLanguage = currentUser.preferredReceiveLanguage;
+      });
+    }
   }
 
   @override
@@ -65,11 +79,27 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final messages = await SupabaseService.getChatMessages(widget.ticketId);
-      setState(() {
-        _messages = messages;
-        _isLoading = false;
-      });
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final userId = authProvider.currentUser?.id;
+
+      if (userId != null) {
+        // Use translated messages
+        final messages = await SupabaseService.getTranslatedMessages(
+          ticketId: widget.ticketId,
+          userId: userId,
+        );
+        setState(() {
+          _messages = messages;
+          _isLoading = false;
+        });
+      } else {
+        // Fallback to regular messages if no user ID
+        final messages = await SupabaseService.getChatMessages(widget.ticketId);
+        setState(() {
+          _messages = messages;
+          _isLoading = false;
+        });
+      }
       _scrollToBottom();
     } catch (e) {
       setState(() => _isLoading = false);
@@ -569,47 +599,38 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         actions: [
-          // Multi-language input dropdown
-          PopupMenuButton<String>(
-            icon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.language, size: 20),
-                const SizedBox(width: 4),
-                Text(
-                  _getLanguageFlag(_selectedLanguage),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
+          // Translation language selector
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: LanguageSelector(
+              currentLanguage: _userPreferredLanguage,
+              onLanguageChanged: (newLang) async {
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final userId = authProvider.currentUser?.id;
+                if (userId != null) {
+                  await SupabaseService.updateUserLanguagePreference(userId, newLang);
+                  setState(() {
+                    _userPreferredLanguage = newLang;
+                  });
+                  _loadMessages(); // Reload with new language
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Text(TranslationService().getLanguageFlag(newLang)),
+                          const SizedBox(width: 8),
+                          Text('Translation language updated to ${TranslationService.supportedLanguages[newLang]}'),
+                        ],
+                      ),
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: AppColors.primary,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
             ),
-            tooltip: 'Select Language: $_selectedLanguage',
-            onSelected: (String language) {
-              setState(() {
-                _selectedLanguage = language;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Chat language set to $_selectedLanguage'),
-                  duration: const Duration(seconds: 2),
-                  backgroundColor: AppColors.primary,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            itemBuilder: (BuildContext context) => [
-              _buildLanguageMenuItem('English', '🇬🇧'),
-              _buildLanguageMenuItem('العربية', '🇸🇦'),
-              _buildLanguageMenuItem('Español', '🇪🇸'),
-              _buildLanguageMenuItem('Français', '🇫🇷'),
-              _buildLanguageMenuItem('Deutsch', '🇩🇪'),
-              _buildLanguageMenuItem('中文', '🇨🇳'),
-              _buildLanguageMenuItem('日本語', '🇯🇵'),
-              _buildLanguageMenuItem('한국어', '🇰🇷'),
-              _buildLanguageMenuItem('Русский', '🇷🇺'),
-              _buildLanguageMenuItem('Português', '🇵🇹'),
-              _buildLanguageMenuItem('Italiano', '🇮🇹'),
-              _buildLanguageMenuItem('हिन्दी', '🇮🇳'),
-            ],
           ),
           // Attachments button
           IconButton(
@@ -1254,10 +1275,10 @@ class _TranslatedMessageText extends StatelessWidget {
 
     // Otherwise, translate the message
     return FutureBuilder<String>(
-      future: TranslationService.translate(
-        message.message,
-        sourceLang: sourceLangCode,
-        targetLang: targetLangCode,
+      future: TranslationService().translate(
+        text: message.message,
+        from: sourceLangCode,
+        to: targetLangCode,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

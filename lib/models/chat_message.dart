@@ -8,6 +8,9 @@ class ChatMessage {
   final String messageType;
   final String? attachmentUrl;
   final String sourceLanguage; // Language the message was written in
+  final String originalText; // Original message text before translation
+  final String originalLang; // Original message language (ISO 639-1 code)
+  final Map<String, dynamic>? translations; // Cached translations
   final DateTime createdAt;
   final UserProfile? sender;
 
@@ -19,6 +22,9 @@ class ChatMessage {
     required this.messageType,
     this.attachmentUrl,
     required this.sourceLanguage,
+    required this.originalText,
+    required this.originalLang,
+    this.translations,
     required this.createdAt,
     this.sender,
   });
@@ -32,6 +38,9 @@ class ChatMessage {
       messageType: json['message_type'] as String? ?? 'text',
       attachmentUrl: json['attachment_url'] as String?,
       sourceLanguage: json['source_language'] as String? ?? 'en', // Default to English for old messages
+      originalText: json['original_text'] as String? ?? json['message'] as String? ?? '',
+      originalLang: json['original_lang'] as String? ?? json['source_language'] as String? ?? 'en',
+      translations: json['translations'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['created_at'] as String),
       sender: json['sender'] != null
           ? UserProfile.fromJson(json['sender'] as Map<String, dynamic>)
@@ -48,6 +57,9 @@ class ChatMessage {
       'message_type': messageType,
       'attachment_url': attachmentUrl,
       'source_language': sourceLanguage,
+      'original_text': originalText,
+      'original_lang': originalLang,
+      'translations': translations,
       'created_at': createdAt.toIso8601String(),
     };
   }

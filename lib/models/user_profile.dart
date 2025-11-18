@@ -12,6 +12,7 @@ class UserProfile {
   final DateTime? lastSeen;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String preferredReceiveLanguage;
 
   UserProfile({
     required this.id,
@@ -27,6 +28,7 @@ class UserProfile {
     this.lastSeen,
     required this.createdAt,
     required this.updatedAt,
+    this.preferredReceiveLanguage = 'en',
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class UserProfile {
           : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      preferredReceiveLanguage: json['preferred_receive_language'] as String? ?? 'en',
     );
   }
 
@@ -64,6 +67,7 @@ class UserProfile {
       'last_seen': lastSeen?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'preferred_receive_language': preferredReceiveLanguage,
     };
   }
 
@@ -81,6 +85,7 @@ class UserProfile {
     DateTime? lastSeen,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? preferredReceiveLanguage,
   }) {
     return UserProfile(
       id: id ?? this.id,
@@ -96,6 +101,7 @@ class UserProfile {
       lastSeen: lastSeen ?? this.lastSeen,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      preferredReceiveLanguage: preferredReceiveLanguage ?? this.preferredReceiveLanguage,
     );
   }
 

@@ -61,7 +61,11 @@
       "Bash(C:/Flutter/flutter/bin/flutter build:*)",
       "Bash(taskkill:*)",
       "Bash(keytool:*)",
-      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\":*)"
+      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\":*)",
+      "Bash(C:/Flutter/flutter/bin/flutter analyze:*)",
+      "Bash(C:/Flutter/flutter/bin/flutter run:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

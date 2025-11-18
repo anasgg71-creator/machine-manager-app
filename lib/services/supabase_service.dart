@@ -5,6 +5,7 @@ import '../models/user_profile.dart';
 import '../models/chat_message.dart';
 import '../models/machine.dart';
 import '../models/todo_item.dart';
+import 'translation_service.dart';
 
 class SupabaseService {
   static SupabaseClient get client => Supabase.instance.client;
@@ -396,25 +397,32 @@ class SupabaseService {
       print('🔷 SUPABASE: sendMessage called');
       print('🔷 SUPABASE: ticketId: $ticketId');
       print('🔷 SUPABASE: message: $message');
-      print('🔷 SUPABASE: sourceLanguage: $sourceLanguage');
-      print('🔷 SUPABASE: currentUser: ${currentUser?.id}');
 
       if (currentUser == null) {
         print('❌ SUPABASE: User not authenticated');
         throw Exception('User not authenticated');
       }
 
-      // Only include fields that exist in the database schema
-      // Temporarily exclude source_language until database migration is applied
+      final translationService = TranslationService();
+
+      // 1. Detect language of the message
+      final detectedLang = await translationService.detectLanguage(message);
+      print('🌐 Detected language: $detectedLang');
+
+      // 2. Prepare message data with translation support
       final messageData = {
         'ticket_id': ticketId,
         'sender_id': currentUser!.id,
         'message': message,
-        // 'source_language': sourceLanguage, // TODO: Uncomment after database migration
+        'source_language': detectedLang,
+        'original_text': message,
+        'original_lang': detectedLang,
+        'translations': {}, // Empty initially, will be populated on-demand
+        'message_type': messageType,
+        if (attachmentUrl != null) 'attachment_url': attachmentUrl,
       };
 
-      print('🔷 SUPABASE: Message data to insert: $messageData');
-      print('🔷 SUPABASE: Inserting into chat_messages table...');
+      print('🔷 SUPABASE: Inserting message with translation metadata...');
 
       final response = await client
           .from('chat_messages')
@@ -425,9 +433,7 @@ class SupabaseService {
           ''')
           .single();
 
-      print('✅ SUPABASE: Message inserted successfully');
-      print('✅ SUPABASE: Response: $response');
-
+      print('✅ SUPABASE: Message sent with translation metadata');
       return ChatMessage.fromJson(response);
     } catch (e, stackTrace) {
       print('❌ SUPABASE: Error sending message: $e');
@@ -461,6 +467,101 @@ class SupabaseService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  // Update user's preferred language for receiving translated messages
+  static Future<void> updateUserLanguagePreference(String userId, String languageCode) async {
+    try {
+      print('🌐 Updating language preference to $languageCode for user $userId');
+      await client
+          .from('profiles')
+          .update({'preferred_receive_language': languageCode})
+          .eq('id', userId);
+      print('✅ Language preference updated successfully');
+    } catch (e) {
+      print('❌ Error updating language preference: $e');
+      rethrow;
+    }
+  }
+
+  // Get messages with automatic translation based on user's preferred language
+  static Future<List<ChatMessage>> getTranslatedMessages({
+    required String ticketId,
+    required String userId,
+  }) async {
+    try {
+      // 1. Get user's preferred language
+      final userProfile = await client
+          .from('profiles')
+          .select('preferred_receive_language')
+          .eq('id', userId)
+          .single();
+
+      final preferredLang = userProfile['preferred_receive_language'] ?? 'en';
+      print('🌐 User preferred language: $preferredLang');
+
+      // 2. Get all messages for the ticket
+      final response = await client
+          .from('chat_messages')
+          .select('*, sender:profiles!chat_messages_sender_id_fkey(*)')
+          .eq('ticket_id', ticketId)
+          .order('created_at', ascending: true);
+
+      final List<ChatMessage> messages = [];
+      final translationService = TranslationService();
+
+      // 3. Process each message
+      for (final json in response) {
+        final originalText = json['original_text'] ?? json['message'] ?? '';
+        final originalLang = json['original_lang'] ?? 'en';
+        final cachedTranslations = json['translations'] as Map<String, dynamic>?;
+
+        // 4. Check if we need to translate
+        String displayText = originalText;
+        if (originalLang != preferredLang) {
+          // Check cache first
+          if (cachedTranslations != null && cachedTranslations.containsKey(preferredLang)) {
+            displayText = cachedTranslations[preferredLang];
+            print('✅ Using cached translation');
+          } else {
+            // Translate on-the-fly
+            print('🌐 Translating message on-the-fly');
+            displayText = await translationService.translate(
+              text: originalText,
+              from: originalLang,
+              to: preferredLang,
+            );
+
+            // Update cache in background (fire and forget)
+            _cacheTranslation(json['id'], preferredLang, displayText, cachedTranslations);
+          }
+        }
+
+        // Create message with translated text
+        json['message'] = displayText; // Override message with translation
+        messages.add(ChatMessage.fromJson(json));
+      }
+
+      return messages;
+    } catch (e) {
+      print('❌ Error getting translated messages: $e');
+      rethrow;
+    }
+  }
+
+  // Helper method to cache translation (fire and forget)
+  static void _cacheTranslation(String messageId, String lang, String translation, Map<String, dynamic>? existingTranslations) {
+    // Merge new translation with existing translations
+    final updatedTranslations = Map<String, dynamic>.from(existingTranslations ?? {});
+    updatedTranslations[lang] = translation;
+
+    client.from('chat_messages').update({
+      'translations': updatedTranslations
+    }).eq('id', messageId).then((_) {
+      print('✅ Translation cached for language: $lang');
+    }).catchError((e) {
+      print('⚠️ Failed to cache translation: $e');
+    });
   }
 
   // Close ticket with optional resolution and rating
