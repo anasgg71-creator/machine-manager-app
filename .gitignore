@@ -49,3 +49,7 @@ app.*.map.json
 *.keystore
 /android/key.properties
 keystore_credentials.txt
+
+# Google Play service account - DO NOT COMMIT
+google-play-key.json
+*-service-account*.json
