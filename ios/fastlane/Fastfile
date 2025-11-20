@@ -3,15 +3,15 @@ default_platform(:ios)
 platform :ios do
   desc "Build and upload to TestFlight"
   lane :beta do
-    # Set up App Store Connect API key
+    # Set up App Store Connect API key using the key file
     api_key = app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
-      key_content: ENV["ASC_PRIVATE_KEY"],
-      is_key_content_base64: false
+      key_filepath: "#{Dir.home}/.appstoreconnect/private_keys/AuthKey_#{ENV["ASC_KEY_ID"]}.p8",
+      in_house: false
     )
 
-    # Update code signing settings
+    # Update code signing settings for automatic signing
     update_code_signing_settings(
       use_automatic_signing: true,
       path: "Runner.xcodeproj"
@@ -22,18 +22,15 @@ platform :ios do
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-          "com.optirva.dairyhtalk" => "match AppStore com.optirva.dairyhtalk"
-        }
-      }
+      clean: true
     )
 
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
       skip_waiting_for_build_processing: true,
-      skip_submission: true
+      skip_submission: true,
+      distribute_external: false
     )
   end
 

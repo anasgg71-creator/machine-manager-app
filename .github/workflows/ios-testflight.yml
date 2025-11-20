@@ -1,18 +1,24 @@
-name: iOS TestFlight
+name: iOS Build & Deploy to TestFlight
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch: {}
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build-and-upload:
+  build:
     runs-on: macos-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -23,8 +29,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+      - name: Bump version
+        run: |
+          chmod +x scripts/bump_version.sh
+          ./scripts/bump_version.sh patch
+
+      - name: Commit version bump
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pubspec.yaml
+          git diff --staged --quiet || git commit -m "chore: bump version [skip ci]"
+          git push
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -38,14 +55,14 @@ jobs:
           cd ios
           pod install --repo-update
 
-      - name: Build and upload to TestFlight
-        env:
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
-          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
-          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
+      - name: Create App Store Connect API Key
         run: |
-          cd ios
-          bundle exec fastlane beta
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.ASC_KEY_CONTENT }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+
+      - name: Build and upload to TestFlight
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: bundle exec fastlane beta

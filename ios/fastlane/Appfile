@@ -1,5 +1,1 @@
-app_identifier(ENV["APP_IDENTIFIER"] || "com.optirva.dairyhtalk")
-apple_id(ENV["APPLE_ID"])
-team_id(ENV["APP_STORE_CONNECT_TEAM_ID"])
-
-itc_team_id(ENV["APP_STORE_CONNECT_TEAM_ID"])
+app_identifier("com.optirva.dairyhtalk")
