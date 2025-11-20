@@ -169,12 +169,34 @@ Points awarded when resolving tickets (lib/models/ticket.dart:282):
 - Quick response bonus: +5 if resolved within 4 hours
 - Rating bonus: rating × 2
 
+## CI/CD Automation
+
+### Automated Deployments
+The project uses GitHub Actions for continuous integration and deployment:
+
+**iOS TestFlight** (.github/workflows/ios-testflight.yml):
+- Automatically builds and deploys to TestFlight on every push to main
+- Uses App Store Connect API for authentication
+- Automatic version bumping with semantic versioning
+- No MacinCloud or manual Xcode builds required
+
+**Android APK** (.github/workflows/android-playstore.yml):
+- Automatically builds APK on every push to main
+- Automatic version bumping with semantic versioning
+- APK artifacts available for download in GitHub Actions
+
+### Version Management
+- Version bumping is handled automatically by scripts/bump_version.sh
+- Commits include [skip ci] tag to prevent infinite loops
+- Version format: MAJOR.MINOR.PATCH+BUILD_NUMBER
+
 ## Development Workflow
 
 1. **Supabase Setup**: Ensure credentials in lib/config/constants.dart match your Supabase project
 2. **Initial Run**: App automatically seeds machines on first launch (main.dart:36)
 3. **Testing**: TestTicketCreation utility runs on startup (main.dart:44)
 4. **Hot Reload**: Flutter supports hot reload during development (Cmd+\ or Ctrl+\)
+5. **Deployment**: Push to main branch triggers automatic builds for iOS TestFlight and Android APK
 
 ## Key Dependencies
 - `supabase_flutter: ^2.8.0` - Backend services
