@@ -47,8 +47,14 @@ NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}+${BUILD_NUMBER}"
 
 echo "Bumping version from $CURRENT_VERSION to $NEW_VERSION"
 
-# Update pubspec.yaml
-sed -i "s/^version: .*/version: $NEW_VERSION/" $PUBSPEC_FILE
+# Update pubspec.yaml (compatible with both macOS and Linux)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS (BSD sed)
+  sed -i '' "s/^version: .*/version: $NEW_VERSION/" $PUBSPEC_FILE
+else
+  # Linux (GNU sed)
+  sed -i "s/^version: .*/version: $NEW_VERSION/" $PUBSPEC_FILE
+fi
 
 echo "Version updated successfully!"
 echo "New version: $NEW_VERSION"
