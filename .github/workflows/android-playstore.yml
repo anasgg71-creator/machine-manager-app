@@ -79,55 +79,8 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Build AAB
-        run: flutter build appbundle --release
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Download AAB artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-          working-directory: android
-
-      - name: Install Fastlane
-        working-directory: android
-        run: bundle install
-
-      - name: Decode Google Play service account
-        run: |
-          echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" | base64 --decode > google-play-key.json
-
-      - name: Deploy to Play Store
-        working-directory: android
-        env:
-          GOOGLE_PLAY_JSON_KEY_PATH: ../google-play-key.json
-        run: |
-          TRACK="${{ github.event.inputs.track || 'internal' }}"
-          bundle exec fastlane $TRACK
