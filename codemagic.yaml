@@ -15,7 +15,7 @@ workflows:
         script: flutter packages pub get
       - name: Build Android Release
         script: |
-          flutter build appbundle --release
+          flutter build appbundle --release --obfuscate --split-debug-info=build/debug-info
       - name: Build iOS Release
         script: |
           flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
